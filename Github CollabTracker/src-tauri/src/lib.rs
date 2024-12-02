@@ -7,7 +7,7 @@ use std::sync::LazyLock;
 static CLIENT: LazyLock<Client> = LazyLock::new(|| Client::new());
 
 #[tauri::command]
-async fn fetch_github_code(
+async fn post_request_github(
     url: String,
     query_params: HashMap<&str, &str>,
 ) -> Result<String, String> {
@@ -39,7 +39,7 @@ async fn fetch_github_code(
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![fetch_github_code])
+        .invoke_handler(tauri::generate_handler![post_request_github])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
