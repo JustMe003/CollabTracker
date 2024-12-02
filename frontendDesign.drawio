@@ -112,7 +112,7 @@
                 <mxCell id="GMy2k86Ek7kI_840MJQZ-33" value="Search" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=default;fontSize=20;" parent="1" vertex="1">
                     <mxGeometry x="530" y="370" width="100" height="35" as="geometry"/>
                 </mxCell>
-                <mxCell id="4ZkRkNRCye_v-X5pu7gx-1" value="Page:1,2,3,etc.." style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="4ZkRkNRCye_v-X5pu7gx-1" value="Page:1,2,3,etc.." style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="710" y="660" width="125" height="30" as="geometry"/>
                 </mxCell>
             </root>
@@ -126,13 +126,13 @@
                 <mxCell id="cLYKK5E4cd3xjMeLIeYH-1" value="Welcome, etc" style="text;strokeColor=none;fillColor=none;html=1;fontSize=24;fontStyle=1;verticalAlign=middle;align=center;" parent="1" vertex="1">
                     <mxGeometry x="195" y="130" width="460" height="90" as="geometry"/>
                 </mxCell>
-                <mxCell id="lfa4kESrfbNGY8JqZh2j-3" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="cLYKK5E4cd3xjMeLIeYH-6" target="lfa4kESrfbNGY8JqZh2j-2">
+                <mxCell id="lfa4kESrfbNGY8JqZh2j-3" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="cLYKK5E4cd3xjMeLIeYH-6" target="lfa4kESrfbNGY8JqZh2j-2" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="cLYKK5E4cd3xjMeLIeYH-6" value="Login with github" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=default;fontSize=20;" parent="1" vertex="1">
                     <mxGeometry x="325" y="380" width="201" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="lfa4kESrfbNGY8JqZh2j-2" value="OAuth2 authentification. Redirect the user to the Github website for login" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                <mxCell id="lfa4kESrfbNGY8JqZh2j-2" value="OAuth2 authentification. Redirect the user to the Github website for login" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="466" y="460" width="224" height="80" as="geometry"/>
                 </mxCell>
             </root>
