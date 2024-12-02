@@ -14,6 +14,7 @@ async function cookieChecker() {
     // go to main page
   } else if(refreshCookie) {
     // refresh token
+    const authenticationData = await Authentication.requestRefreshToken(refreshCookie);
   } else {
     const verificationData = await Authentication.startAuthentication();
     // show login page

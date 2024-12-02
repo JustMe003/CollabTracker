@@ -7,6 +7,7 @@ export abstract class Authentication {
   
   static clientId = "Iv23liDO3ngcMFSVuXF7";
   static grantType = "urn:ietf:params:oauth:grant-type:device_code";
+  static grantTypeRefresh = "urn:ietf:params:oauth:grant-type:refresh_token";
   
 
   public static async startAuthentication(): Promise<VerificationData> {
@@ -22,6 +23,17 @@ export abstract class Authentication {
         ["client_id", Authentication.clientId],
         ["device_code", verificationData.getDeviceCode()],
         ["grant_type", Authentication.grantType]
+      ])
+    );
+  }
+
+  public static async requestRefreshToken(refreshToken:string): Promise<AuthenticationData | AuthenticationError> {
+    return await RequestGithub.sendPostRequest<AuthenticationData | AuthenticationError>(
+      "https://github.com/login/oauth/access_token",
+      new Map<string, string>([
+        ["client_id", Authentication.clientId],
+        ["grant_type", Authentication.grantTypeRefresh],
+        ["refresh_token", refreshToken]
       ])
     );
   }
