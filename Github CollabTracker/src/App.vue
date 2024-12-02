@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { invoke } from '@tauri-apps/api/core';
+import Cookies from 'universal-cookie';
 import { ref } from 'vue';
 import { open } from '@tauri-apps/plugin-shell';
 
 let code = ref("");
 let intervalId: number;
 const clientId = 'Iv23liDO3ngcMFSVuXF7';
+const cookies = new Cookies();
+const date = new Date();
+
 let deviceCode: string;
 const grantType = "urn:ietf:params:oauth:grant-type:device_code";
 let userToken: string;
@@ -47,24 +51,31 @@ async function poll_github() {
       clearInterval(intervalId);
       userToken = res.access_token;
       console.log(userToken);
+      date.setMonth(date.getMonth() + 6);
+      cookies.set("GitToken", userToken, {expires: date});
     }
   }
 }
 
 async function logIn() {
-  const url = "https://github.com/login/device/code";
-  const map = {
-    client_id: clientId
-  }
-  try {
-    const res: TEMP = JSON.parse(await invoke('post_request_github', { url: url, queryParams: map })) as TEMP;
-    console.log(res);
-    code = ref(res.user_code);
-    deviceCode = res.device_code;
-    open(res.verification_uri);
-    intervalId = setInterval(poll_github, 5500);
-  } catch(e) {
-    console.error("error! ", e);
+  if(cookies.get("GitToken")){
+    console.log("Cookie Found\n");
+  } else {
+    const url = "https://github.com/login/device/code";
+    
+    const map = {
+      client_id: clientId
+    }
+    try {
+      const res: TEMP = JSON.parse(await invoke('post_request_github', { url: url, queryParams: map })) as TEMP;
+      console.log(res);
+      code = ref(res.user_code);
+      deviceCode = res.device_code;
+      open(res.verification_uri);
+      intervalId = setInterval(poll_github, 5500);
+    } catch(e) {
+      console.error("error! ", e);
+    }
   }
 }
 
