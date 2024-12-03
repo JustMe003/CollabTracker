@@ -1,35 +1,35 @@
 export class VerificationData {
-  private deviceCode: string;
-  private userCode: string;
-  private verificationUri: string;
-  private expiresIn: number;
+  private device_code: string;
+  private user_code: string;
+  private verification_uri: string;
+  private expires_in: number;
   private interval: number;
 
   constructor(deviceCode: string, userCode: string, verificationUri: string, expiresIn: number, interval: number) {
-    this.deviceCode = deviceCode;
-    this.userCode = userCode;
-    this.verificationUri = verificationUri;
-    this.expiresIn = expiresIn;
+    this.device_code = deviceCode;
+    this.user_code = userCode;
+    this.verification_uri = verificationUri;
+    this.expires_in = expiresIn;
     this.interval = interval;
   }
 
-  public getDeviceCode() {
-    return this.deviceCode;
+  public getDeviceCode(): string {
+    return this.device_code;
   }
 
-  public getUserCode() {
-    return this.userCode;
+  public getUserCode(): string {
+    return this.user_code;
   }
 
-  public getVerificationUri() {
-    return this.verificationUri;
+  public getVerificationUri(): string {
+    return this.verification_uri;
   }
 
-  public getExpiresIn() {
-    return this.expiresIn;
+  public getExpiresIn(): number {
+    return this.expires_in;
   }
 
-  public getInterval() {
+  public getInterval(): number {
     return this.interval;
   }
 }

@@ -1,34 +1,34 @@
 export class AuthenticationData {
   
-  private accessToken: string;
-  private expiresIn: number;
-  private refreshToken: string;
-  private refreshTokenExpiresIn: number;
+  private access_token: string;
+  private expires_in: number;
+  private refresh_token: string;
+  private refresh_token_expires_in: number;
   private scope: string;
-  private tokenType: string;
+  private token_type: string;
 
   constructor(accessToken: string, expiresIn: number, refreshToken: string, refreshTokenExpiresIn: number, scope: string, tokenType: string) {
-    this.accessToken = accessToken;
-    this.expiresIn = expiresIn;
-    this.refreshToken = refreshToken;
-    this.refreshTokenExpiresIn = refreshTokenExpiresIn;
+    this.access_token = accessToken;
+    this.expires_in = expiresIn;
+    this.refresh_token = refreshToken;
+    this.refresh_token_expires_in = refreshTokenExpiresIn;
     this.scope = scope;
-    this.tokenType = tokenType;
+    this.token_type = tokenType;
   }
 
   public getAccessToken() {
-    return this.accessToken;
+    return this.access_token;
   }
 
   public getExpiresIn() {
-    return this.expiresIn;
+    return this.expires_in;
   }
 
   public getRefreshToken() {
-    return this.refreshToken;
+    return this.refresh_token;
   }
 
   public getRefreshTokenExpiresIn() {
-    return this.refreshTokenExpiresIn;
+    return this.refresh_token_expires_in;
   }
 }
