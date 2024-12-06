@@ -18,6 +18,7 @@ async function finishAuth() {
 
   const res = await AuthPage.finishAuth();
   if(res) {
+    console.log(this.$router);
     this.$router.push("/Home");
   }
 
