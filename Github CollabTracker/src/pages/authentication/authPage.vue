@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { AuthPage } from './authPage';
+import router from '../../router/router';
 
 defineProps(["clicked"]);
 
@@ -18,8 +19,7 @@ async function finishAuth() {
 
   const res = await AuthPage.finishAuth();
   if(res) {
-    console.log(this.$router);
-    this.$router.push("/Home");
+    router.push("/Home");
   }
 
   setTimeout(function() {
