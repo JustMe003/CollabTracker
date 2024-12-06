@@ -1,6 +1,6 @@
-import {User} from "./User"
+import {User} from "./UserModel"
 
-export class RepoMode{
+export class RepoModel{
   public repoID: string;
   public html: string;
   public creator: User;
