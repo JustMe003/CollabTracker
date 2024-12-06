@@ -7,7 +7,7 @@ export class IssueModel{
   public numberOfComments: number;
   public reviewers: [User];
 
-  constructor(html:string, creator:User, assignees:[User], numberOfComments:number, reviewers: [User]){
+  constructor(html: string, creator: User, assignees: [User], numberOfComments: number, reviewers: [User]){
     this.html = html;
     this.creator = creator;
     this.assignees = assignees;

@@ -4,6 +4,7 @@
 
 <template>
   <Suspense>
+    <RouterView />
 
     <template #fallback>
       loading...
