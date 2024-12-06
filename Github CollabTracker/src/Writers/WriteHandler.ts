@@ -17,21 +17,22 @@ export class WriteHandler {
     console.log(exists);
     if (!exists) {
       await this.createFolder();
-      }
+    }
     /*
-      this.repoWriter.init("Storage/repos.json");
+    this.repoWriter.init("Storage/repos.json");
     this.userWriter.init("Storage/users.json")
     */
   }
+  
   // Check if the folder exists
   private async checkFolder(): Promise<boolean> {
-    return await fs.exists('Storage', {baseDir: fs.BaseDirectory.AppLocalData,});
+    return await fs.exists('Storage', {baseDir: fs.BaseDirectory.AppLocalData});
   }
 
   // Create the folder if it doesn't exist
   private async createFolder() {
     try {
-      await fs.mkdir('Storage', {baseDir: fs.BaseDirectory.AppLocalData,});
+      await fs.mkdir('Storage', {baseDir: fs.BaseDirectory.AppLocalData});
     } catch (error) {
       console.error('Error creating folder:', error);
     }

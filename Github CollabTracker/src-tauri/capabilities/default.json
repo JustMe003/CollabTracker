@@ -8,6 +8,17 @@
   "permissions": [
     "core:default",
     "shell:allow-open",
-    "fs:default"
+    {
+      "identifier": "fs:allow-applocaldata-read-recursive",
+      "allow": [{ "path": "$APPLOCALDATA/*" }]
+    },
+    {
+      "identifier": "fs:allow-applocaldata-write-recursive",
+      "allow": [{ "path": "$APPLOCALDATA/*" }]
+    },
+    {
+      "identifier": "fs:allow-exists",
+      "allow": [{ "path": "$APPLOCALDATA/*" }]
+    }
   ]
 }
