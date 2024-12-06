@@ -3,6 +3,7 @@ import MainPage from "../pages/main/mainPage.vue"
 import AuthPage from "../pages/authentication/authPage.vue";
 import { GitTokenCookie } from "../authorization/cookies/GitTokenCookie";
 import { GitRefreshCookie } from "../authorization/cookies/GitRefreshCookie";
+import { WriteHandler } from "../Writers/WriteHandler";
 
 const router = createRouter({
   history: createMemoryHistory(),
@@ -15,6 +16,8 @@ const router = createRouter({
 
 router.beforeEach((to) => {
   const cookie = GitTokenCookie.getGitTokenCookie();
+  const writer = new WriteHandler();
+  writer.init();
   if(!cookie) {
     const refreshCookie = GitRefreshCookie.getRefreshCookie();
     if(refreshCookie) {
