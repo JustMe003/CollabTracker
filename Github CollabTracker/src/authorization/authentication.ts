@@ -42,9 +42,9 @@ export abstract class Authentication {
     const res = await RequestGithub.sendPostRequest<AuthenticationData>(
       "https://github.com/login/oauth/access_token",
       new Map<string, string>([
-        ["client_id", Authentication.clientId],
+        ["refresh_token", refreshToken],
         ["grant_type", Authentication.grantTypeRefresh],
-        ["refresh_token", refreshToken]
+        ["client_id", Authentication.clientId]
       ]),
       AuthenticationData
     );

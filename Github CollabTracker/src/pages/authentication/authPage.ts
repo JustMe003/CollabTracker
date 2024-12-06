@@ -1,8 +1,6 @@
 import { Ref, ref } from "vue";
 import { Authentication } from "../../authorization/authentication";
 import { AuthenticationError } from "../../authorization/authenticationError";
-import { GitRefreshCookie } from "../../authorization/cookies/GitRefreshCookie";
-import { GitTokenCookie } from "../../authorization/cookies/GitTokenCookie";
 import { VerificationData } from "../../authorization/verificationData";
 import { AuthErrorType, errorToEnum } from "./authErrorTypes";
 
@@ -24,8 +22,7 @@ export abstract class AuthPage {
   public static async finishAuth(): Promise<boolean> {
     try {
       const authenticationData = await Authentication.finishAuthentication(AuthPage.verificationData);
-      GitTokenCookie.setGitTokenCookie(authenticationData);
-      GitRefreshCookie.setRefreshCookie(authenticationData);
+      authenticationData.saveCookies();
       return true;
     } catch(e) {
       if(e instanceof AuthenticationError) {

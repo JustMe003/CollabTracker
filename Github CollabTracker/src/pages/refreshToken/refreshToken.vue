@@ -1,5 +1,8 @@
 <script setup>
+import { refreshToken } from './refreshToken';
 
+
+refreshToken();
 </script>
 
 <template>

@@ -1,3 +1,6 @@
+import { GitRefreshCookie } from "./cookies/GitRefreshCookie";
+import { GitTokenCookie } from "./cookies/GitTokenCookie";
+
 export class AuthenticationData {
   
   private access_token: string;
@@ -14,6 +17,11 @@ export class AuthenticationData {
     this.refresh_token_expires_in = refreshTokenExpiresIn;
     this.scope = scope;
     this.token_type = tokenType;
+  }
+
+  public saveCookies() {
+    GitTokenCookie.setGitTokenCookie(this);
+    GitRefreshCookie.setRefreshCookie(this);
   }
 
   public getAccessToken() {
