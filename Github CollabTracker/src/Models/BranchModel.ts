@@ -1,6 +1,6 @@
-import { User } from "./User";
+import { User } from "./UserModel";
 
-export class Branch{
+export class BranchModel{
   public creator: User;
   public sha: string;
   

@@ -1,6 +1,6 @@
-import { User } from "./User";
+import { User } from "./UserModel";
 
-export class Issue{
+export class IssueModel{
   public html:string;
   public creator:User;
   public assignees:[User];

@@ -1,6 +1,6 @@
-import { User } from "./User";
+import { User } from "./UserModel";
 
-export class Commits{
+export class CommitsModel{
   public nrOfContents: number;
   public users: [User];
 
