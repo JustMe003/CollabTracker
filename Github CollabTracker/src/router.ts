@@ -1,21 +1,14 @@
-import { createMemoryHistory, createRouter, Router } from "vue-router";
+import { createMemoryHistory, createRouter } from "vue-router";
 import MainPage from "./pages/main/mainPage.vue";
 import AuthPage from "./pages/authentication/authPage.vue";
-import App from "./App.vue";
 
+const router = createRouter({
+  history: createMemoryHistory(),
+  routes: [
+    { path: "/Home", component: MainPage },
+    { path: "/Authentication", component: AuthPage },
+    { path: "/", redirect: "/Home" }
+  ]
+});
 
-export class OurRouter {
-
-  public static createRouter(): Router {
-    const routes = [
-      { path: "/Home", component: MainPage },
-      { path: "/Authentication", component: AuthPage },
-      { path: "/", component: App }
-    ];
-
-    return createRouter({
-      history: createMemoryHistory(),
-      routes
-    });
-  }
-}
+export default router;
