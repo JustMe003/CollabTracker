@@ -44,26 +44,12 @@ async fn get_request_github(
     token: String
 ) -> Result<String, String> {
     let mut builder = CLIENT.get(&url).header(ACCEPT, "application/vnd.github+json")
-        .header(AUTHORIZATION, "bearer ".to_owned() + &token.clone());
+        .header(AUTHORIZATION, "bearer ".to_owned() + &token);
 
     for (key, value) in &query_params {
         builder = builder.query(&[(key, value)]);
     }
 
-    let mut test = CLIENT.get(&url).header(ACCEPT, "application/vnd.github+json")
-        .header(AUTHORIZATION, "bearer ".to_owned() + &token.clone());
-
-    for (key, value) in &query_params {
-        test = test.query(&[(key, value)]);
-    }
-    
-
-    match test.build() {
-        Ok(t) => for (key, value) in t.headers() {
-            print!("{key}: {value:?}\n");
-        }
-        Err(t) => todo!("{}", t)
-    }
 
     match builder.send().await {
         Ok(response) => {
