@@ -15,4 +15,8 @@ export class GitRefreshCookie extends CookieHandler {
     if(cookie) return atob(cookie);
     return cookie;
   }
+
+  public static removeRefreshCookie(){
+    this.removeCookies(this.cookieName);
+  }
 }

@@ -10,4 +10,8 @@ export abstract class CookieHandler {
   protected static getCookies<T>(name: string): T {
     return this.cookie.get(name) as T;
   }
+
+  protected static removeCookies(name:string){
+    this.cookie.remove(name);
+  }
 }

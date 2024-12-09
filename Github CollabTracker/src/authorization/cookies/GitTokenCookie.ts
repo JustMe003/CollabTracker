@@ -15,4 +15,8 @@ export class GitTokenCookie extends CookieHandler {
     if(cookie) return atob(cookie);
     return cookie;
   }
+
+  public static removeGitCookie(){
+    this.removeCookies(this.cookieName);
+  }
 }
