@@ -20,7 +20,7 @@ export abstract class Writer {
   // Create the folder/file if it doesn't exist
   protected async createFile() {
     try {
-      await fs.writeTextFile(this.path, "", {
+      await fs.create(this.path, {
         baseDir: fs.BaseDirectory.AppLocalData,
       });
       console.log(`File created at: ${this.path}`);
