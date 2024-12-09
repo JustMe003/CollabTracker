@@ -3,6 +3,7 @@ import { Authentication } from "../../authorization/authentication";
 import { AuthenticationError } from "../../authorization/authenticationError";
 import { VerificationData } from "../../authorization/verificationData";
 import { AuthErrorType, errorToEnum } from "./authErrorTypes";
+import { WriteHandler } from "../../Writers/WriteHandler";
 
 export abstract class AuthPage {
   private static verificationData: VerificationData;
@@ -23,6 +24,8 @@ export abstract class AuthPage {
     try {
       const authenticationData = await Authentication.finishAuthentication(AuthPage.verificationData);
       authenticationData.saveCookies();
+      const writer = new WriteHandler("R-Selaru"); // Insert username
+      writer.init();
       return true;
     } catch(e) {
       if(e instanceof AuthenticationError) {
