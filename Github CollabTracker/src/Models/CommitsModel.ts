@@ -1,10 +1,10 @@
-import { User } from "./UserModel";
+import { UserModel } from "./UserModel";
 
 export class CommitsModel{
   public nrOfContents: number;
-  public users: [User];
+  public users: [UserModel];
 
-  constructor(users: [User], nrOfContents: number){
+  constructor(users: [UserModel], nrOfContents: number){
     this.nrOfContents = nrOfContents;
     this.users = users;
   }

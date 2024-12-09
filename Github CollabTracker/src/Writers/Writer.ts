@@ -28,4 +28,25 @@ export abstract class Writer {
       console.error('Error creating folder:', error);
     }
   }
+
+  async writeObject(object: object) {
+    try {
+      const fileContents = await fs.readTextFile(this.path, {
+        baseDir: fs.BaseDirectory.LocalData,
+      });
+      let jsonObject;
+      if (fileContents) {
+        jsonObject = JSON.parse(fileContents);
+      } else {
+        jsonObject = {};
+      }
+      Object.assign(jsonObject, object);
+      await fs.writeTextFile(this.path, JSON.stringify(jsonObject), {
+        baseDir: fs.BaseDirectory.LocalData,
+      })
+      console.log("File updated successfully!");
+    } catch (error) {
+      console.error("Error updating file:", error);
+    }
+  }
 }
