@@ -43,8 +43,6 @@ async fn get_request_github(
     query_params: HashMap<&str, &str>,
     token: String
 ) -> Result<String, String> {
-    print!("{url}");
-    print!("{}", "Bearer ".to_owned() + &token);
     let mut builder = CLIENT.post(&url).header(ACCEPT, "application/vnd.github+json")
         .header(AUTHORIZATION, "Bearer ".to_owned() + &token);
 
