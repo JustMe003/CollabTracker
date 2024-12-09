@@ -1,6 +1,7 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 use reqwest::header::ACCEPT;
 use reqwest::header::AUTHORIZATION;
+use reqwest::header::USER_AGENT;
 use reqwest::Client;
 use std::collections::HashMap;
 use std::sync::LazyLock;
@@ -44,7 +45,7 @@ async fn get_request_github(
     token: String
 ) -> Result<String, String> {
     let mut builder = CLIENT.get(&url).header(ACCEPT, "application/vnd.github+json")
-        .header(AUTHORIZATION, "bearer ".to_owned() + &token);
+        .header(AUTHORIZATION, "bearer ".to_owned() + &token).header(USER_AGENT, "CollabTracker");
 
     for (key, value) in &query_params {
         builder = builder.query(&[(key, value)]);
