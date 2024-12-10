@@ -18,19 +18,21 @@ export class Scraper {
     return userData;
   }
 
-  public static async scrapeRepos() : Promise<RepoApiModel[]>{
+  public async scrapeRepos() : Promise<RepoApiModel[]>{
     const repos =  await RequestGithub.sendGetRequest(
       "https://api.github.com/user/repos",
       new Map<string, string>(),
-      GitTokenCookie.getGitTokenCookie() as string) as RepoApiModel[]
+      this.token) as RepoApiModel[]
     return repos;
   }
 
-  public static async scrapeBranches(repoID: string) : Promise<BranchApiModel[]>{
-    const branches =  await RequestGithub.sendGetRequest(
-      "https://api.github.com/repositories/${repoID}/branches",
-      new Map<string, string>(),
-      GitTokenCookie.getGitTokenCookie() as string) as BranchApiModel[]
+  public async scrapeBranches(repoID: string): Promise<BranchApiModel[]> {
+    const branches = await RequestGithub.sendGetRequest(
+        `https://api.github.com/repositories/${repoID}/branches`,
+        new Map<string, string>(),
+        this.token
+    ) as BranchApiModel[];
     return branches;
-  }
+}
+
 }
