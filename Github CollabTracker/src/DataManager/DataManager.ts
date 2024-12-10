@@ -1,5 +1,7 @@
 import { Scraper } from "../ApiScraper/Scraper";
 import { RepoModel, UserModel } from "../Models";
+import { UserWriter } from "../Writers/UserWriter";
+import { WriteHandler } from "../Writers/WriteHandler";
 
 export class DataManager {
   private scraper: Scraper;
@@ -10,7 +12,9 @@ export class DataManager {
     this.scraper = new Scraper(token);
     this.getUserData().finally(() => {
       console.log(this.us);
-      
+      const wh = new WriteHandler(this.us?.getUserName() ?? "test");
+      wh.init();
+      wh.writeUser(this.us ?? {});
     });
   }
 

@@ -43,4 +43,8 @@ export class WriteHandler {
       console.error('Error creating folder:', error);
     }
   }
+
+  public writeUser(param: object) {
+    this.userWriter.writeObject(param);
+  }
 }

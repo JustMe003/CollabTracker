@@ -24,8 +24,6 @@ export abstract class AuthPage {
     try {
       const authenticationData = await Authentication.finishAuthentication(AuthPage.verificationData);
       authenticationData.saveCookies();
-      const writer = new WriteHandler("R-Selaru"); // Insert username
-      writer.init();
       return true;
     } catch(e) {
       if(e instanceof AuthenticationError) {

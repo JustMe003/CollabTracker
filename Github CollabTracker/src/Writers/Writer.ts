@@ -30,9 +30,10 @@ export abstract class Writer {
   }
 
   async writeObject(object: object) {
+    console.log(this.path)
     try {
       const fileContents = await fs.readTextFile(this.path, {
-        baseDir: fs.BaseDirectory.LocalData,
+        baseDir: fs.BaseDirectory.AppLocalData,
       });
       let jsonObject;
       if (fileContents) {
