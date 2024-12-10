@@ -16,13 +16,18 @@ export class DataManager {
         wh.writeUser(this.us ?? {});
       });
     });
+    this.getAllRepos().finally(() => {
+      console.log(this.repos);
+    });
   }
 
   private async getUserData(): Promise<void> {
     this.us = new UserModel(await this.scraper.scrapeUser());
   }
 
-  // private async getAllRepos(): Promise<void> {
-  //   // this.repos = (await this.scraper.scrapeRepos()).forEach((m) => {});
-  // }
+  private async getAllRepos(): Promise<void> {
+    (await this.scraper.scrapeRepos()).forEach((m) => {
+      this.repos.push(new RepoModel(m));
+    });
+  }
 }
