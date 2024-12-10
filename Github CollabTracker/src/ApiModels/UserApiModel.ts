@@ -1,4 +1,4 @@
 export interface UserApiModel{
-  name: string;
+  login: string;
   html_url: string;
 }

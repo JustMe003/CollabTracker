@@ -5,12 +5,12 @@ export class UserModel{
   private html: string;
 
   constructor(apiModel: UserApiModel){
-    this.username = apiModel.name;
+    this.username = apiModel.login;
     this.html = apiModel.html_url;
   }
 
   public static createNew(name: string, html: string) {
-    return new UserModel({ name: name, html_url: html} as UserApiModel);
+    return new UserModel({ login: name, html_url: html} as UserApiModel);
   }
 
   public getUserName() {
