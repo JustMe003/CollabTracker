@@ -11,7 +11,7 @@ export class UserWriter extends Writer {
 
   async readUsers() : Promise<UserModel[]>  {
     const fileContents = await readTextFile(this.path, {
-    baseDir: BaseDirectory.AppLocalData,
+      baseDir: BaseDirectory.AppLocalData,
     });
     const data = JSON.parse(fileContents);
     if (Array.isArray(data)) {
