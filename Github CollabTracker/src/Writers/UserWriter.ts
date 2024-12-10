@@ -15,9 +15,9 @@ export class UserWriter extends Writer {
     });
     const data = JSON.parse(fileContents);
     if (Array.isArray(data)) {
-      return data as UserModel[];
+      return data.map(item => new UserModel(item.username, item.html));
     } else {
-      return [data as UserModel]; 
+      return [new UserModel(data.username, data.html)]; 
     }
   }
 }
