@@ -30,7 +30,6 @@ export abstract class Writer {
   }
 
   async writeObject(object: object) {
-    console.log(this.path)
     try {
       const fileContents = await fs.readTextFile(this.path, {
         baseDir: fs.BaseDirectory.AppLocalData,
@@ -41,9 +40,10 @@ export abstract class Writer {
       } else {
         jsonObject = {};
       }
+      console.log("Read contents" + jsonObject)
       Object.assign(jsonObject, object);
       await fs.writeTextFile(this.path, JSON.stringify(jsonObject), {
-        baseDir: fs.BaseDirectory.LocalData,
+        baseDir: fs.BaseDirectory.AppLocalData,
       })
       console.log("File updated successfully!");
     } catch (error) {
