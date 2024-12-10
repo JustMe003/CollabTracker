@@ -10,6 +10,7 @@ export class DataManager {
     this.scraper = new Scraper(token);
     this.getUserData().finally(() => {
       console.log(this.us);
+      
     });
   }
 
