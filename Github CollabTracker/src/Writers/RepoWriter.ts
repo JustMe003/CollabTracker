@@ -14,9 +14,9 @@ export class RepoWriter extends Writer {
     });
     const data = JSON.parse(fileContents);
     if (Array.isArray(data)) {
-      return data.map(item => new RepoModel(item.repoID, item.html, item.creator));
+      return data.map(item => RepoModel.createNew(item.name, item.html, item.creator));
     } else {
-      return [new RepoModel(data.repoID, data.html, data.creator)] // If it's a single object, wrap it in an array
+      return [RepoModel.createNew(data.name, data.html, data.creator )] // If it's a single object, wrap it in an array
     }
   }
 }
