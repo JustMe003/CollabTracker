@@ -1,15 +1,20 @@
 import { BranchApiModel } from "../ApiModels/BranchApiModel";
 import { RepoApiModel } from "../ApiModels/RepoApiModel";
 import { UserApiModel } from "../ApiModels/UserApiModel";
-import { GitTokenCookie } from "../authorization/cookies/GitTokenCookie";
 import { RequestGithub } from "../requestGithub";
 
-export abstract class Scraper{
-  public static async scrapeUser() : Promise<UserApiModel>{
+export class Scraper {
+  private token: string;
+
+  constructor(token: string) {
+    this.token = token;
+  }
+
+  public async scrapeUser() : Promise<UserApiModel>{
     const userData =  await RequestGithub.sendGetRequest(
       "https://api.github.com/user",
       new Map<string, string>(),
-      GitTokenCookie.getGitTokenCookie() as string) as UserApiModel
+      this.token) as UserApiModel
     return userData;
   }
 
@@ -28,5 +33,4 @@ export abstract class Scraper{
       GitTokenCookie.getGitTokenCookie() as string) as BranchApiModel[]
     return branches;
   }
-  
 }
