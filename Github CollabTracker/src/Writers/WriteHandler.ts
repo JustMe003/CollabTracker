@@ -16,7 +16,7 @@ export class WriteHandler {
   // Initialize the WriteHandler by checking and creating the folder
   public async init() {
     const storage = 'Storage';
-    const exists = await this.checkFolder(storage);    
+    const exists = await this.checkFolder(storage);
     console.log(exists);
     if (!exists) {
       await this.createFolder(storage);
@@ -27,7 +27,7 @@ export class WriteHandler {
       await this.createFolder(subDirPath);
     }
     this.repoWriter.init(subDirPath + "/repos.json");
-    this.userWriter.init(subDirPath + "/users.json")
+    this.userWriter.init(subDirPath + "/users.json");
   }
   
   // Check if the folder exists
