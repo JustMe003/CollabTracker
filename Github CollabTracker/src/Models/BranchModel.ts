@@ -12,7 +12,7 @@ export class BranchModel{
   }
 
   public static createNew(creator: UserModel, sha: string){
-    return new BranchModel({creator: {name: creator.username, html_url:creator.html} as UserApiModel, sha:sha} as BranchApiModel);
+    return new BranchModel({creator: {name: creator.getUserName(), html_url:creator.getHtml()} as UserApiModel, sha:sha} as BranchApiModel);
 
   }
 }

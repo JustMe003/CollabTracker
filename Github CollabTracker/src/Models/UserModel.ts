@@ -16,4 +16,8 @@ export class UserModel{
   public getUserName() {
     return this.username;
   }
+
+  public getHtml() {
+    return this.html;
+  }
 }

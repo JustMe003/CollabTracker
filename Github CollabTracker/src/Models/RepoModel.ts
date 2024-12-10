@@ -15,7 +15,7 @@ export class RepoModel{
   }
 
   public static createNew(repoID: string, html: string, creator: UserModel) {
-    return new RepoModel({ repoID: repoID, html: html, creator: {name: creator.username, html_url: creator.html} as UserApiModel} as RepoApiModel);
+    return new RepoModel({ repoID: repoID, html: html, creator: {name: creator.getUserName(), html_url: creator.getHtml()} as UserApiModel} as RepoApiModel);
   }
 
   public getRepoID() {
