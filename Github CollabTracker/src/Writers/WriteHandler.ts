@@ -1,6 +1,7 @@
 import * as fs from "@tauri-apps/plugin-fs";
 import { RepoWriter } from "./RepoWriter";
 import { UserWriter } from "./UserWriter";
+import { RepoModel, UserModel } from "../Models";
 
 export class WriteHandler {
   private repoWriter: RepoWriter;
@@ -17,7 +18,6 @@ export class WriteHandler {
   public async init() {
     const storage = 'Storage';
     const exists = await this.checkFolder(storage);
-    console.log(exists);
     if (!exists) {
       await this.createFolder(storage);
     }
@@ -45,10 +45,18 @@ export class WriteHandler {
   }
 
   public writeUser(param: object) {
-    this.userWriter.writeObject(param);
+    this.userWriter.writeObjects([param]);
+  }
+
+  public async getUser(): Promise<UserModel> {
+    return (await this.userWriter.readUsers())[0];
   }
 
   public writeRepos(param: object[]) {
-    this.repoWriter.writeObject(param);
+    this.repoWriter.writeObjects(param);
+  }
+
+  public getRepos(): Promise<RepoModel[]> {
+    return this.repoWriter.readRepos();
   }
 }
