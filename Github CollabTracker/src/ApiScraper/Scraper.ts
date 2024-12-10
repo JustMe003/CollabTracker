@@ -21,7 +21,9 @@ export class Scraper {
   public async scrapeRepos() : Promise<RepoApiModel[]>{
     const repos =  await RequestGithub.sendGetRequest(
       "https://api.github.com/user/repos",
-      new Map<string, string>(),
+      new Map<string, string>([
+        ["visibility", "all"]
+      ]),
       this.token) as RepoApiModel[]
     return repos;
   }
