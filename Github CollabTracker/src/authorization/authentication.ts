@@ -5,9 +5,10 @@ import { VerificationData } from "./verificationData";
 
 export abstract class Authentication {
   
-  static clientId = "Iv23liDO3ngcMFSVuXF7";
+  static clientId = "Iv23liDO3ngcMFSVuXF7"; // Needs to be hidden in final product!!!
   static grantType = "urn:ietf:params:oauth:grant-type:device_code";
-  static grantTypeRefresh = "urn:ietf:params:oauth:grant-type:refresh_token";
+  static grantTypeRefresh = "refresh_token";
+  static clientSecret = "9af30d5bafe239ef3a624d6bc69647bd64ba1cfc"; // Needs to be refreshed and hidden in final product!!!
   
 
   public static async startAuthentication(): Promise<VerificationData> {
@@ -44,7 +45,8 @@ export abstract class Authentication {
       new Map<string, string>([
         ["refresh_token", refreshToken],
         ["grant_type", Authentication.grantTypeRefresh],
-        ["client_id", Authentication.clientId]
+        ["client_id", Authentication.clientId],
+        ["client_secret", Authentication.clientSecret]
       ]),
       AuthenticationData
     );
