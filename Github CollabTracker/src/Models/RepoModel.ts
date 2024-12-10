@@ -1,17 +1,21 @@
-import { BranchModel } from "./BranchModel";
+import { RepoApiModel } from "../ApiModels/RepoApiModel";
+import { UserApiModel } from "../ApiModels/UserApiModel";
 import { UserModel } from "./UserModel"
 
 export class RepoModel{
   private repoID: string;
   private html: string;
   private creator: UserModel;
-  private branches: BranchModel[] = []
 
 
-  constructor(repoID: string, html: string, creator: UserModel){
-    this.repoID = repoID;
-    this.html = html;
-    this.creator = creator;
+  constructor(apiModel: RepoApiModel){
+    this.repoID = apiModel.repoID;
+    this.html = apiModel.html;
+    this.creator = new UserModel(apiModel.creator);
+  }
+
+  public static createNew(repoID: string, html: string, creator: UserModel) {
+    return new RepoModel({ repoID: repoID, html: html, creator: {name: creator.username, html_url: creator.html} as UserApiModel} as RepoApiModel);
   }
 
   public getRepoID() {
@@ -26,11 +30,4 @@ export class RepoModel{
     return this.creator;
   }
 
-  public getBranches() {
-    return this.branches;
-  }
-
-  public setBranches(branches: BranchModel[]) {
-    this.branches = branches;
-  }
 }
