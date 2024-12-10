@@ -3,7 +3,6 @@ import { Authentication } from "../../authorization/authentication";
 import { AuthenticationError } from "../../authorization/authenticationError";
 import { VerificationData } from "../../authorization/verificationData";
 import { AuthErrorType, errorToEnum } from "./authErrorTypes";
-import { WriteHandler } from "../../Writers/WriteHandler";
 
 export abstract class AuthPage {
   private static verificationData: VerificationData;

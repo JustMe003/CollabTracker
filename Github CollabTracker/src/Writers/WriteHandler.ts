@@ -21,13 +21,13 @@ export class WriteHandler {
     if (!exists) {
       await this.createFolder(storage);
     }
-    const subDirPath = storage + '/' + this.userName;
+    const subDirPath = storage + '\\' + this.userName;
     const userExists = await this.checkFolder(subDirPath)
     if (!userExists) {
       await this.createFolder(subDirPath);
     }
-    this.repoWriter.init(subDirPath + "/repos.json");
-    this.userWriter.init(subDirPath + "/users.json");
+    this.repoWriter.init(subDirPath + "\\repos.json");
+    this.userWriter.init(subDirPath + "\\users.json");
   }
   
   // Check if the folder exists
