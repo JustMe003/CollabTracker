@@ -9,9 +9,9 @@ import router from '../../router/router';
 async function test() {
   console.log(GitTokenCookie.getGitTokenCookie());
   console.log(await RequestGithub.sendGetRequest(
-      "https://api.github.com/user",
-      new Map<string, string>(),
-      GitTokenCookie.getGitTokenCookie() as string));
+    "https://api.github.com/user",
+    new Map<string, string>(),
+    GitTokenCookie.getGitTokenCookie() as string));
 }
 
 function logOut() {
