@@ -47,4 +47,8 @@ export class WriteHandler {
   public writeUser(param: object) {
     this.userWriter.writeObject(param);
   }
+
+  public writeRepos(param: object[]) {
+    this.repoWriter.writeObject(param);
+  }
 }

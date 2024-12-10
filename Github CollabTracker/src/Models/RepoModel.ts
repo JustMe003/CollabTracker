@@ -9,13 +9,13 @@ export class RepoModel{
 
 
   constructor(apiModel: RepoApiModel){
-    this.repoID = apiModel.repoID;
-    this.html = apiModel.html;
-    this.creator = new UserModel(apiModel.creator);
+    this.repoID = apiModel.id;
+    this.html = apiModel.html_url;
+    this.creator = new UserModel(apiModel.owner);
   }
 
   public static createNew(repoID: string, html: string, creator: UserModel) {
-    return new RepoModel({ repoID: repoID, html: html, creator: {name: creator.getUserName(), html_url: creator.getHtml()} as UserApiModel} as RepoApiModel);
+    return new RepoModel({ id: repoID, html_url: html, owner: {login: creator.getUserName(), html_url: creator.getHtml()} as UserApiModel} as RepoApiModel);
   }
 
   public getRepoID() {
