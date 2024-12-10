@@ -1,20 +1,6 @@
 <script setup lang="ts">
-import { GitTokenCookie } from '../../authorization/cookies/GitTokenCookie';
-import { GitRefreshCookie } from '../../authorization/cookies/GitRefreshCookie';
-import router from '../../router/router';
-import { DataManager } from '../../DataManager/DataManager';
+import { logOut, test } from './mainPage';
 
-function test() {
-  const dataManager = new DataManager(GitTokenCookie.getGitTokenCookie() as string);
-  console.log(dataManager);
-}
-
-function logOut() {
-  console.log("Logged out");
-  GitTokenCookie.removeGitCookie();
-  GitRefreshCookie.removeRefreshCookie();
-  router.push("/Authentication");
-}
 </script>
 
 <template>
