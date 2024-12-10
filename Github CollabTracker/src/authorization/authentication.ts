@@ -46,7 +46,8 @@ export abstract class Authentication {
         ["refresh_token", refreshToken],
         ["grant_type", Authentication.grantTypeRefresh],
         ["client_id", Authentication.clientId],
-        ["client_secret", Authentication.clientSecret]
+        ["client_secret", Authentication.clientSecret],
+        ["redirect_uri", "http://localhost:1420/"]
       ]),
       AuthenticationData
     );
