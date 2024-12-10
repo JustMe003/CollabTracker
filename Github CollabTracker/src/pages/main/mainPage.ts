@@ -4,7 +4,7 @@ import { DataManager } from "../../DataManager/DataManager";
 import router from "../../router/router";
 
 export function test() {
-  const dataManager = new DataManager(GitTokenCookie.getGitTokenCookie() as string);
+  // const dataManager = new DataManager(GitTokenCookie.getGitTokenCookie() as string);
 }
   
 export function logOut() {
