@@ -10,7 +10,7 @@ Step 2:
 Clone the code 
 
 Step 3:
-Using your IDE of choice go to the "CollabTracker" folder
+Using PowerShell go to the "CollabTracker" folder
 
 Step 4
 Use the following commands in PowerShell:
