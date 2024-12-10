@@ -6,6 +6,7 @@ import { DataManager } from '../../DataManager/DataManager';
 
 function test() {
   const dataManager = new DataManager(GitTokenCookie.getGitTokenCookie() as string);
+  console.log(dataManager);
 }
 
 function logOut() {
