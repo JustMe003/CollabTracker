@@ -1,5 +1,5 @@
 import { BranchModel } from "./BranchModel";
-import {UserModel} from "./UserModel"
+import { UserModel } from "./UserModel"
 
 export class RepoModel{
   private repoID: string;
