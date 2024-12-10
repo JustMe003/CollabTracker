@@ -10,7 +10,7 @@ export class RepoWriter extends Writer {
 
   async readRepos() : Promise<RepoModel[]>  {
     const fileContents = await readTextFile(this.path, {
-    baseDir: BaseDirectory.LocalData,
+    baseDir: BaseDirectory.AppLocalData,
     });
     const data = JSON.parse(fileContents);
     if (Array.isArray(data)) {
