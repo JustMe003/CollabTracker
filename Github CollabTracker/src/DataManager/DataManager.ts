@@ -1,6 +1,5 @@
 import { Scraper } from "../ApiScraper/Scraper";
-import { RepoModel } from "../Models/RepoModel";
-import { UserModel } from "../Models/UserModel";
+import { RepoModel, UserModel } from "../Models";
 
 export class DataManager {
   private scraper: Scraper;
