@@ -5,7 +5,6 @@ import router from "../../router/router";
 
 export function test() {
     const dataManager = new DataManager(GitTokenCookie.getGitTokenCookie() as string);
-    console.log(dataManager);
   }
   
 export function logOut() {

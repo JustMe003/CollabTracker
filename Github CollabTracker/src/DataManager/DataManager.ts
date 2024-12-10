@@ -13,7 +13,6 @@ export class DataManager {
       console.log(this.us);
       const wh = new WriteHandler(this.us?.getUserName() ?? "test");
       wh.init().finally(() => {
-        console.log(wh);
         wh.writeUser(this.us ?? {});
       });
     });
