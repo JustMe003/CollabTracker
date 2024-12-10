@@ -9,16 +9,17 @@ export class DataManager {
 
   constructor(token: string) {
     this.scraper = new Scraper(token);
-    const wh = new WriteHandler(this.us?.getUserName() ?? "test");
     this.getUserData().finally(() => {
       console.log(this.us);
-      wh.init().finally(() => {
+      const wh = new WriteHandler(this.us?.getUserName() ?? "test");
+      wh.init().then(() => {
         wh.writeUser(this.us ?? {});
       });
     });
     this.getAllRepos().finally(() => {
+      const wh = new WriteHandler(this.us?.getUserName() ?? "test");
       console.log(this.repos);
-      wh.init().finally(() => {
+      wh.init().then(() => {
         wh.writeRepos(this.repos);
       })
     });

@@ -26,8 +26,8 @@ export class WriteHandler {
     if (!userExists) {
       await this.createFolder(subDirPath);
     }
-    this.repoWriter.init(subDirPath + "\\repos.json");
-    this.userWriter.init(subDirPath + "\\users.json");
+    await this.repoWriter.init(subDirPath + "\\repos.json");
+    await this.userWriter.init(subDirPath + "\\users.json");
   }
   
   // Check if the folder exists
