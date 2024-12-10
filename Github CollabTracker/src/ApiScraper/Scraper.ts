@@ -22,7 +22,7 @@ export class Scraper {
     const repos =  await RequestGithub.sendGetRequest(
       "https://api.github.com/user/repos",
       new Map<string, string>([
-        ["visibility", "all"]
+        ["affiliation", "owner,collaborator"]
       ]),
       this.token) as RepoApiModel[]
     return repos;
