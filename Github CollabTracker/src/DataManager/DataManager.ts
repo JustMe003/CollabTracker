@@ -1,5 +1,5 @@
 import { Scraper } from "../ApiScraper/Scraper";
-import { UserModel } from "../Models";
+import { RepoModel, UserModel } from "../Models";
 
 export class DataManager {
   private scraper: Scraper;
@@ -12,5 +12,15 @@ export class DataManager {
 
   public async getUser(): Promise<UserModel> {
     return new UserModel(await this.scraper.scrapeUser());
+  }
+
+  public async getRepos(): Promise<RepoModel[]> {
+    const res = await this.scraper.scrapeRepos();
+    console.log(res);
+    const l: RepoModel[] = [];
+    res.forEach((v) => {
+      l.push(new RepoModel(v));
+    });
+    return l;
   }
 }

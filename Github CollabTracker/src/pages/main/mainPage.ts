@@ -12,6 +12,7 @@ export async function test() {
     const manager = new DataManager(token);
     const us = await manager.getUser();
     storage.initUserStorage(us.getUserName());
+    console.log(await manager.getRepos());
     // Now we have storage yay :)
   }
 }
