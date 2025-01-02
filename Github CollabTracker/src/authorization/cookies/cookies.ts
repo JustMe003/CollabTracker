@@ -7,6 +7,10 @@ export abstract class CookieHandler {
     this.cookie.set(name, value, options)
   }
 
+  protected static setCookiesSessionOnly(name: string, value: string) {
+    this.cookie.set(name, value)
+  }
+
   protected static getCookies<T>(name: string): T {
     return this.cookie.get(name) as T;
   }

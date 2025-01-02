@@ -10,6 +10,10 @@ export class GitTokenCookie extends CookieHandler {
     this.setCookies(this.cookieName, btoa(authenticationData.getAccessToken()), { expires: date });
   }
 
+  public static setGitTokenCookieSessionOnly(authenticationData: AuthenticationData) {
+    this.setCookiesSessionOnly(this.cookieName, btoa(authenticationData.getAccessToken()));
+  }
+
   public static getGitTokenCookie(): string | null {
     const cookie = this.getCookies<string>(this.cookieName);
     if(cookie) return atob(cookie);

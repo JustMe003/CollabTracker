@@ -24,6 +24,11 @@ export class AuthenticationData {
     GitRefreshCookie.setRefreshCookie(this);
   }
 
+  public saveCookiesSessionOnly() {
+    GitTokenCookie.setGitTokenCookieSessionOnly(this);
+    GitRefreshCookie.setRefreshCookieSessionOnly(this);
+  }
+
   public getAccessToken() {
     return this.access_token;
   }

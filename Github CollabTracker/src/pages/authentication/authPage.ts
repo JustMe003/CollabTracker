@@ -19,10 +19,14 @@ export abstract class AuthPage {
     open(AuthPage.verificationData.getVerificationUri());
   }
 
-  public static async finishAuth(): Promise<boolean> {
+  public static async finishAuth(rememberMe: boolean): Promise<boolean> {
     try {
       const authenticationData = await Authentication.finishAuthentication(AuthPage.verificationData);
-      authenticationData.saveCookies();
+      if(rememberMe) {
+        authenticationData.saveCookies();
+      } else {
+        authenticationData.saveCookiesSessionOnly();
+      }
       return true;
     } catch(e) {
       if(e instanceof AuthenticationError) {
