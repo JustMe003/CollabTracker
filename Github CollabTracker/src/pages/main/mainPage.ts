@@ -18,8 +18,8 @@ export async function test() {
 }
   
 export function logOut() {
-  console.log("Logged out");
   GitTokenCookie.removeGitCookie();
   GitRefreshCookie.removeRefreshCookie();
+  console.log("Logged out");
   router.push("/Authentication");
 }
