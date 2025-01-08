@@ -19,12 +19,16 @@ export class DataManager {
     const res = await this.scraper.scrapeRepos();
     const l: RepoModel[] = [];
     res.forEach((v) => {
-      l.push(new RepoModel(v));
+      l.push(new RepoModel(v.id, v.html_url, 0, v.updated_at));
     });
     return l;
   }
 
   public getRepos(): Promise<RepoModel[]> {
     return this.IOHandler.getRepos();
+  }
+
+  public writeRepos(repos: RepoModel[]) {
+    this.IOHandler.writeRepos(repos);
   }
 }

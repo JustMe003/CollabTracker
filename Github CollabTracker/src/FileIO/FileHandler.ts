@@ -19,6 +19,7 @@ export abstract class FileHandler {
   public static async createFolder(path: string) {
     try {
       await fs.mkdir(path, { baseDir: fs.BaseDirectory.AppLocalData });
+      console.log(path);
     } catch (error) {
       console.error("Error creating folder:", error);
     }
@@ -31,6 +32,7 @@ export abstract class FileHandler {
   public static async createFile(path: string) {
     try {
       await fs.create(path, { baseDir: fs.BaseDirectory.AppLocalData });
+      console.log(path);
     } catch (error) {
       console.error("Error creating file:", error);
     }

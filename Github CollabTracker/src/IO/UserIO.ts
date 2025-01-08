@@ -1,23 +1,19 @@
 import { UserModel } from "../Models/UserModel";
-import { FileWriter } from "../FileIO/FileWriter";
-import { readTextFile, BaseDirectory } from '@tauri-apps/plugin-fs';
+import { FileIO } from "../FileIO/FileIO";
 
 
-export class UserIO extends FileWriter {
+export class UserIO extends FileIO {
 
   constructor(path: string) {
     super(path);
   }
 
   async readUsers() : Promise<UserModel[]>  {
-    const fileContents = await readTextFile(this.path, {
-      baseDir: BaseDirectory.AppLocalData,
-    });
-    const data = JSON.parse(fileContents);
-    if (Array.isArray(data)) {
-      return data.map(item => UserModel.createNew(item.username, item.html));
+    const data = await this.readObjects();
+    if (data) {
+      return data as UserModel[];
     } else {
-      return [UserModel.createNew(data.username, data.html)]; 
+      return [];
     }
   }
 }

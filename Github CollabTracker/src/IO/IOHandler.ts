@@ -3,20 +3,28 @@ import { RepoModel } from "../Models";
 import { RepoIO } from "./RepoIO";
 import { UserIO } from "./UserIO";
 
-const delimiter: string = "\\";
-const extension: string = ".json";
-
 export class IOHandler {
   private repoIO: RepoIO;
   private userIO: UserIO;
-  private static path: string =  FileStorage.getStoragePath();
-  private static reposPath: string = IOHandler.path + delimiter + "repos" + extension;
-  private static usersPath: string = IOHandler.path + delimiter + "users" + extension;
+  private reposPath: string;
+  private usersPath: string;
 
-  constructor() {
-    FileStorage.init();
-    this.repoIO = new RepoIO(IOHandler.reposPath);
-    this.userIO = new UserIO(IOHandler.usersPath);
+  constructor(storage: FileStorage) {
+    this.reposPath = this.getFilePath(storage, "repos");
+    this.usersPath = this.getFilePath(storage, "users");
+    this.repoIO = new RepoIO(this.reposPath);
+    this.userIO = new UserIO(this.usersPath);
+  }
+
+  private getFilePath(storage: FileStorage, name: string): string {
+    return storage.getStoragePath() + FileStorage.getDelimiter() + name + FileStorage.getExtension();
+  }
+  
+  public async init(storage: FileStorage) {
+    await storage.init([
+      this.reposPath,
+      this.usersPath
+    ]);
   }
 
   public writeUser(param: object) {

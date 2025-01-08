@@ -1,16 +1,37 @@
 import { FileHandler } from "./FileHandler";
 
 export class FileStorage {
-  private static StorageFolderName = "Storage";
+  private static Delimiter = "\\";
+  private static Extension = ".json";
+  private static StorageFolder = "Storage"
+  private storageFolderName: string;
 
-  public static async init() {
-    if (!await FileHandler.pathExists(FileStorage.StorageFolderName)) {
-      FileHandler.createFolder(FileStorage.StorageFolderName);
-    }
+  constructor(folder: string) {
+    this.storageFolderName = FileStorage.StorageFolder + FileStorage.Delimiter + folder;
   }
 
-  public static getStoragePath() {
-    return FileStorage.StorageFolderName;
+  public async init(files: Array<string>) {
+    if (!await FileHandler.pathExists(FileStorage.StorageFolder)) 
+      await FileHandler.createFolder(FileStorage.StorageFolder);
+    if (!await FileHandler.pathExists(this.storageFolderName)) 
+      await FileHandler.createFolder(this.storageFolderName);
+    files.forEach((f) => {
+      FileHandler.pathExists(f).then((b) => {
+        if (!b) FileHandler.createFile(f);
+      })
+    });
+  }
+
+  public getStoragePath(): string {
+    return this.storageFolderName;
+  }
+
+  public static getDelimiter(): string {
+    return FileStorage.Delimiter;
+  }
+
+  public static getExtension(): string {
+    return FileStorage.Extension;
   }
 }
 
