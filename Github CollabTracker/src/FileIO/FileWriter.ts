@@ -1,8 +1,17 @@
 import * as fs from "@tauri-apps/plugin-fs";
+import { FileHandler } from "./FileHandler";
 
-export abstract class Writer {
-  protected path: string = "";
+export abstract class FileWriter {
+  protected path: string;
 
+  constructor(path: string) {
+    this.path = path;
+    FileHandler.pathExists(this.path).then((b) => {
+      if(!b) FileHandler.createFile(this.path);
+    }, (reason) => {
+      throw new Error(reason.toString());
+    });
+  }
 
   async writeObject(object: object) {
     try {
@@ -42,5 +51,9 @@ export abstract class Writer {
     } catch (error) {
       console.error("Error updating file:", error);
     }
+  }
+
+  async readObjects() {
+    
   }
 }

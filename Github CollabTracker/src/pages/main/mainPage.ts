@@ -1,25 +1,20 @@
 import { GitRefreshCookie } from "../../authorization/cookies/GitRefreshCookie";
 import { GitTokenCookie } from "../../authorization/cookies/GitTokenCookie";
 import { DataManager } from "../../DataManager/DataManager";
-import { FileStorage } from "../../FileIO/FileStorage";
+import { IOHandler } from "../../IO/IOHandler";
 import router from "../../router/router";
-
-export async function test() {
-  const storage = new FileStorage();
-  await storage.init();
-  const token = GitTokenCookie.getGitTokenCookie();
-  if (token) {
-    const manager = new DataManager(token);
-    const us = await manager.getUser();
-    storage.initUserStorage(us.getUserName());
-    console.log(await manager.getRepos());
-    // Now we have storage yay :)
-  }
-}
   
 export function logOut() {
   GitTokenCookie.removeGitCookie();
   GitRefreshCookie.removeRefreshCookie();
   console.log("Logged out");
   router.push("/Authentication");
+}
+
+export async function test() {
+  const dataManager = new DataManager(GitTokenCookie.getGitTokenCookie() || "", new IOHandler());
+  const data = await dataManager.updateRepos();
+  console.log(data);
+  const data2 = await dataManager.getRepos();
+  console.log(data2);
 }

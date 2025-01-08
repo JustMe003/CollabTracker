@@ -1,12 +1,12 @@
 import { UserModel } from "../Models/UserModel";
-import { Writer } from "./Writer";
+import { FileWriter } from "../FileIO/FileWriter";
 import { readTextFile, BaseDirectory } from '@tauri-apps/plugin-fs';
 
 
-export class UserWriter extends Writer {
+export class UserIO extends FileWriter {
 
-  constructor(){
-    super();
+  constructor(path: string) {
+    super(path);
   }
 
   async readUsers() : Promise<UserModel[]>  {

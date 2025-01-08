@@ -1,12 +1,12 @@
 import { UserModel } from "../Models";
 import { RepoModel } from "../Models/RepoModel";
-import { Writer } from "./Writer";
+import { FileWriter } from "../FileIO/FileWriter";
 import { readTextFile, BaseDirectory } from '@tauri-apps/plugin-fs';
 
-export class RepoWriter extends Writer {
+export class RepoIO extends FileWriter {
 
-  constructor(){
-    super();
+  constructor(path: string) {
+    super(path);
   }
 
   async readRepos() : Promise<RepoModel[]>  {
