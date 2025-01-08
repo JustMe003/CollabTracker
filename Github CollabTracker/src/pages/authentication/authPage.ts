@@ -11,12 +11,13 @@ export abstract class AuthPage {
   private static code: Ref<string, string> = ref("");
 
   public static async startAuth() {
+    this.errorText.value = "";
     AuthPage.verificationData = await Authentication.startAuthentication();
     this.code.value = this.verificationData.getUserCode();
   }
 
   public static openBrowser() {
-    open(AuthPage.verificationData.getVerificationUri());
+    return open(AuthPage.verificationData.getVerificationUri());
   }
 
   public static async finishAuth(rememberMe: boolean): Promise<boolean> {
