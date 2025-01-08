@@ -1,16 +1,22 @@
-import { UserApiModel } from "../ApiModels/UserApiModel";
-
 export class UserModel{
+  private id: number;
+  private login: string;
   private username: string;
   private html: string;
 
-  constructor(apiModel: UserApiModel){
-    this.username = apiModel.login;
-    this.html = apiModel.html_url;
+  constructor(id: number, login: string, username: string, html: string){
+    this.id = id;
+    this.login = login;
+    this.username = username;
+    this.html = html;
   }
 
-  public static createNew(name: string, html: string) {
-    return new UserModel({ login: name, html_url: html} as UserApiModel);
+  public getLogin() {
+    return this.login;
+  }
+
+  public getID() {
+    return this.id;
   }
 
   public getUserName() {
