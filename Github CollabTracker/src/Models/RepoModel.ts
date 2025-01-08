@@ -1,22 +1,17 @@
-import { RepoApiModel } from "../ApiModels/RepoApiModel";
-import { UserApiModel } from "../ApiModels/UserApiModel";
-import { UserModel } from "./UserModel"
-
 export class RepoModel{
   private repoID: string;
   private html: string;
-  private creator: UserModel;
+  private creatorID: number;
+  private updated_at: Date;
 
 
-  constructor(apiModel: RepoApiModel){
-    this.repoID = apiModel.id;
-    this.html = apiModel.html_url;
-    this.creator = new UserModel(apiModel.owner);
+  constructor(repoID: string, html: string, creatorID: number, updated_at: Date){
+    this.repoID = repoID;
+    this.html = html;
+    this.creatorID = creatorID;
+    this.updated_at = updated_at;
   }
-
-  public static createNew(repoID: string, html: string, creator: UserModel) {
-    return new RepoModel({ id: repoID, html_url: html, owner: {login: creator.getUserName(), html_url: creator.getHtml()} as UserApiModel} as RepoApiModel);
-  }
+  
 
   public getRepoID() {
     return this.repoID;
@@ -27,7 +22,11 @@ export class RepoModel{
   }
 
   public getCreator() {
-    return this.creator;
+    return this.creatorID;
+  }
+
+  public getUpdatedAt() {
+    return this.updated_at;
   }
 
 }
