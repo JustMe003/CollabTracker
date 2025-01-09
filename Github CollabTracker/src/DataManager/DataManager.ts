@@ -1,13 +1,14 @@
 import { Scraper } from "../ApiScraper/Scraper";
 import { RepoModel } from "../Models";
 import { IOHandler } from "../IO/IOHandler";
+import { RepoModelConverter } from "../ModelConverter";
 
 export class DataManager {
   private scraper: Scraper;
   private IOHandler: IOHandler;
 
-  constructor(token: string, handler: IOHandler) {
-    this.scraper = new Scraper(token);
+  constructor(scraper: Scraper, handler: IOHandler) {
+    this.scraper = scraper;
     this.IOHandler = handler;
   }
 
@@ -19,7 +20,7 @@ export class DataManager {
     const res = await this.scraper.scrapeRepos();
     const l: RepoModel[] = [];
     res.forEach((v) => {
-      l.push(new RepoModel(v.id, v.html_url, 0, v.updated_at));
+      l.push(RepoModelConverter.convert(v));
     });
     return l;
   }

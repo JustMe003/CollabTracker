@@ -24,3 +24,4 @@ Branch creator same thing
 Issue creation --> First message, is a commenter action
 Pull request creation --> Developer action
 
+Direct and indirect collaborations
