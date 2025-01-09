@@ -7,8 +7,9 @@ export class IssueModel {
   private numberOfComments: number;
   private reviewers: number[];
   private updated_at: Date;
+  private repoID: number
 
-  constructor(id: number, html: string, creator: number, assignees: number[], numberOfComments: number, reviewers: number[], updated_at: Date){
+  constructor(id: number, html: string, creator: number, assignees: number[], numberOfComments: number, reviewers: number[], updated_at: Date, repoID: number){
     this.id = id;
     this.html = html;
     this.creator = creator;
@@ -16,6 +17,7 @@ export class IssueModel {
     this.numberOfComments = numberOfComments;
     this.reviewers = reviewers;
     this.updated_at = updated_at;
+    this.repoID = repoID;
   }
 
   public getID() {
@@ -46,5 +48,7 @@ export class IssueModel {
     return this.updated_at;
   }
 
-  
+  public getRepoID() {
+    return this.repoID;
+  }  
 }

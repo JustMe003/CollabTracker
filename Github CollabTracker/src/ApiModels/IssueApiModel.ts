@@ -8,4 +8,5 @@ export interface IssueApiModel{
   comments: number;
   reviewers: UserApiModel[];
   updated_at: Date;
+  repoID: number;
 }
