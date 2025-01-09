@@ -8,7 +8,7 @@ export class RepoIO extends FileIO {
   }
 
   async readRepos() : Promise<RepoModel[]>  {
-    const data = await this.readObjects();
+    const data = await this.readObject();
     if (data) {
       return data as RepoModel[];
     } else {

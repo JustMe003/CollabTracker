@@ -1,5 +1,6 @@
 import { GitRefreshCookie } from "../../authorization/cookies/GitRefreshCookie";
 import { GitTokenCookie } from "../../authorization/cookies/GitTokenCookie";
+import { Controller } from "../../Controller/Controller";
 import router from "../../router/router";
   
 export class Application {
@@ -11,7 +12,10 @@ export class Application {
     router.push("/Authentication");
   }
 
-  public startMain() {
-    
+  public async startMain() {
+    const controller = new Controller(GitTokenCookie.getGitTokenCookie() || "");
+    const dataManager = await controller.getDataManager();
+    const repos = await dataManager.updateRepos();
+    dataManager.writeRepos(repos);
   }
 }
