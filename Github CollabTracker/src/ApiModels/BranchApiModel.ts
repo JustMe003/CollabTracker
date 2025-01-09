@@ -1,3 +1,3 @@
-export interface BranchApiModel{
+export interface BranchApiModel {
   name: string;  
 }

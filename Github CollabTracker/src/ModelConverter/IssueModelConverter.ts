@@ -3,7 +3,6 @@ import { IssueModel } from "../Models";
 
 export class IssueModelConverter {
   public static convert(apiModel: IssueApiModel): IssueModel {
-    console.log(apiModel);
     const assignees: number[] = [];
     apiModel.assignees.forEach((e) => {
       assignees.push(e.id);
