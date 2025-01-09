@@ -34,7 +34,7 @@ export class IOHandler {
   public writeRepos(param: RepoModel[]) {
     param.forEach((repo) => {
       this.repoIO.writeObject(repo, repo.getRepoID().toString());
-    })
+    });
   }
 
   public getRepos(): Promise<RepoModel[]> {

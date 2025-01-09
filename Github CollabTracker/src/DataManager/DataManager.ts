@@ -15,14 +15,14 @@ export class DataManager {
   public async updateAll() {
     const issues = await this.updateIssues();
     const repos = await this.updateRepos(issues);
-    console.log(issues);
-    console.log(repos);
+    this.IOHandler.writeRepos(repos);
   }
 
   public async updateRepos(issues: Map<number, Map<number, IssueModel>>): Promise<RepoModel[]> {
     const res = await this.scraper.scrapeRepos();
     const repos: RepoModel[] = [];
-    res.forEach(async (e) => {
+    for (let i = 0; i < res.length; i++) {
+      const e = res[i];
       const branches = new Map<string, BranchModel>();
       await this.updateBranches(e.owner.login, e.name).then((br) => {
         br.forEach((e) => {
@@ -30,7 +30,7 @@ export class DataManager {
         });
       });
       repos.push(RepoModelConverter.convert(e, branches, new Map(), new Map()));
-    });
+    }
     return repos;
   }
   

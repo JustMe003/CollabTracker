@@ -30,7 +30,6 @@ export class Scraper {
           ["page", page.toString()]
         ]),
         this.token) as apiMod.RepoApiModel[]);
-      console.log(repos);
     } while (repos.length / Scraper.perPage >= page++);
     return repos;
   }
@@ -70,7 +69,6 @@ export class Scraper {
         new Map<string, string>(),
         this.token
     ) as apiMod.BranchApiModel[];
-    console.log(branches);
     return branches;
   }
 
