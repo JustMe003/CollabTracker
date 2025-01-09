@@ -1,5 +1,5 @@
 import { FileStorage } from "../FileIO/FileStorage";
-import { RepoModel } from "../Models";
+import { RepoModel, UserModel } from "../Models";
 import { RepoIO } from "./RepoIO";
 import { UserIO } from "./UserIO";
 
@@ -17,7 +17,7 @@ export class IOHandler {
   }
 
   private getFolderPath(storage: FileStorage, name: string): string {
-    return storage.getStoragePath() + FileStorage.getDelimiter() + name + FileStorage.getExtension();
+    return storage.getStoragePath() + FileStorage.getDelimiter() + name;
   }
   
   public async init(storage: FileStorage) {
@@ -27,12 +27,14 @@ export class IOHandler {
     ]);
   }
 
-  public writeUser(param: object) {
-    this.userIO.writeObjects([param]);
+  public writeUser(param: UserModel) {
+    this.userIO.writeObject(param, param.getID().toString());
   }
 
-  public writeRepos(param: object[]) {
-    this.repoIO.writeObjects(param);
+  public writeRepos(param: RepoModel[]) {
+    param.forEach((repo) => {
+      this.repoIO.writeObject(repo, repo.getRepoID().toString());
+    })
   }
 
   public getRepos(): Promise<RepoModel[]> {

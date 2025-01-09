@@ -9,7 +9,7 @@ export class UserIO extends FileIO {
   }
 
   async readUsers() : Promise<UserModel[]>  {
-    const data = await this.readObjects();
+    const data = await this.readObject();
     if (data) {
       return data as UserModel[];
     } else {

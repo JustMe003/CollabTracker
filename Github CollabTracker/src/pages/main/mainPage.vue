@@ -2,6 +2,7 @@
 import { Application } from './mainPage';
 
 const application = new Application();
+application.startMain();
 
 </script>
 
