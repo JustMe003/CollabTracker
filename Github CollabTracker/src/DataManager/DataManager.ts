@@ -21,23 +21,21 @@ export class DataManager {
 
   public async updateRepos(issues: Map<number, Map<number, IssueModel>>): Promise<RepoModel[]> {
     const res = await this.scraper.scrapeRepos();
-    const branches = new Map<string, BranchModel>();
-    res.forEach((e) => {
-      this.updateBranches(e.name).then((br) => {
+    const repos: RepoModel[] = [];
+    res.forEach(async (e) => {
+      const branches = new Map<string, BranchModel>();
+      await this.updateBranches(e.owner.login, e.name).then((br) => {
         br.forEach((e) => {
           branches.set(e.getName(), e);
         });
       });
-    });
-    const repos: RepoModel[] = [];
-    res.forEach((e) => {
       repos.push(RepoModelConverter.convert(e, branches, new Map(), new Map()));
     });
     return repos;
   }
   
-  public async updateBranches(repoName: string): Promise<BranchModel[]> {
-    const res = await this.scraper.scrapeBranches(repoName);
+  public async updateBranches(owner: string, repoName: string): Promise<BranchModel[]> {
+    const res = await this.scraper.scrapeBranches(owner, repoName);
     const branches: BranchModel[] = [];
     res.forEach((e) => {
       branches.push(BranchModelConverter.convert(e));
