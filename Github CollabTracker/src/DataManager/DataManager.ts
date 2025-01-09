@@ -1,6 +1,8 @@
 import { Scraper } from "../ApiScraper/Scraper";
-import { RepoModel } from "../Models";
+import { RepoModel, UserModel } from "../Models";
 import { IOHandler } from "../IO/IOHandler";
+import { UserModelConverter } from "../ModelConverter/UserModelConverter";
+import { RepoModelConverter } from "../ModelConverter/RepoModelConverter";
 
 export class DataManager {
   private scraper: Scraper;
@@ -19,9 +21,13 @@ export class DataManager {
     const res = await this.scraper.scrapeRepos();
     const l: RepoModel[] = [];
     res.forEach((v) => {
-      l.push(new RepoModel(v.id, v.html_url, 0, v.updated_at));
+      l.push(RepoModelConverter.convert(v));
     });
     return l;
+  }
+
+  public async updateUs(): Promise<UserModel> {
+    return UserModelConverter.convert(await this.scraper.scrapeUser());
   }
 
   public getRepos(): Promise<RepoModel[]> {
