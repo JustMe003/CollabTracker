@@ -1,8 +1,8 @@
 import { RepoApiModel } from "../ApiModels/RepoApiModel";
-import { RepoModel } from "../Models";
+import { BranchModel, IssueModel, RepoModel } from "../Models";
 
 export class RepoModelConverter {
-  public static convert(apiModel: RepoApiModel): RepoModel {
-    return new RepoModel(apiModel.id, apiModel.html_url, apiModel.owner.id, apiModel.updated_at);
+  public static convert(apiModel: RepoApiModel, branches: BranchModel[] = [], issues: IssueModel[] = []): RepoModel {
+    return new RepoModel(apiModel.id, apiModel.html_url, apiModel.owner.id, apiModel.updated_at, branches, issues, [], []);
   }
 }

@@ -1,12 +1,11 @@
 import { UserApiModel } from "./UserApiModel";
 
 export interface IssueApiModel{
-  html:string;
+  html_url: string;
   id: number;
-  creator:UserApiModel;
-  assignees:[UserApiModel];
-  numberOfComments: number;
-  reviewers: [UserApiModel];
+  user: UserApiModel;
+  assignees: UserApiModel[];
+  comments: number;
+  reviewers: UserApiModel[];
   updated_at: Date;
-
 }

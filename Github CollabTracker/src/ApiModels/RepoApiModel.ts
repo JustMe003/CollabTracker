@@ -1,7 +1,7 @@
 import {UserApiModel} from "./UserApiModel"
 
 export interface RepoApiModel{
-  id: string;
+  id: number;
   html_url: string;
   updated_at: Date;
   owner: UserApiModel;

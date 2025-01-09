@@ -30,15 +30,20 @@ export class Scraper {
   }
 
 
-  public async scrapeIssues(username: string) : Promise<IssueApiModel[]>{
-    const issues =  await RequestGithub.sendGetRequest(
-      "https://api.github.com/search/issues",
-      new Map<string, string>([
-        ["involves", username],
-        ["is", "issues" ]
-      ]),
-      this.token) as IssueApiModel[]
-    return issues;
+  public async scrapeIssues() : Promise<IssueApiModel[]>{
+    try {
+      const issues =  await RequestGithub.sendGetRequest(
+        "https://api.github.com/issues",
+        new Map<string, string>([
+          ["filter", "all"],
+          ["state", "all"]
+        ]),
+        this.token) as IssueApiModel[]
+      return issues;
+    } catch(e) {
+      console.log(e);
+    }
+    return [];
   }
 
   public async scrapePullRequests(username: string) : Promise<IssueApiModel[]>{
@@ -53,7 +58,6 @@ export class Scraper {
   }
 
 
-  /* BROKEN
   public async scrapeBranches(repoID: string): Promise<BranchApiModel[]> {
     const branches = await RequestGithub.sendGetRequest(
         `https://api.github.com/repositories/${repoID}/branches`,
@@ -62,7 +66,6 @@ export class Scraper {
     ) as BranchApiModel[];
     return branches;
   }
-  */
 
 
 
