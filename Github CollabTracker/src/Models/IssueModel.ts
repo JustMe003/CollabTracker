@@ -1,14 +1,14 @@
 
-export class IssueModel{
+export class IssueModel {
   private id: number;
   private html: string;
   private creator: number;
-  private assignees: [number];
+  private assignees: number[];
   private numberOfComments: number;
-  private reviewers: [number];
+  private reviewers: number[];
   private updated_at: Date;
 
-  constructor(id: number, html: string, creator: number, assignees: [number], numberOfComments: number, reviewers: [number], updated_at: Date){
+  constructor(id: number, html: string, creator: number, assignees: number[], numberOfComments: number, reviewers: number[], updated_at: Date){
     this.id = id;
     this.html = html;
     this.creator = creator;
