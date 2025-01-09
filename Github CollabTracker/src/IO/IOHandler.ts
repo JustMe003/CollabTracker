@@ -10,13 +10,13 @@ export class IOHandler {
   private usersPath: string;
 
   constructor(storage: FileStorage) {
-    this.reposPath = this.getFilePath(storage, "repos");
-    this.usersPath = this.getFilePath(storage, "users");
+    this.reposPath = this.getFolderPath(storage, "repos");
+    this.usersPath = this.getFolderPath(storage, "users");
     this.repoIO = new RepoIO(this.reposPath);
     this.userIO = new UserIO(this.usersPath);
   }
 
-  private getFilePath(storage: FileStorage, name: string): string {
+  private getFolderPath(storage: FileStorage, name: string): string {
     return storage.getStoragePath() + FileStorage.getDelimiter() + name + FileStorage.getExtension();
   }
   

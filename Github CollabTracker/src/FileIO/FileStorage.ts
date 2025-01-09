@@ -17,7 +17,7 @@ export class FileStorage {
       await FileHandler.createFolder(this.storageFolderName);
     files.forEach((f) => {
       FileHandler.pathExists(f).then((b) => {
-        if (!b) FileHandler.createFile(f);
+        if (!b) FileHandler.createFolder(f);
       })
     });
   }
