@@ -1,8 +1,7 @@
 import { Scraper } from "../ApiScraper/Scraper";
 import { RepoModel, UserModel } from "../Models";
 import { IOHandler } from "../IO/IOHandler";
-import { UserModelConverter } from "../ModelConverter/UserModelConverter";
-import { RepoModelConverter } from "../ModelConverter/RepoModelConverter";
+import { UserModelConverter, RepoModelConverter } from "../ModelConverter";
 
 export class DataManager {
   private scraper: Scraper;
