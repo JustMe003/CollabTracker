@@ -1,14 +1,14 @@
 import { Scraper } from "../ApiScraper/Scraper";
-import { RepoModel, UserModel } from "../Models";
+import { RepoModel } from "../Models";
 import { IOHandler } from "../IO/IOHandler";
-import { UserModelConverter, RepoModelConverter } from "../ModelConverter";
+import { RepoModelConverter } from "../ModelConverter";
 
 export class DataManager {
   private scraper: Scraper;
   private IOHandler: IOHandler;
 
-  constructor(token: string, handler: IOHandler) {
-    this.scraper = new Scraper(token);
+  constructor(scraper: Scraper, handler: IOHandler) {
+    this.scraper = scraper;
     this.IOHandler = handler;
   }
 
@@ -23,10 +23,6 @@ export class DataManager {
       l.push(RepoModelConverter.convert(v));
     });
     return l;
-  }
-
-  public async updateUs(): Promise<UserModel> {
-    return UserModelConverter.convert(await this.scraper.scrapeUser());
   }
 
   public getRepos(): Promise<RepoModel[]> {

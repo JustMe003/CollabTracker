@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { logOut, test } from './mainPage';
+import { Application } from './mainPage';
+
+const application = new Application();
 
 </script>
 
 <template>
   <p>Main</p>
-  <button @click=logOut()>Log out</button>
-  {{ test() }}
+  <button @click=application.logOut()>Log out</button>
 </template>
