@@ -1,8 +1,10 @@
+import { CommitsModel } from "./CommitsModel";
+
 export class BranchModel {
   private name: string;
-  private commits: string[];
+  private commits: CommitsModel[];
   
-  constructor(name: string, commits: string[]){
+  constructor(name: string, commits: CommitsModel[]){
     this.name = name;
     this.commits = commits
   }
