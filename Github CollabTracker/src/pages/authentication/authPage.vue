@@ -16,12 +16,13 @@ async function startAuth() {
 }
 
 async function openBrowser() {
-  const authWindow = await AuthPage.openBrowser(); // Open the browser window
+  const authWindow = AuthPage.openBrowser(); // Open the browser window
   const pollInterval = 500; // Check every 500ms
 
   pollingInterval = setInterval(async () => {
     if (authWindow.closed) {
       clearInterval(pollingInterval); // Stop polling
+      isLoginPressed.value = false;
       await finishAuth();
     }
   }, pollInterval);
@@ -48,13 +49,13 @@ async function handleLoginClick() {
       <h2>Welcome to the Github CollabTracker.</h2>
     </div>
     <div class="container-md">
-      <button @click="handleLoginClick">Log in</button>
+      <button :disabled="isLoginPressed" @click="handleLoginClick">Log in</button>
       <div class="remember-me">
         <input type="checkbox" id="rememberMe" v-model="rememberData" />
         <label for="rememberMe">Remember Me</label>
       </div>
       <p>{{ errorText }}</p>
-      <div v-if="isLoginPressed && !errorText.value">
+      <div v-if="isLoginPressed">
         <h3>Your code</h3>
         <p class="text-md-center">{{ code }}</p>
       </div>
