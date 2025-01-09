@@ -14,16 +14,24 @@ export class DataManager {
 
   public async updateAll() {
     const issues = await this.updateIssues();
-    const repos = await this.updateRepos();
+    const repos = await this.updateRepos(issues);
     console.log(issues);
     console.log(repos);
   }
 
-  public async updateRepos(): Promise<RepoModel[]> {
+  public async updateRepos(issues: Map<number, Map<number, IssueModel>>): Promise<RepoModel[]> {
     const res = await this.scraper.scrapeRepos();
+    const branches = new Map<string, BranchModel>();
+    res.forEach((e) => {
+      this.updateBranches(e.name).then((br) => {
+        br.forEach((e) => {
+          branches.set(e.getName(), e);
+        });
+      });
+    });
     const repos: RepoModel[] = [];
-    res.forEach((v) => {
-      repos.push(RepoModelConverter.convert(v));
+    res.forEach((e) => {
+      repos.push(RepoModelConverter.convert(e, branches, new Map(), new Map()));
     });
     return repos;
   }
@@ -37,12 +45,16 @@ export class DataManager {
     return branches;
   }
   
-  public async updateIssues(): Promise<IssueModel[]> {
+  public async updateIssues(): Promise<Map<number, Map<number, IssueModel>>> {
     const res = await this.scraper.scrapeIssues();
-    const issues: IssueModel[] = [];
+    const issues = new Map<number, Map<number, IssueModel>>();
     res.forEach((e) => {
-      issues.push(IssueModelConverter.convert(e));
-    });
+      let issueMap = issues.get(e.repoID);
+      if (!issueMap) {
+        issueMap = new Map<number, IssueModel>();
+      }
+      issueMap.set(e.id, IssueModelConverter.convert(e));
+    })
     return issues;
   }
 

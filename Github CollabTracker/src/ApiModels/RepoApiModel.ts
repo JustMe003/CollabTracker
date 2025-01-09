@@ -5,4 +5,5 @@ export interface RepoApiModel{
   html_url: string;
   updated_at: Date;
   owner: UserApiModel;
+  name: string;
 }

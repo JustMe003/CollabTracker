@@ -7,13 +7,13 @@ export class RepoModel {
   private html: string;
   private creatorID: number;
   private updated_at: Date;
-  private branches: BranchModel[];
-  private issues: IssueModel[];
-  private mergeRequests: IssueModel[];
+  private branches: Map<string, BranchModel>;
+  private issues: Map<number, IssueModel>;
+  private mergeRequests: Map<number, IssueModel>;
   private repoEvents: RepoEventModel[];
 
 
-  constructor(repoID: number, html: string, creatorID: number, updated_at: Date, branches: BranchModel[], issues: IssueModel[], mergeRequests: IssueModel[],
+  constructor(repoID: number, html: string, creatorID: number, updated_at: Date, branches: Map<string, BranchModel>, issues: Map<number, IssueModel>, mergeRequests: Map<number, IssueModel>,
     repoEvents: RepoEventModel[]) {
     this.repoID = repoID;
     this.html = html;
