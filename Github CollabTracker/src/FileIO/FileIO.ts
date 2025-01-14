@@ -4,8 +4,8 @@ import { FileHandler } from "./FileHandler";
 
 export abstract class FileIO {
   protected path: string;
+  protected static extension: string = FileStorage.getExtension();
   private static baseDir: fs.BaseDirectory = fs.BaseDirectory.AppLocalData;
-  private static extension: string = FileStorage.getExtension();
   private static delimiter: string = FileStorage.getDelimiter();
 
   constructor(path: string) {

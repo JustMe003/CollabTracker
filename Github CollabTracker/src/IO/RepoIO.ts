@@ -7,7 +7,7 @@ export class RepoIO extends FileIO {
     super(path);
   }
 
-  async readRepos() : Promise<RepoModel[]>  {
+  async readRepos(): Promise<RepoModel[]>  {
     const files = await this.getAllFilesInFolder();
     const res: RepoModel[] = [];
     for (let i = 0; i < files.length; i++) {
@@ -16,4 +16,8 @@ export class RepoIO extends FileIO {
     console.log(res);
     return res;
   }
+
+  // async readRepo(repoID: number): Promise<RepoModel> {
+  //   const res = await this.readObject(tostring(repoID))
+  // }
 }
