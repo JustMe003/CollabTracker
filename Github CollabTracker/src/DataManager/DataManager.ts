@@ -3,6 +3,8 @@ import { BranchObject, IssueObject, RepoModel } from "../Models";
 import { IOHandler } from "../IO/IOHandler";
 import { BranchModelConverter, IssueModelConverter, RepoModelConverter } from "../ModelConverter";
 
+type IssuePullRequestObject = { issues: IssueObject, pullRequests: IssueObject };
+
 export class DataManager {
   private scraper: Scraper;
   private IOHandler: IOHandler;
@@ -35,19 +37,8 @@ export class DataManager {
     for (let i = 0; i < res.length; i++) {
       const repo = res[i];
       let branches: BranchObject = await this.updateBranches(repo.owner.login, repo.name);
-      const issues: IssueObject = {};
-      const pullReqs: IssueObject = {};
-      const list = issueObjects.get(repo.id);
-      if (list) {
-        Object.entries(list).forEach((pair) => {
-          if (pair[1].getIsPullRequest()) {
-            pullReqs[pair[1].getID()] = pair[1];
-          } else {
-            issues[pair[1].getID()] = pair[1];
-          }
-        })
-      }
-      repos.push(RepoModelConverter.convert(repo, branches, issues, pullReqs));
+      const seperate = this.seperateIssuesPullRequests(issueObjects.get(repo.id));
+      repos.push(RepoModelConverter.convert(repo, branches, seperate.issues, seperate.pullRequests));
     }
     return repos;
   }
@@ -83,5 +74,24 @@ export class DataManager {
 
   public writeRepos(repos: RepoModel[]) {
     this.IOHandler.writeRepos(repos);
+  }
+
+
+  public seperateIssuesPullRequests(all: IssueObject | null | undefined): IssuePullRequestObject  {
+    const issues: IssueObject = {};
+    const pullReqs: IssueObject = {};
+    if (all) {
+      Object.entries(all).forEach((pair) => {
+        if (pair[1].getIsPullRequest()) {
+          pullReqs[pair[1].getID()] = pair[1];
+        } else {
+          issues[pair[1].getID()] = pair[1];
+        }
+      });
+    }
+    return {
+      issues: issues,
+      pullRequests: pullReqs
+    };
   }
 }
