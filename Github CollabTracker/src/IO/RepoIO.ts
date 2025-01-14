@@ -11,13 +11,13 @@ export class RepoIO extends FileIO {
     const files = await this.getAllFilesInFolder();
     const res: RepoModel[] = [];
     for (let i = 0; i < files.length; i++) {
-      res.push(await this.readObject(files[i]) as RepoModel);
+      res.push(RepoModel.createNew(await this.readObject(files[i]) as RepoModel));
     }
     console.log(res);
     return res;
   }
 
   public async readRepo(repoID: number): Promise<RepoModel> {
-    return await this.readObject(repoID.toString() + FileIO.extension) as RepoModel;
+    return RepoModel.createNew(await this.readObject(repoID.toString() + FileIO.extension) as RepoModel);
   }
 }

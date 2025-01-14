@@ -17,9 +17,9 @@ export class DataManager {
   public async updateData() {
     const repos = await this.IOHandler.getRepos();
     const allIssues = await this.updateIssues();
-    let upToDate:boolean = true;
+    let upToDate: boolean = true;
     repos.forEach(repo => {
-      console.log(repo)
+      console.log(repo.getRepoID);
       const repoNewAll = allIssues.get(repo.getRepoID());
       const newIssues = this.seperateIssuesPullRequests(repoNewAll).issues;
       Object.entries(newIssues).forEach((id) =>{
