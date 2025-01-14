@@ -21,7 +21,7 @@ export class Controller {
   }
   
   private async updateUs(): Promise<UserModel> {
-    return UserModelConverter.convert(await this.scraper.scrapeUser());
+    return UserModelConverter.convert(await this.scraper.scrapeUs());
   }
   
 }

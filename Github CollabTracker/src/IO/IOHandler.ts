@@ -41,4 +41,8 @@ export class IOHandler {
     return this.repoIO.readRepos();
   }
 
+  public getUsers(): Promise<UserModel[]> {
+    return this.userIO.readUsers();
+  }
+
 }

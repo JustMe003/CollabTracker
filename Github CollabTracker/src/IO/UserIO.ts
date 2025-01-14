@@ -12,13 +12,12 @@ export class UserIO extends FileIO {
     const files = await this.getAllFilesInFolder();
     const res: UserModel[] = [];
     for (let i = 0; i < files.length; i++) {
-      res.push(await this.readObject(files[i]) as UserModel);
+      res.push(UserModel.createNew(await this.readObject(files[i]) as UserModel));
     }
-    console.log(res);
     return res;
   }
 
   public async readUser(userId: number): Promise<UserModel> {
-    return await this.readObject(userId.toString() + FileIO.extension) as UserModel;
+    return UserModel.createNew(await this.readObject(userId.toString() + FileIO.extension) as UserModel);
   }
 }

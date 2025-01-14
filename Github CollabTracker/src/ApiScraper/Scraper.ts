@@ -9,7 +9,7 @@ export class Scraper {
     this.token = token;
   }
 
-  public async scrapeUser() : Promise<apiMod.UserApiModel>{
+  public async scrapeUs() : Promise<apiMod.UserApiModel> {
     const userData = await RequestGithub.sendGetRequest(
       "https://api.github.com/user",
       new Map<string, string>(),
@@ -17,7 +17,21 @@ export class Scraper {
     return userData;
   }
 
-  public async scrapeRepos(): Promise<apiMod.RepoApiModel[]>{
+  public async scrapeUser(user: string) : Promise<apiMod.UserApiModel> {
+    try{
+      const userData = await RequestGithub.sendGetRequest(
+        `https://api.github.com/users/${user}`,
+        new Map<string, string>(),
+        this.token) as apiMod.UserApiModel;
+      return userData;
+
+    } catch (e) {
+      console.log(e);
+      return {} as apiMod.UserApiModel;
+    }
+  }
+
+  public async scrapeRepos(): Promise<apiMod.RepoApiModel[]> {
     let page = 1;
     let repos: apiMod.RepoApiModel[] = [];
     do {
@@ -34,8 +48,15 @@ export class Scraper {
     return repos;
   }
 
+  public async scrapeRepo(owner: string, name: string): Promise<apiMod.RepoApiModel> {
+    return await RequestGithub.sendGetRequest(
+      `https://api.github.com/${owner}/${name}`,
+      new Map(),
+      this.token) as apiMod.RepoApiModel;
+  }
 
-  public async scrapeIssues(): Promise<apiMod.IssueApiModel[]>{
+
+  public async scrapeIssues(): Promise<apiMod.IssueApiModel[]> {
     let page = 1;
     let issues: apiMod.IssueApiModel[] = [];
     do {
@@ -54,7 +75,7 @@ export class Scraper {
       return issues;
     }
     
-  public async scrapePullRequests(username: string): Promise<apiMod.IssueApiModel[]>{
+  public async scrapePullRequests(username: string): Promise<apiMod.IssueApiModel[]> {
     let page = 1;
     let pullRequests: apiMod.IssueApiModel[] = [];
     do {

@@ -26,4 +26,8 @@ export class UserModel{
   public getHtml() {
     return this.html;
   }
+
+  public static createNew(user: UserModel): UserModel {
+    return new UserModel(user.id, user.login, user.username, user.html);
+  }
 }

@@ -4,4 +4,4 @@ export { IssueModel } from "./IssueModel";
 export { RepoModel } from "./RepoModel";
 export { UserModel } from "./UserModel";
 export type { BranchObject } from "./GenericStringObject";
-export type { IssueObject, PullReqObject } from "./GenericNumberObjects";
+export type { IssueObject, PullReqObject, RepoObject, UserObject } from "./GenericNumberObjects";
