@@ -19,8 +19,12 @@ export class DataManager {
     const allIssues = await this.updateIssues();
     let upToDate:boolean = true;
     repos.forEach(repo => {
-      const repoIssues = allIssues.get(repo.getRepoID());
-      const s
+      console.log(repo)
+      const repoNewAll = allIssues.get(repo.getRepoID());
+      const newIssues = this.seperateIssuesPullRequests(repoNewAll).issues;
+      Object.entries(newIssues).forEach((id) =>{
+        console.log(repo.getIssues()[parseInt(id[0])]);
+      })
     });
     
   }
