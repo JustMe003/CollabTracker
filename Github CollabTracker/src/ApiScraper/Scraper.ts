@@ -88,6 +88,15 @@ export class Scraper {
     return branches;
   }
 
+
+  public async scrapeLastUpdatedBranch(url: string): Promise<apiMod.CommitsApiModel> {
+    const lastCommit = await RequestGithub.sendGetRequest(
+      url,
+      new Map<string, string>(),
+      this.token) as apiMod.CommitsApiModel
+    return lastCommit;
+  }
+
   public async scrapeCommits(owner:string, repoID: string, nameBranch:string, last_updated: Date | undefined): Promise<apiMod.CommitsApiModel[]> {
     let page = 1;
     let commits: apiMod.CommitsApiModel[] = [];

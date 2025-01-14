@@ -9,11 +9,12 @@ export class UserIO extends FileIO {
   }
 
   async readUsers() : Promise<UserModel[]>  {
-    const data = await this.readObject();
-    if (data) {
-      return data as UserModel[];
-    } else {
-      return [];
+    const files = await this.getAllFilesInFolder();
+    const res: UserModel[] = [];
+    for (let i = 0; i < files.length; i++) {
+      res.push(await this.readObject(files[i]) as UserModel);
     }
+    console.log(res);
+    return res;
   }
 }

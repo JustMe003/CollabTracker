@@ -37,8 +37,9 @@ export class DataManager {
   public async updateBranches(owner: string, repoName: string): Promise<BranchObject> {
     const res = await this.scraper.scrapeBranches(owner, repoName);
     const branches: BranchObject = {};
-    res.forEach((e) => {
-      branches[e.name] = BranchModelConverter.convert(e);
+    res.forEach(async (e) => {
+      const lastCommit = await this.scraper.scrapeLastUpdatedBranch(e.branch.url); 
+      branches[e.name] = BranchModelConverter.convert(e, lastCommit);
     });
     return branches;
   }
