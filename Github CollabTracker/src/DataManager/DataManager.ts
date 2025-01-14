@@ -1,5 +1,5 @@
 import { Scraper } from "../ApiScraper/Scraper";
-import { BranchObject, IssueObject, RepoModel } from "../Models";
+import { BranchObject, IssueModel, IssueObject, RepoModel } from "../Models";
 import { IOHandler } from "../IO/IOHandler";
 import { BranchModelConverter, IssueModelConverter, RepoModelConverter } from "../ModelConverter";
 
@@ -15,39 +15,28 @@ export class DataManager {
   }
 
   public async updateData() {
-    const repos = await this.IOHandler.getRepos();
-    const allIssues = await this.updateIssues();
-    let upToDate:boolean = true;
-    repos.forEach(repo => {
-      console.log(repo)
-      const repoNewAll = allIssues.get(repo.getRepoID());
-      const newIssues = this.seperateIssuesPullRequests(repoNewAll).issues;
-      Object.entries(newIssues).forEach((id) =>{
-        console.log(repo.getIssues()[parseInt(id[0])]);
-      })
-    });
+    updateRepos()
+    updateIssues()
+    updateMergeRequests()
+    updateBranches()
+    //const repos = await this.readRepos();
     
   }
 
-  public async updateAll() {
-    const issues = await this.updateIssues();
-    const repos = await this.updateRepos(issues);
-    this.IOHandler.writeRepos(repos);
-  }
 
-  public async updateRepos(issueObjects: Map<number, IssueObject>): Promise<RepoModel[]> {
+  public async scrapeRepos(issueObjects: Map<number, IssueObject>): Promise<RepoModel[]> {
     const res = await this.scraper.scrapeRepos();
     const repos: RepoModel[] = [];
     for (let i = 0; i < res.length; i++) {
       const repo = res[i];
-      let branches: BranchObject = await this.updateBranches(repo.owner.login, repo.name);
+      let branches: BranchObject = await this.scrapeBranches(repo.owner.login, repo.name);
       const seperate = this.seperateIssuesPullRequests(issueObjects.get(repo.id));
       repos.push(RepoModelConverter.convert(repo, branches, seperate.issues, seperate.pullRequests));
     }
     return repos;
   }
   
-  public async updateBranches(owner: string, repoName: string): Promise<BranchObject> {
+  public async scrapeBranches(owner: string, repoName: string): Promise<BranchObject> {
     const res = await this.scraper.scrapeBranches(owner, repoName);
     const branches: BranchObject = {};
     res.forEach(async (e) => {
@@ -57,7 +46,7 @@ export class DataManager {
     return branches;
   }
   
-  public async updateIssues(): Promise<Map<number, IssueObject>> {
+  public async scrapeIssues(): Promise<Map<number, IssueObject>> {
     const res = await this.scraper.scrapeIssues();
     const issues = new Map<number, IssueObject>();
     res.forEach((e) => {
@@ -72,7 +61,7 @@ export class DataManager {
     return issues;
   }
 
-  public getRepos(): Promise<RepoModel[]> {
+  public readRepos(): Promise<RepoModel[]> {
     return this.IOHandler.getRepos();
   }
 
