@@ -22,4 +22,8 @@ export class BranchModel {
   public getCommits() {
     return this.commits;
   }
+
+  public static createNew(mod: BranchModel): BranchModel {
+    return new BranchModel(mod.name, mod.lastUpdated, mod.commits);
+  }
 }

@@ -24,6 +24,7 @@ export class DataManager {
   }
 
 
+
   public async scrapeRepos(issueObjects: Map<number, IssueObject>): Promise<RepoModel[]> {
     const res = await this.scraper.scrapeRepos();
     const repos: RepoModel[] = [];

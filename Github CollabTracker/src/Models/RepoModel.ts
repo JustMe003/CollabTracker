@@ -1,5 +1,7 @@
+import { BranchModel } from "./BranchModel";
 import { IssueObject } from "./GenericNumberObjects";
 import { BranchObject } from "./GenericStringObject";
+import { IssueModel } from "./IssueModel";
 import { RepoEventModel } from "./RepoEventModel";
 
 export class RepoModel {
@@ -56,6 +58,22 @@ export class RepoModel {
 
   public getEvents() {
     return this.repoEvents;
+  }
+
+  public static createNew(mod: RepoModel): RepoModel {
+    const branches: BranchObject = {};
+    Object.entries(mod.branches).forEach((pair: [string, BranchModel]) => {
+      branches[pair[0]] = BranchModel.createNew(pair[1]);
+    });
+    const issues: IssueObject = {};
+    Object.entries(mod.issues).forEach((pair: [string, IssueModel]) => {
+      issues[parseInt(pair[0])] = IssueModel.createNew(pair[1]);
+    });
+    const pullReqs: IssueObject = {};
+    Object.entries(mod.issues).forEach((pair: [string, IssueModel]) => {
+      pullReqs[parseInt(pair[0])] = IssueModel.createNew(pair[1]);
+    });
+    return new RepoModel(mod.repoID, mod.name, mod.html, mod.creatorID, branches, issues, pullReqs, mod.repoEvents);
   }
 
 }

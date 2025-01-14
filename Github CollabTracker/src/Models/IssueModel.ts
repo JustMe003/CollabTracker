@@ -56,4 +56,8 @@ export class IssueModel {
   public getIsPullRequest() {
     return this.isPullRequest;
   }
+
+  public static createNew(mod: IssueModel): IssueModel {
+    return new IssueModel(mod.id, mod.html, mod.creator, mod.assignees, mod.numberOfComments, mod.reviewers, mod.updated_at, mod.repoID, mod.isPullRequest);
+  }
 }
