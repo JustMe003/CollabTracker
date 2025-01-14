@@ -8,7 +8,7 @@ export class UserIO extends FileIO {
     super(path);
   }
 
-  async readUsers() : Promise<UserModel[]>  {
+  public async readUsers() : Promise<UserModel[]>  {
     const files = await this.getAllFilesInFolder();
     const res: UserModel[] = [];
     for (let i = 0; i < files.length; i++) {
@@ -16,5 +16,9 @@ export class UserIO extends FileIO {
     }
     console.log(res);
     return res;
+  }
+
+  public async readUser(userId: number): Promise<UserModel> {
+    return await this.readObject(userId.toString() + FileIO.extension) as UserModel;
   }
 }
