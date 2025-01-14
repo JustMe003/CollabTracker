@@ -23,20 +23,25 @@ export class DataManager {
     this.IOHandler.writeRepos(repos);
   }
 
-  public async updateRepos(issues: Map<number, IssueObject>): Promise<RepoModel[]> {
-    console.log(issues);
+  public async updateRepos(issueObjects: Map<number, IssueObject>): Promise<RepoModel[]> {
     const res = await this.scraper.scrapeRepos();
     const repos: RepoModel[] = [];
     for (let i = 0; i < res.length; i++) {
       const repo = res[i];
       let branches: BranchObject = await this.updateBranches(repo.owner.login, repo.name);
-      const tmp = issues.get(repo.id);
-      if (tmp) {
-        Object.entries(tmp).forEach((pair) => {
-          console.log(pair[0], pair[1]);
+      const issues: IssueObject = {};
+      const pullReqs: IssueObject = {};
+      const list = issueObjects.get(repo.id);
+      if (list) {
+        Object.entries(list).forEach((pair) => {
+          if (pair[1].getIsPullRequest()) {
+            pullReqs[pair[1].getID()] = pair[1];
+          } else {
+            issues[pair[1].getID()] = pair[1];
+          }
         })
       }
-      repos.push(RepoModelConverter.convert(repo, branches, issues.get(repo.id), new Map()));
+      repos.push(RepoModelConverter.convert(repo, branches, issues, pullReqs));
     }
     return repos;
   }
