@@ -1,4 +1,4 @@
-import { BranchModel } from "./BranchModel";
+import { BranchObject } from "./GenericStringObject";
 import { IssueModel } from "./IssueModel";
 import { RepoEventModel } from "./RepoEventModel";
 
@@ -8,13 +8,13 @@ export class RepoModel {
   private html: string;
   private creatorID: number;
   private updated_at: Date;
-  private branches: Map<string, BranchModel>;
+  private branches: BranchObject;
   private issues: Map<number, IssueModel>;
   private mergeRequests: Map<number, IssueModel>;
   private repoEvents: RepoEventModel[];
 
 
-  constructor(repoID: number, name: string, html: string, creatorID: number, updated_at: Date, branches: Map<string, BranchModel> = new Map(), 
+  constructor(repoID: number, name: string, html: string, creatorID: number, updated_at: Date, branches: BranchObject = {}, 
   issues: Map<number, IssueModel> = new Map(), mergeRequests: Map<number, IssueModel> = new Map(), repoEvents: RepoEventModel[] = []) {
     this.repoID = repoID;
     this.name = name;
