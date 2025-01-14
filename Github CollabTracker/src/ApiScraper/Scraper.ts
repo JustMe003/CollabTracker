@@ -17,7 +17,7 @@ export class Scraper {
     return userData;
   }
 
-  public async scrapeRepos() : Promise<apiMod.RepoApiModel[]>{
+  public async scrapeRepos(): Promise<apiMod.RepoApiModel[]>{
     let page = 1;
     let repos: apiMod.RepoApiModel[] = [];
     do {
@@ -35,7 +35,7 @@ export class Scraper {
   }
 
 
-  public async scrapeIssues() : Promise<apiMod.IssueApiModel[]>{
+  public async scrapeIssues(): Promise<apiMod.IssueApiModel[]>{
     let page = 1;
     let issues: apiMod.IssueApiModel[] = [];
     do {
@@ -54,7 +54,7 @@ export class Scraper {
       return issues;
     }
     
-  public async scrapePullRequests(username: string) : Promise<apiMod.IssueApiModel[]>{
+  public async scrapePullRequests(username: string): Promise<apiMod.IssueApiModel[]>{
     let page = 1;
     let pullRequests: apiMod.IssueApiModel[] = [];
     do {

@@ -30,8 +30,6 @@ export class DataManager {
     for (let i = 0; i < res.length; i++) {
       const repo = res[i];
       let branches: BranchObject = await this.updateBranches(repo.owner.login, repo.name);
-      const issue: IssueObject[] = [];
-      const pullReqs: IssueObject[] = [];
       const tmp = issues.get(repo.id);
       if (tmp) {
         Object.entries(tmp).forEach((pair) => {
@@ -57,7 +55,6 @@ export class DataManager {
     const res = await this.scraper.scrapeIssues();
     const issues = new Map<number, IssueObject>();
     res.forEach((e) => {
-      console.log(e);
       const issue = IssueModelConverter.convert(e);
       let issueMap = issues.get(issue.getRepoID());
       if (!issueMap) {
