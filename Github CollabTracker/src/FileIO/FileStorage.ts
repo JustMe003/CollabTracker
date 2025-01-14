@@ -15,11 +15,9 @@ export class FileStorage {
       await FileHandler.createFolder(FileStorage.StorageFolder);
     if (!await FileHandler.pathExists(this.storageFolderName)) 
       await FileHandler.createFolder(this.storageFolderName);
-    files.forEach((f) => {
-      FileHandler.pathExists(f).then((b) => {
-        if (!b) FileHandler.createFolder(f);
-      })
-    });
+    for (let i = 0; i < files.length; i++) {
+      if(!await FileHandler.pathExists(files[i])) await FileHandler.createFolder(files[i]);
+    }
   }
 
   public getStoragePath(): string {

@@ -11,6 +11,6 @@ export class IssueModelConverter {
     (apiModel.reviewers || []).forEach((e) => {
       reviewers.push(e.id);
     });
-    return new IssueModel(apiModel.number, apiModel.html_url, apiModel.user.id, assignees, apiModel.comments, reviewers, apiModel.updated_at, apiModel.repository.id);
+    return new IssueModel(apiModel.number, apiModel.html_url, apiModel.user.id, assignees, apiModel.comments, reviewers, apiModel.updated_at, apiModel.repository.id, apiModel.pull_request != undefined);
   }
 }

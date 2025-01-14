@@ -1,4 +1,3 @@
-
 export class IssueModel {
   private id: number;
   private html: string;
@@ -7,9 +6,10 @@ export class IssueModel {
   private numberOfComments: number;
   private reviewers: number[];
   private updated_at: Date;
-  private repoID: number
+  private repoID: number;
+  private isPullRequest: boolean;
 
-  constructor(id: number, html: string, creator: number, assignees: number[], numberOfComments: number, reviewers: number[], updated_at: Date, repoID: number){
+  constructor(id: number, html: string, creator: number, assignees: number[], numberOfComments: number, reviewers: number[], updated_at: Date, repoID: number, isPullRequest: boolean){
     this.id = id;
     this.html = html;
     this.creator = creator;
@@ -18,6 +18,7 @@ export class IssueModel {
     this.reviewers = reviewers;
     this.updated_at = updated_at;
     this.repoID = repoID;
+    this.isPullRequest = isPullRequest
   }
 
   public getID() {
@@ -51,4 +52,8 @@ export class IssueModel {
   public getRepoID() {
     return this.repoID;
   }  
+
+  public getIsPullRequest() {
+    return this.isPullRequest;
+  }
 }

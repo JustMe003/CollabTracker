@@ -10,4 +10,5 @@ export interface IssueApiModel{
   reviewers: UserApiModel[];
   updated_at: Date;
   repository: RepoApiModel;
+  pull_request: object
 }
