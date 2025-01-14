@@ -4,6 +4,7 @@ import { RepoEventModel } from "./RepoEventModel";
 
 export class RepoModel {
   private repoID: number;
+  private name: string;
   private html: string;
   private creatorID: number;
   private updated_at: Date;
@@ -13,9 +14,10 @@ export class RepoModel {
   private repoEvents: RepoEventModel[];
 
 
-  constructor(repoID: number, html: string, creatorID: number, updated_at: Date, branches: Map<string, BranchModel>, issues: Map<number, IssueModel>, mergeRequests: Map<number, IssueModel>,
-    repoEvents: RepoEventModel[]) {
+  constructor(repoID: number, name: string, html: string, creatorID: number, updated_at: Date, branches: Map<string, BranchModel> = new Map(), 
+  issues: Map<number, IssueModel> = new Map(), mergeRequests: Map<number, IssueModel> = new Map(), repoEvents: RepoEventModel[] = []) {
     this.repoID = repoID;
+    this.name = name;
     this.html = html;
     this.creatorID = creatorID;
     this.updated_at = updated_at;
@@ -28,6 +30,10 @@ export class RepoModel {
 
   public getRepoID() {
     return this.repoID;
+  }
+
+  public getName() {
+    return this.name;
   }
 
   public getHtml() {

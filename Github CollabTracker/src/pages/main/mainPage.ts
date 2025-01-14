@@ -15,6 +15,7 @@ export class Application {
   public async startMain() {
     const controller = new Controller(GitTokenCookie.getGitTokenCookie() || "");
     const dataManager = await controller.getDataManager();
-    dataManager.updateAll();
+    await dataManager.updateAll();
+    console.log("all updated!");
   }
 }
