@@ -8,20 +8,18 @@ export class RepoModel {
   private name: string;
   private html: string;
   private creatorID: number;
-  private updated_at: Date;
   private branches: BranchObject;
   private issues: IssueObject;
   private mergeRequests: Map<number, IssueModel>;
   private repoEvents: RepoEventModel[];
 
 
-  constructor(repoID: number, name: string, html: string, creatorID: number, updated_at: Date, branches: BranchObject = {}, 
+  constructor(repoID: number, name: string, html: string, creatorID: number, branches: BranchObject = {}, 
       issues: IssueObject = {}, mergeRequests: Map<number, IssueModel> = new Map(), repoEvents: RepoEventModel[] = []) {
     this.repoID = repoID;
     this.name = name;
     this.html = html;
     this.creatorID = creatorID;
-    this.updated_at = updated_at;
     this.branches = branches;
     this.issues = issues;
     this.mergeRequests = mergeRequests;
@@ -43,10 +41,6 @@ export class RepoModel {
 
   public getCreator() {
     return this.creatorID;
-  }
-
-  public getUpdatedAt() {
-    return this.updated_at;
   }
 
   public getBranches() {
