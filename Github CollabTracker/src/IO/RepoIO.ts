@@ -13,7 +13,6 @@ export class RepoIO extends FileIO {
     for (let i = 0; i < files.length; i++) {
       res.push(RepoModel.createNew(await this.readObject(files[i]) as RepoModel));
     }
-    console.log(res);
     return res;
   }
 
