@@ -1,5 +1,5 @@
 import { Scraper } from "../ApiScraper/Scraper";
-import { BranchModel, BranchObject, IssueModel, RepoModel } from "../Models";
+import { BranchObject, IssueObject, RepoModel } from "../Models";
 import { IOHandler } from "../IO/IOHandler";
 import { BranchModelConverter, IssueModelConverter, RepoModelConverter } from "../ModelConverter";
 
@@ -13,8 +13,8 @@ export class DataManager {
   }
 
   public async updateData() {
-    const repos = await this.IOHandler.getRepos();
-    if (repos.length == 0) await this.updateAll();
+    const repos = this.IOHandler.getRepos();
+    await this.updateAll();
   }
 
   public async updateAll() {
@@ -23,13 +23,22 @@ export class DataManager {
     this.IOHandler.writeRepos(repos);
   }
 
-  public async updateRepos(issues: Map<number, Map<number, IssueModel>>): Promise<RepoModel[]> {
+  public async updateRepos(issues: Map<number, IssueObject>): Promise<RepoModel[]> {
+    console.log(issues);
     const res = await this.scraper.scrapeRepos();
     const repos: RepoModel[] = [];
     for (let i = 0; i < res.length; i++) {
-      const e = res[i];
-      let branches: BranchObject = await this.updateBranches(e.owner.login, e.name);
-      repos.push(RepoModelConverter.convert(e, branches, new Map(), new Map()));
+      const repo = res[i];
+      let branches: BranchObject = await this.updateBranches(repo.owner.login, repo.name);
+      const issue: IssueObject[] = [];
+      const pullReqs: IssueObject[] = [];
+      const tmp = issues.get(repo.id);
+      if (tmp) {
+        Object.entries(tmp).forEach((pair) => {
+          console.log(pair[0], pair[1]);
+        })
+      }
+      repos.push(RepoModelConverter.convert(repo, branches, issues.get(repo.id), new Map()));
     }
     return repos;
   }
@@ -43,15 +52,17 @@ export class DataManager {
     return branches;
   }
   
-  public async updateIssues(): Promise<Map<number, Map<number, IssueModel>>> {
+  public async updateIssues(): Promise<Map<number, IssueObject>> {
     const res = await this.scraper.scrapeIssues();
-    const issues = new Map<number, Map<number, IssueModel>>();
+    const issues = new Map<number, IssueObject>();
     res.forEach((e) => {
-      let issueMap = issues.get(e.repoID);
+      const issue = IssueModelConverter.convert(e);
+      let issueMap = issues.get(issue.getRepoID());
       if (!issueMap) {
-        issueMap = new Map<number, IssueModel>();
+        issueMap = {};
+        issues.set(issue.getRepoID(), issueMap);
       }
-      issueMap.set(e.id, IssueModelConverter.convert(e));
+      issueMap[issue.getID()] = issue;
     })
     return issues;
   }

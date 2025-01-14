@@ -1,3 +1,4 @@
+import { IssueObject } from "./GenericNumberObjects";
 import { BranchObject } from "./GenericStringObject";
 import { IssueModel } from "./IssueModel";
 import { RepoEventModel } from "./RepoEventModel";
@@ -9,13 +10,13 @@ export class RepoModel {
   private creatorID: number;
   private updated_at: Date;
   private branches: BranchObject;
-  private issues: Map<number, IssueModel>;
+  private issues: IssueObject;
   private mergeRequests: Map<number, IssueModel>;
   private repoEvents: RepoEventModel[];
 
 
   constructor(repoID: number, name: string, html: string, creatorID: number, updated_at: Date, branches: BranchObject = {}, 
-  issues: Map<number, IssueModel> = new Map(), mergeRequests: Map<number, IssueModel> = new Map(), repoEvents: RepoEventModel[] = []) {
+      issues: IssueObject = {}, mergeRequests: Map<number, IssueModel> = new Map(), repoEvents: RepoEventModel[] = []) {
     this.repoID = repoID;
     this.name = name;
     this.html = html;
