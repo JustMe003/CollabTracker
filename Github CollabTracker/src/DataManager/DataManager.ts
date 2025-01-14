@@ -47,7 +47,7 @@ export class DataManager {
     const res = await this.scraper.scrapeBranches(owner, repoName);
     const branches: BranchObject = {};
     res.forEach(async (e) => {
-      const lastCommit = await this.scraper.scrapeLastUpdatedBranch(e.branch.url); 
+      const lastCommit = await this.scraper.scrapeLastUpdatedBranch(e.commit.url); 
       branches[e.name] = BranchModelConverter.convert(e, lastCommit);
     });
     return branches;
