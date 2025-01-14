@@ -56,6 +56,7 @@ export class DataManager {
     const res = await this.scraper.scrapeIssues();
     const issues = new Map<number, IssueObject>();
     res.forEach((e) => {
+      console.log(e);
       const issue = IssueModelConverter.convert(e);
       let issueMap = issues.get(issue.getRepoID());
       if (!issueMap) {
