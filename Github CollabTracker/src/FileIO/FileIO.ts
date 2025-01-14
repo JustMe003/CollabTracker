@@ -54,4 +54,13 @@ export abstract class FileIO {
       console.log(error);
     }
   }
+
+  async getAllFilesInFolder(): Promise<string[]> {
+    const res = await FileStorage.getAllFileNamesInFolder(this.path);
+    for (let i = 0; i < res.length; i++) {
+      let name = res[i];
+      if (name.endsWith(FileIO.extension)) res[i] = name.substring(0, name.length - FileIO.extension.length);
+    }
+    return res;
+  }
 }

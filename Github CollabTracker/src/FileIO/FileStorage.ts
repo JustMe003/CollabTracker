@@ -33,5 +33,9 @@ export class FileStorage {
   public static getExtension(): string {
     return FileStorage.Extension;
   }
+
+  public static async getAllFileNamesInFolder(path: string): Promise<string[]> {
+    return FileHandler.getAllFileNames(path);
+  }
 }
 

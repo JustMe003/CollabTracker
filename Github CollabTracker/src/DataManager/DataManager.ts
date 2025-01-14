@@ -1,5 +1,5 @@
 import { Scraper } from "../ApiScraper/Scraper";
-import { BranchModel, IssueModel, RepoModel } from "../Models";
+import { BranchModel, BranchObject, IssueModel, RepoModel } from "../Models";
 import { IOHandler } from "../IO/IOHandler";
 import { BranchModelConverter, IssueModelConverter, RepoModelConverter } from "../ModelConverter";
 
@@ -10,6 +10,11 @@ export class DataManager {
   constructor(scraper: Scraper, handler: IOHandler) {
     this.scraper = scraper;
     this.IOHandler = handler;
+  }
+
+  public async updateData() {
+    const repos = await this.IOHandler.getRepos();
+    if (repos.length == 0) await this.updateAll();
   }
 
   public async updateAll() {
@@ -23,22 +28,17 @@ export class DataManager {
     const repos: RepoModel[] = [];
     for (let i = 0; i < res.length; i++) {
       const e = res[i];
-      const branches = new Map<string, BranchModel>();
-      await this.updateBranches(e.owner.login, e.name).then((br) => {
-        br.forEach((e) => {
-          branches.set(e.getName(), e);
-        });
-      });
+      let branches: BranchObject = await this.updateBranches(e.owner.login, e.name);
       repos.push(RepoModelConverter.convert(e, branches, new Map(), new Map()));
     }
     return repos;
   }
   
-  public async updateBranches(owner: string, repoName: string): Promise<BranchModel[]> {
+  public async updateBranches(owner: string, repoName: string): Promise<BranchObject> {
     const res = await this.scraper.scrapeBranches(owner, repoName);
-    const branches: BranchModel[] = [];
+    const branches: BranchObject = {};
     res.forEach((e) => {
-      branches.push(BranchModelConverter.convert(e));
+      branches[e.name] = BranchModelConverter.convert(e);
     });
     return branches;
   }
