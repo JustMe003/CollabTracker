@@ -15,8 +15,13 @@ export class DataManager {
   }
 
   public async updateData() {
-    const repos = this.IOHandler.getRepos();
-    await this.updateAll();
+    const repos = await this.IOHandler.getRepos();
+    const allIssues = await this.updateIssues();
+    repos.forEach(repo => {
+      const repoIssues = allIssues.get(repo.getRepoID());
+      
+    });
+    
   }
 
   public async updateAll() {
