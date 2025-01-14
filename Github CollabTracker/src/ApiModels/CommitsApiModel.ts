@@ -1,7 +1,9 @@
+import { CommitsExtraApiModel } from "./CommitExtraApiMode";
 import { UserApiModel } from "./UserApiModel";
 
 export interface CommitsApiModel{
-  nrOfContents: number;
-  users: [UserApiModel];
+  author: UserApiModel;
+  sha: string;
+  commit: CommitsExtraApiModel;
 
 }
