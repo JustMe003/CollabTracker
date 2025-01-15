@@ -18,17 +18,11 @@ export class Scraper {
   }
 
   public async scrapeUser(user: string) : Promise<apiMod.UserApiModel> {
-    try {
-      const userData = await RequestGithub.sendGetRequest(
-        `https://api.github.com/users/${user}`,
-        new Map<string, string>(),
-        this.token) as apiMod.UserApiModel;
-      return userData;
-
-    } catch (e) {
-      console.log(e);
-      return {} as apiMod.UserApiModel;
-    }
+    const userData = await RequestGithub.sendGetRequest(
+      `https://api.github.com/users/${user}`,
+      new Map<string, string>(),
+      this.token) as apiMod.UserApiModel;
+    return userData;
   }
 
   public async scrapeRepos(): Promise<apiMod.RepoApiModel[]> {
@@ -50,7 +44,7 @@ export class Scraper {
 
   public async scrapeRepo(owner: string, name: string): Promise<apiMod.RepoApiModel> {
     return await RequestGithub.sendGetRequest(
-      `https://api.github.com/${owner}/${name}`,
+      `https://api.github.com/repos/${owner}/${name}`,
       new Map(),
       this.token) as apiMod.RepoApiModel;
   }
@@ -60,7 +54,6 @@ export class Scraper {
     let page = 1;
     let issues: apiMod.IssueApiModel[] = [];
     do {
-
       issues = issues.concat(await RequestGithub.sendGetRequest(
         "https://api.github.com/user/issues",
         new Map<string, string>([

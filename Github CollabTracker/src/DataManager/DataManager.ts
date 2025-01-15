@@ -1,5 +1,5 @@
 import { Scraper } from "../ApiScraper/Scraper";
-import { BranchObject, IssueObject, RepoModel, RepoObject, UserModel, UserObject } from "../Models";
+import { BranchObject, getNumberObjectList, IssueModel, IssueObject, RepoModel, RepoObject, UserModel, UserObject } from "../Models";
 import { IOHandler } from "../IO/IOHandler";
 import { BranchModelConverter, IssueModelConverter, RepoModelConverter, UserModelConverter } from "../ModelConverter";
 
@@ -34,14 +34,27 @@ export class DataManager {
     
   }
 
+
+  // get all repos from storages S
+  // 
+  // get all repos from scraper   -- async A
+  // get all issues from scraper    -- async B
+
+  // After getting all issues from scraper, check whether we have stored it repo: If not, push to array C if repo of B is not in S
+
+  // After getting all repos from scraper , check whether we have stored it already: If not, s
+
+  // await both repo and issue checking.
+  // Take array C from issue checking and check again with updated repo object
+
   public async updateRepos() {
     const scrapedRepos = await this.scrapeRepos();
     while (!this.initialized);
-    Object.entries(scrapedRepos).forEach((pair: [string, RepoModel]) => {
+    getNumberObjectList<RepoModel, RepoObject>(scrapedRepos).forEach((pair: [number, RepoModel]) => {
       const id = pair[1].getRepoID();
       if (!this.repos[id]) {
         // repo does not exists in storage
-        // this.scrapeFullRepo(pair[1]); 
+        this.scrapeFullRepo(pair[1]);
       }
     });
   }
@@ -55,11 +68,14 @@ export class DataManager {
     return this.repoModelsToObject(repos);
   }
 
-  public async scrapeFullRepo(rep: RepoModel): Promise<void> {
-    if (!this.users[rep.getCreator()]) this.users[rep.getCreator()] = await this.scrapeUser("");
-    console.log(this.users[rep.getCreator()]);
-    const repo = this.scraper.scrapeRepo(this.users[rep.getCreator()].getLogin(), rep.getName());
-    console.log(repo);
+  public async scrapeFullRepo(rep: RepoModel): Promise<RepoModel> {
+    if (!this.users[rep.getCreator()]) 
+      this.scrapeUser(rep.getCreator()).then((user) => this.users[rep.getCreator()] = UserModel.createNew(user));
+    const branches = await this.scrapeBranches(rep.getCreator(), rep.getName());
+    const repo = RepoModelConverter.convert(await this.scraper.scrapeRepo(rep.getCreator(), rep.getName()), branches);
+    this.repos[repo.getRepoID()];
+    this.IOHandler.writeRepo(repo);
+    return repo;
   }
 
   public async scrapeUser(user: string): Promise<UserModel> {
@@ -112,7 +128,7 @@ export class DataManager {
     return this.userModelToObject(await this.IOHandler.getUsers());
   }
 
-  public writeRepos(repos: RepoModel[]) {
+  public writeRepos(repos: RepoObject) {
     this.IOHandler.writeRepos(repos);
   }
 
@@ -136,7 +152,7 @@ export class DataManager {
     const issues: IssueObject = {};
     const pullReqs: IssueObject = {};
     if (all) {
-      Object.entries(all).forEach((pair) => {
+      getNumberObjectList<IssueModel, IssueObject>(all).forEach((pair) => {
         if (pair[1].getIsPullRequest()) {
           pullReqs[pair[1].getID()] = pair[1];
         } else {

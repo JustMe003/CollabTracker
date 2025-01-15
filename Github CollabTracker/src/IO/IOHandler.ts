@@ -1,5 +1,5 @@
 import { FileStorage } from "../FileIO/FileStorage";
-import { RepoModel, UserModel } from "../Models";
+import { RepoModel, RepoObject, UserModel } from "../Models";
 import { RepoIO } from "./RepoIO";
 import { UserIO } from "./UserIO";
 
@@ -31,10 +31,14 @@ export class IOHandler {
     this.userIO.writeObject(param, param.getLogin());
   }
 
-  public writeRepos(param: RepoModel[]) {
-    param.forEach((repo) => {
-      this.repoIO.writeObject(repo, repo.getRepoID().toString());
+  public writeRepos(param: RepoObject) {
+    Object.entries(param).forEach((repo: [string, RepoModel]) => {
+      this.repoIO.writeObject(repo[1], repo[0]);
     });
+  }
+
+  public writeRepo(repo: RepoModel) {
+    this.repoIO.writeObject(repo, repo.getRepoID().toString());
   }
 
   public getRepos(): Promise<RepoModel[]> {

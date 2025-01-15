@@ -60,6 +60,10 @@ export class RepoModel {
     return this.repoEvents;
   }
 
+  public setBranches(branches: BranchObject) {
+    this.branches = branches;
+  }
+
   public static createNew(mod: RepoModel): RepoModel {
     const branches: BranchObject = {};
     Object.entries(mod.branches).forEach((pair: [string, BranchModel]) => {
