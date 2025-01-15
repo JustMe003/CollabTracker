@@ -41,8 +41,7 @@ export class DataManager {
       const id = pair[1].getRepoID();
       if (!this.repos[id]) {
         // repo does not exists in storage
-        // this.repos[id] = pair[1];
-        // this.scrapeFullRepo(pair[1]);
+        // this.scrapeFullRepo(pair[1]); 
       }
     });
   }
@@ -57,7 +56,7 @@ export class DataManager {
   }
 
   public async scrapeFullRepo(rep: RepoModel): Promise<void> {
-    if (!this.users[rep.getCreator()]) this.users[rep.getCreator()] = await this.scrapeUser("JustMe003");
+    if (!this.users[rep.getCreator()]) this.users[rep.getCreator()] = await this.scrapeUser("");
     console.log(this.users[rep.getCreator()]);
     const repo = this.scraper.scrapeRepo(this.users[rep.getCreator()].getLogin(), rep.getName());
     console.log(repo);
