@@ -8,6 +8,8 @@ export abstract class RequestGithub {
   }
 
   public static async sendGetRequest(url: string, queryParameters: Map<string, string>, tok: string): Promise<Object> {
-    return await JSON.parse(await invoke('get_request_github', { url: url, queryParams: queryParameters, token: tok }));
+    const res = await invoke('get_request_github', { url: url, queryParams: queryParameters, token: tok });
+    console.log(res);
+    return await JSON.parse(res as string);
   }
 }

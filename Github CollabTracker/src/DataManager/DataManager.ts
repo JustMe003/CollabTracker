@@ -20,20 +20,22 @@ export class DataManager {
 
   public async updateData() {
     const lastUpdated = await this.readMetaData();
-    const repos = this.readRepos();
-    const users = this.readUsers();
+    const repos = await this.readRepos();
+    const users = await this.readUsers();
     this.updateRepos();
     
     this.storageRepos = await repos;
     let newIssues = await this.updateIssues(lastUpdated);
-    this.users = await users;
+    console.log(newIssues);
+    // this.users = await users;
     this.initialized = true;
-
-    newIssues = this.getNewRepoIssues(newIssues);
     
-    newIssues.forEach(async (obj, key) => {
-      console.log(await this.scrapeRepo(key));
-    });
+    // newIssues = this.getNewRepoIssues(newIssues);
+    // console.log(newIssues);
+    
+    // newIssues.forEach(async (obj, key) => {
+    //   console.log(await this.scrapeRepo(key));
+    // });
 
     
     
@@ -84,7 +86,9 @@ export class DataManager {
   }
 
   public async updateIssues(metaData: MetaData): Promise<Map<number, IssueObject>> {
+    console.log("started getting all issues");
     const allIssues = await this.scrapeIssues(metaData.getLastUpdated());
+    console.log(allIssues);
     return this.getNewRepoIssues(allIssues);
   }
 
@@ -138,18 +142,28 @@ export class DataManager {
   }
   
   public async scrapeIssues(lastUpdated: Date | undefined): Promise<Map<number, IssueObject>> {
+    console.log(1);
     const res = await this.scraper.scrapeIssues(lastUpdated);
-    const issues = new Map<number, IssueObject>();
-    res.forEach((e) => {
-      const issue = IssueModelConverter.convert(e);
-      let issueMap = issues.get(issue.getRepoID());
-      if (!issueMap) {
-        issueMap = {};
-        issues.set(issue.getRepoID(), issueMap);
-      }
-      issueMap[issue.getID()] = issue;
-    })
-    return issues;
+    console.log(2);
+    // console.log(res);
+    // const issues = new Map<number, IssueObject>();
+    // console.log(3);
+    // res.forEach((e) => {
+    //   console.log(4);
+    //   const issue = IssueModelConverter.convert(e);
+    //   let issueMap = issues.get(issue.getRepoID());
+    //   if (!issueMap) {
+    //     console.log(5);
+    //     issueMap = {};
+    //     issues.set(issue.getRepoID(), issueMap);
+    //   }
+    //   console.log(6);
+    //   issueMap[issue.getID()] = issue;
+    //   console.log(7);
+    // })
+    // console.log(8);
+    // return issues;
+    return new Map(); 
   }
 
   public async readRepos(): Promise<RepoObject> {
