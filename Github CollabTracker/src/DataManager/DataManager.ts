@@ -25,9 +25,17 @@ export class DataManager {
     this.updateRepos();
     
     this.storageRepos = await repos;
-    this.updateIssues(lastUpdated);
+    let newIssues = await this.updateIssues(lastUpdated);
     this.users = await users;
     this.initialized = true;
+
+    newIssues = this.getNewRepoIssues(newIssues);
+    
+    newIssues.forEach(async (obj, key) => {
+      console.log(await this.scrapeRepo(key));
+    });
+
+    
     
     // updateIssues()
     // updateMergeRequests()
@@ -75,16 +83,22 @@ export class DataManager {
     });
   }
 
-  public async updateIssues(metaData: MetaData) : Promise<IssueModel[]> {
+  public async updateIssues(metaData: MetaData): Promise<Map<number, IssueObject>> {
     const allIssues = await this.scrapeIssues(metaData.getLastUpdated());
     console.log(allIssues)
-    const newIssues: IssueModel[] = [];
-    allIssues.forEach(pair => {
-      const repoID = pair[1].getRepoID();
-      if(!this.storageRepos[repoID])
-        newIssues.push(pair[1]);
+    return this.getNewRepoIssues(allIssues);
+  }
+
+  public getNewRepoIssues(map: Map<number, IssueObject>): Map<number, IssueObject> {
+    const res = new Map<number, IssueObject>();
+    map.forEach((obj, key) => {
+      if (!this.repoInStorage(key)) res.set(key, obj);
     });
-    return newIssues;
+    return res;
+  }
+
+  public repoInStorage(repId: number): boolean {
+    return this.storageRepos[repId] != undefined;
   }
 
   public async scrapeRepos(): Promise<RepoObject> {
@@ -94,6 +108,10 @@ export class DataManager {
       repos.push(RepoModelConverter.convert(repo));
     })
     return this.repoModelsToObject(repos);
+  }
+
+  public async scrapeRepo(id: number): Promise<RepoModel> {
+    return RepoModelConverter.convert(await this.scraper.scrapeRepoFromId(id.toString()));
   }
 
   public async scrapeFullRepo(rep: RepoModel): Promise<RepoModel> {
@@ -110,19 +128,6 @@ export class DataManager {
     return UserModelConverter.convert(await this.scraper.scrapeUser(user));
   }
 
-
-  // public async scrapeRepos(issueObjects: Map<number, IssueObject>): Promise<RepoModel[]> {
-  //   const res = await this.scraper.scrapeRepos();
-  //   const repos: RepoModel[] = [];
-  //   for (let i = 0; i < res.length; i++) {
-  //     const repo = res[i];
-  //     let branches: BranchObject = await this.scrapeBranches(repo.owner.login, repo.name);
-  //     const seperate = this.seperateIssuesPullRequests(issueObjects.get(repo.id));
-  //     repos.push(RepoModelConverter.convert(repo, branches, seperate.issues, seperate.pullRequests));
-  //   }
-  //   return repos;
-  // }
-  
   public async scrapeBranches(owner: string, repoName: string): Promise<BranchObject> {
     const res = await this.scraper.scrapeBranches(owner, repoName);
     const branches: BranchObject = {};
