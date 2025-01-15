@@ -49,6 +49,13 @@ export class Scraper {
       this.token) as apiMod.RepoApiModel;
   }
 
+  public async scrapeRepoFromId(id: string): Promise<apiMod.RepoApiModel> {
+    return await RequestGithub.sendGetRequest(
+      `https://api.github.com/repositories/${id}`,
+      new Map(),
+      this.token) as apiMod.RepoApiModel;
+  }
+
 
   public async scrapeIssues(lastUpdated: Date | undefined): Promise<apiMod.IssueApiModel[]> {
     let page = 1;
