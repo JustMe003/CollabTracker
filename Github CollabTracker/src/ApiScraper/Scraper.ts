@@ -64,7 +64,7 @@ export class Scraper {
 
     do {
       console.log(lastUpdated);
-      // if (lastUpdated == undefined) {
+      if (lastUpdated == undefined) {
         issues = issues.concat(await RequestGithub.sendGetRequest(
           "https://api.github.com/user/issues",
           new Map<string, string>([
@@ -75,40 +75,23 @@ export class Scraper {
             ["page", page.toString()]
           ]),
           this.token) as apiMod.IssueApiModel[]);
-        // } else {
-        //   issues = issues.concat(await RequestGithub.sendGetRequest(
-        //     "https://api.github.com/user/issues",
-        //     new Map<string, string>([
-        //       ["filter", "all"],
-        //       ["state", "all"],
-        //       ["sort", "updated"],
-        //       ["since", lastUpdated.toDateString()],
-        //       ["per_page", Scraper.perPage.toString()],
-        //       ["page", page.toString()]
-        //     ]),
-        //     this.token) as apiMod.IssueApiModel[]);
-        // }
+        } else {
+          issues = issues.concat(await RequestGithub.sendGetRequest(
+            "https://api.github.com/user/issues",
+            new Map<string, string>([
+              ["filter", "all"],
+              ["state", "all"],
+              ["sort", "updated"],
+              ["since", lastUpdated.toDateString()],
+              ["per_page", Scraper.perPage.toString()],
+              ["page", page.toString()]
+            ]),
+            this.token) as apiMod.IssueApiModel[]);
+        }
         console.log(issues);
       } while (issues.length / Scraper.perPage >= page++);
       return issues;
-  }
-
-  public async scrapeComments(owner: string, repoName: string, issueNumber: number): Promise<apiMod.CommentApiModel[]> {
-    let page = 1;
-    let comments: apiMod.CommentApiModel[] = [];
-    do {
-      comments = comments.concat(await RequestGithub.sendGetRequest(
-        `https://api.github.com/repos/${owner}/${repoName}/issues/${issueNumber}/comments`,
-        new Map<string, string>([
-          ["per_page", Scraper.perPage.toString()],
-          ["page", page.toString()]
-        ]),
-        this.token) as apiMod.CommentApiModel[]);
-    } while (comments.length / Scraper.perPage >= page++);
-    return comments;
-  }
-
-
+    }
           
       
   public async scrapeBranches(owner:string, repoID: string): Promise<apiMod.BranchApiModel[]> {

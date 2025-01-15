@@ -19,23 +19,27 @@ export class DataManager {
   }
 
   public async updateData() {
-    const lastUpdated = await this.readMetaData();
-    const repos = await this.readRepos();
-    const users = await this.readUsers();
-    this.updateRepos();
+    const metaData = this.readMetaData();
+    const repos = this.readRepos();
+    const users = this.readUsers();
+    const scrapeReps = this.updateRepos();
     
     this.storageRepos = await repos;
-    let newIssues = await this.updateIssues(lastUpdated);
-    console.log(newIssues);
-    // this.users = await users;
+    this.users = await users;
+    const lastUpdated = await metaData;
     this.initialized = true;
     
-    // newIssues = this.getNewRepoIssues(newIssues);
-    // console.log(newIssues);
     
-    // newIssues.forEach(async (obj, key) => {
-    //   console.log(await this.scrapeRepo(key));
-    // });
+    let newIssues = await this.updateIssues(lastUpdated);
+    console.log(newIssues);
+    scrapeReps;
+    
+    newIssues = this.getNewRepoIssues(newIssues);
+    console.log(newIssues);
+    
+    newIssues.forEach(async (obj, key) => {
+      console.log(await this.scrapeRepo(key));
+    });
 
     
     
@@ -44,7 +48,6 @@ export class DataManager {
     // updateBranches()
     //const repos = await this.readRepos();
     this.writeMetaData();
-    
   }
 
 
@@ -75,18 +78,27 @@ export class DataManager {
 
   public async updateRepos() {
     const scrapedRepos = await this.scrapeRepos();
+    console.log(1);
     while (!this.initialized);
-    getNumberObjectList<RepoModel, RepoObject>(scrapedRepos).forEach((pair: [number, RepoModel]) => {
-      const id = pair[1].getRepoID();
-      if (!this.storageRepos[id]) {
-        // repo does not exists in storage
-        this.scrapeFullRepo(pair[1]);
-      }
-    });
+    console.log(2);
+    // getNumberObjectList<RepoModel, RepoObject>(scrapedRepos).forEach((pair: [number, RepoModel]) => {
+    //   const id = pair[1].getRepoID();
+    //   if (!this.storageRepos[id]) {
+    //     // repo does not exists in storage
+    //     this.scrapeFullRepo(pair[1]);
+    //   }
+    // });
+    console.log(3);
+    const list = getNumberObjectList<RepoModel, RepoObject>(scrapedRepos);
+    for (let i = 0; i < list.length; i++) {
+      console.log(i);
+      if (!this.storageRepos[list[i][1].getRepoID()])
+          await this.scrapeFullRepo(list[i][1]);
+    }
+    console.log("finished!");
   }
 
   public async updateIssues(metaData: MetaData): Promise<Map<number, IssueObject>> {
-    console.log("started getting all issues");
     const allIssues = await this.scrapeIssues(metaData.getLastUpdated());
     console.log(allIssues);
     return this.getNewRepoIssues(allIssues);
@@ -142,27 +154,18 @@ export class DataManager {
   }
   
   public async scrapeIssues(lastUpdated: Date | undefined): Promise<Map<number, IssueObject>> {
-    console.log(1);
     const res = await this.scraper.scrapeIssues(lastUpdated);
-    console.log(2);
-    // console.log(res);
-    // const issues = new Map<number, IssueObject>();
-    // console.log(3);
-    // res.forEach((e) => {
-    //   console.log(4);
-    //   const issue = IssueModelConverter.convert(e);
-    //   let issueMap = issues.get(issue.getRepoID());
-    //   if (!issueMap) {
-    //     console.log(5);
-    //     issueMap = {};
-    //     issues.set(issue.getRepoID(), issueMap);
-    //   }
-    //   console.log(6);
-    //   issueMap[issue.getID()] = issue;
-    //   console.log(7);
-    // })
-    // console.log(8);
-    // return issues;
+    const issues = new Map<number, IssueObject>();
+    res.forEach((e) => {
+      const issue = IssueModelConverter.convert(e, );
+      let issueMap = issues.get(issue.getRepoID());
+      if (!issueMap) {
+        issueMap = {};
+        issues.set(issue.getRepoID(), issueMap);
+      }
+      issueMap[issue.getID()] = issue;
+    })
+    return issues;
     return new Map(); 
   }
 

@@ -3,7 +3,7 @@ import { IssueApiModel } from "../ApiModels/IssueApiModel";
 import { IssueModel } from "../Models";
 
 export class IssueModelConverter {
-  public static convert(apiModel: IssueApiModel, comments: CommentApiModel[]): IssueModel {
+  public static convert(apiModel: IssueApiModel, comments: CommentApiModel[] = []): IssueModel {
     const assignees: string[] = [];
     apiModel.assignees.forEach((e) => {
       assignees.push(e.login);
