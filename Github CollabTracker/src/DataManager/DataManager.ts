@@ -77,6 +77,7 @@ export class DataManager {
 
   public async updateIssues(metaData: MetaData) : Promise<IssueModel[]> {
     const allIssues = await this.scrapeIssues(metaData.getLastUpdated());
+    console.log(allIssues)
     const newIssues: IssueModel[] = [];
     allIssues.forEach(pair => {
       const repoID = pair[1].getRepoID();
@@ -135,8 +136,9 @@ export class DataManager {
   public async scrapeIssues(lastUpdated: Date | undefined): Promise<Map<number, IssueObject>> {
     const res = await this.scraper.scrapeIssues(lastUpdated);
     const issues = new Map<number, IssueObject>();
-    res.forEach((e) => {
-      const issue = IssueModelConverter.convert(e);
+    res.forEach(async (e) => {
+      const comments = await this.scraper.scrapeComments(e.repository.owner.login, e.repository.name, e.number)
+      const issue = IssueModelConverter.convert(e, comments);
       let issueMap = issues.get(issue.getRepoID());
       if (!issueMap) {
         issueMap = {};
