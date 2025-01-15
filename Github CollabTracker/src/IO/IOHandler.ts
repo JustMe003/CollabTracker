@@ -28,7 +28,7 @@ export class IOHandler {
   }
 
   public writeUser(param: UserModel) {
-    this.userIO.writeObject(param, param.getID().toString());
+    this.userIO.writeObject(param, param.getLogin());
   }
 
   public writeRepos(param: RepoModel[]) {

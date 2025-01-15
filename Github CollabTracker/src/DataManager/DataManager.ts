@@ -128,7 +128,7 @@ export class DataManager {
   private userModelToObject(users: UserModel[]): UserObject {
     const obj: UserObject = {};
     users.forEach(user => {
-      obj[user.getID()] = user;
+      obj[user.getLogin()] = user;
     });
     return obj;
   }

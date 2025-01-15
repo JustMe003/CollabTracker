@@ -3,6 +3,6 @@ import { UserModel } from "../Models";
 
 export class UserModelConverter {
   public static convert(apiModel: UserApiModel): UserModel {
-    return new UserModel(apiModel.id, apiModel.login, apiModel.username, apiModel.html_url);
+    return new UserModel(apiModel.login, apiModel.username, apiModel.html_url);
   }
 }

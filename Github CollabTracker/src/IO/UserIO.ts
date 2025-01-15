@@ -17,7 +17,7 @@ export class UserIO extends FileIO {
     return res;
   }
 
-  public async readUser(userId: number): Promise<UserModel> {
-    return UserModel.createNew(await this.readObject(userId.toString() + FileIO.extension) as UserModel);
+  public async readUser(userLogin: string): Promise<UserModel> {
+    return UserModel.createNew(await this.readObject(userLogin + FileIO.extension) as UserModel);
   }
 }

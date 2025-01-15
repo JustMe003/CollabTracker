@@ -1,11 +1,9 @@
 export class UserModel{
-  private id: number;
   private login: string;
   private username: string;
   private html: string;
 
-  constructor(id: number, login: string, username: string, html: string){
-    this.id = id;
+  constructor(login: string, username: string, html: string){
     this.login = login;
     this.username = username;
     this.html = html;
@@ -13,10 +11,6 @@ export class UserModel{
 
   public getLogin() {
     return this.login;
-  }
-
-  public getID() {
-    return this.id;
   }
 
   public getUserName() {
@@ -28,6 +22,6 @@ export class UserModel{
   }
 
   public static createNew(user: UserModel): UserModel {
-    return new UserModel(user.id, user.login, user.username, user.html);
+    return new UserModel(user.login, user.username, user.html);
   }
 }
