@@ -18,7 +18,7 @@ export class Scraper {
   }
 
   public async scrapeUser(user: string) : Promise<apiMod.UserApiModel> {
-    try{
+    try {
       const userData = await RequestGithub.sendGetRequest(
         `https://api.github.com/users/${user}`,
         new Map<string, string>(),
