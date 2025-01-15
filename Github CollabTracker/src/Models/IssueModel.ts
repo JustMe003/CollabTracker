@@ -1,18 +1,21 @@
 export class IssueModel {
   private id: number;
   private html: string;
-  private creator: number;
-  private assignees: number[];
+  private creator: string;
+  private assignees: string[];
   private numberOfComments: number;
-  private reviewers: number[];
+  private commenters: string[];
+  private reviewers: string[];
   private updated_at: Date;
   private repoID: number;
   private isPullRequest: boolean;
 
-  constructor(id: number, html: string, creator: number, assignees: number[], numberOfComments: number, reviewers: number[], updated_at: Date, repoID: number, isPullRequest: boolean){
+  constructor(id: number, html: string, creator: string, assignees: string[], numberOfComments: number, commenters: string[],
+    reviewers: string[], updated_at: Date, repoID: number, isPullRequest: boolean){
     this.id = id;
     this.html = html;
     this.creator = creator;
+    this.commenters = commenters;
     this.assignees = assignees;
     this.numberOfComments = numberOfComments;
     this.reviewers = reviewers;
@@ -27,6 +30,10 @@ export class IssueModel {
 
   public getHTML() {
     return this.html;
+  }
+
+  public getCommenter() {
+    return this.commenters;
   }
 
   public getCreator() {
@@ -58,6 +65,7 @@ export class IssueModel {
   }
 
   public static createNew(mod: IssueModel): IssueModel {
-    return new IssueModel(mod.id, mod.html, mod.creator, mod.assignees, mod.numberOfComments, mod.reviewers, mod.updated_at, mod.repoID, mod.isPullRequest);
+    return new IssueModel(mod.id, mod.html, mod.creator, mod.assignees, mod.numberOfComments, mod.commenters, 
+      mod.reviewers, mod.updated_at, mod.repoID, mod.isPullRequest);
   }
 }
