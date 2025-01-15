@@ -4,6 +4,7 @@ import { MetaData } from "../Models/MetaData";
 export class metaDataIO extends FileIO {
 
   constructor(path: string) {
+    console.log(path);
     super(path);
   }
 

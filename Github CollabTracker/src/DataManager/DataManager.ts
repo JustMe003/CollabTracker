@@ -2,6 +2,7 @@ import { Scraper } from "../ApiScraper/Scraper";
 import { BranchObject, IssueObject, RepoModel, RepoObject, UserModel, UserObject } from "../Models";
 import { IOHandler } from "../IO/IOHandler";
 import { BranchModelConverter, IssueModelConverter, RepoModelConverter, UserModelConverter } from "../ModelConverter";
+import { MetaData } from "../Models/MetaData";
 
 type IssuePullRequestObject = { issues: IssueObject, pullRequests: IssueObject };
 
@@ -114,6 +115,10 @@ export class DataManager {
 
   public writeRepos(repos: RepoModel[]) {
     this.IOHandler.writeRepos(repos);
+  }
+
+  public writeMetaData() {
+    this.IOHandler.writeMetaData(new MetaData(new Date()));
   }
 
   private repoModelsToObject(repos: RepoModel[]): RepoObject {
