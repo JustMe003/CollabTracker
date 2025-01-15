@@ -1,17 +1,24 @@
 import { FileStorage } from "../FileIO/FileStorage";
 import { RepoModel, RepoObject, UserModel } from "../Models";
 import { RepoIO } from "./RepoIO";
+import {metaDataIO} from "./metaDataIO"
 import { UserIO } from "./UserIO";
+import { MetaData } from "../Models/MetaData";
 
 export class IOHandler {
   private repoIO: RepoIO;
   private userIO: UserIO;
+  private metaDataIO: metaDataIO;
+  private metaDataPath: string;
   private reposPath: string;
   private usersPath: string;
 
   constructor(storage: FileStorage) {
     this.reposPath = this.getFolderPath(storage, "repos");
     this.usersPath = this.getFolderPath(storage, "users");
+    this.metaDataPath = storage.getStoragePath();
+    console.log(this.metaDataPath)
+    this.metaDataIO = new metaDataIO(this.metaDataPath)
     this.repoIO = new RepoIO(this.reposPath);
     this.userIO = new UserIO(this.usersPath);
   }
@@ -29,6 +36,10 @@ export class IOHandler {
 
   public writeUser(param: UserModel) {
     this.userIO.writeObject(param, param.getLogin());
+  }
+
+  public writeMetaData(param: MetaData) {
+    this.metaDataIO.writeObject(param, "metaData");
   }
 
   public writeRepos(param: RepoObject) {
@@ -49,4 +60,7 @@ export class IOHandler {
     return this.userIO.readUsers();
   }
 
+  public getMetaData() : Promise<MetaData> {
+    return this.metaDataIO.readMetaData();
+  }
 }

@@ -50,42 +50,39 @@ export class Scraper {
   }
 
 
-  public async scrapeIssues(): Promise<apiMod.IssueApiModel[]> {
+  public async scrapeIssues(lastUpdated: Date | undefined): Promise<apiMod.IssueApiModel[]> {
     let page = 1;
     let issues: apiMod.IssueApiModel[] = [];
     do {
-      issues = issues.concat(await RequestGithub.sendGetRequest(
-        "https://api.github.com/user/issues",
-        new Map<string, string>([
-          ["filter", "all"],
-          ["state", "all"],
-          ["sort", "updated"],
-          ["per_page", Scraper.perPage.toString()],
-          ["page", page.toString()]
-        ]),
-        this.token) as apiMod.IssueApiModel[]);
+      if (lastUpdated == undefined) {
+
+        issues = issues.concat(await RequestGithub.sendGetRequest(
+          "https://api.github.com/user/issues",
+          new Map<string, string>([
+            ["filter", "all"],
+            ["state", "all"],
+            ["sort", "updated"],
+            ["per_page", Scraper.perPage.toString()],
+            ["page", page.toString()]
+          ]),
+          this.token) as apiMod.IssueApiModel[]);
+        } else {
+          issues = issues.concat(await RequestGithub.sendGetRequest(
+            "https://api.github.com/user/issues",
+            new Map<string, string>([
+              ["filter", "all"],
+              ["state", "all"],
+              ["sort", "updated"],
+              ["since", lastUpdated.toDateString()],
+              ["per_page", Scraper.perPage.toString()],
+              ["page", page.toString()]
+            ]),
+            this.token) as apiMod.IssueApiModel[]);
+          }
       } while (issues.length / Scraper.perPage >= page++);
       return issues;
     }
-    
-  public async scrapePullRequests(username: string): Promise<apiMod.IssueApiModel[]> {
-    let page = 1;
-    let pullRequests: apiMod.IssueApiModel[] = [];
-    do {
-      pullRequests = pullRequests.concat(await RequestGithub.sendGetRequest(
-        "https://api.github.com/repos/{owner}/{repo}/pulls",
-        new Map<string, string>([
-          ["involves", username],
-          ["is", "pr"],
-          ["sort", "updated"],
-          ["per_page", Scraper.perPage.toString()],
-          ["page", page.toString()]
-        ]),
-        this.token) as apiMod.IssueApiModel[]);
-      } while (pullRequests.length / Scraper.perPage >= page++);
-      return pullRequests;
-    }
-      
+          
       
   public async scrapeBranches(owner:string, repoID: string): Promise<apiMod.BranchApiModel[]> {
     let page = 1;
