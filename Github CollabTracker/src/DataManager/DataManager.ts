@@ -1,5 +1,5 @@
 import { Scraper } from "../ApiScraper/Scraper";
-import { BranchObject, IssueObject, RepoModel, RepoObject, UserModel, UserObject } from "../Models";
+import { BranchObject, IssueModel, IssueObject, RepoModel, RepoObject, UserModel, UserObject } from "../Models";
 import { IOHandler } from "../IO/IOHandler";
 import { BranchModelConverter, IssueModelConverter, RepoModelConverter, UserModelConverter } from "../ModelConverter";
 import { MetaData } from "../Models/MetaData";
@@ -9,7 +9,7 @@ type IssuePullRequestObject = { issues: IssueObject, pullRequests: IssueObject }
 export class DataManager {
   private scraper: Scraper;
   private IOHandler: IOHandler;
-  private repos: RepoObject = {};
+  private storageRepos: RepoObject = {};
   private users: UserObject = {};
   private initialized: boolean = false;
 
@@ -19,19 +19,21 @@ export class DataManager {
   }
 
   public async updateData() {
+    const lastUpdated = await this.readMetaData();
     const repos = this.readRepos();
     const users = this.readUsers();
-
     this.updateRepos();
     
-    this.repos = await repos;
+    this.storageRepos = await repos;
+    this.updateIssues(lastUpdated);
     this.users = await users;
     this.initialized = true;
-
+    
     // updateIssues()
     // updateMergeRequests()
     // updateBranches()
     //const repos = await this.readRepos();
+    this.writeMetaData();
     
   }
 
@@ -40,11 +42,22 @@ export class DataManager {
     while (!this.initialized);
     Object.entries(scrapedRepos).forEach((pair: [string, RepoModel]) => {
       const id = pair[1].getRepoID();
-      if (!this.repos[id]) {
+      if (!this.storageRepos[id]) {
         // repo does not exists in storage
         // this.scrapeFullRepo(pair[1]); 
       }
     });
+  }
+
+  public async updateIssues(metaData: MetaData) : Promise<IssueModel[]> {
+    const allIssues = await this.scrapeIssues(metaData.getLastUpdated());
+    const newIssues: IssueModel[] = [];
+    allIssues.forEach(pair => {
+      const repoID = pair[1].getRepoID();
+      if(!this.storageRepos[repoID])
+        newIssues.push(pair[1]);
+    });
+    return newIssues;
   }
 
   public async scrapeRepos(): Promise<RepoObject> {
@@ -90,8 +103,8 @@ export class DataManager {
     return branches;
   }
   
-  public async scrapeIssues(): Promise<Map<number, IssueObject>> {
-    const res = await this.scraper.scrapeIssues();
+  public async scrapeIssues(lastUpdated: Date | undefined): Promise<Map<number, IssueObject>> {
+    const res = await this.scraper.scrapeIssues(lastUpdated);
     const issues = new Map<number, IssueObject>();
     res.forEach((e) => {
       const issue = IssueModelConverter.convert(e);
@@ -108,13 +121,18 @@ export class DataManager {
   public async readRepos(): Promise<RepoObject> {
     return this.repoModelsToObject(await this.IOHandler.getRepos());
   }
-
+  
   public async readUsers(): Promise<UserObject> {
     return this.userModelToObject(await this.IOHandler.getUsers());
   }
-
+  
   public writeRepos(repos: RepoModel[]) {
     this.IOHandler.writeRepos(repos);
+  }
+  
+  
+  public async readMetaData(): Promise<MetaData> {
+    return await this.IOHandler.getMetaData();
   }
 
   public writeMetaData() {
