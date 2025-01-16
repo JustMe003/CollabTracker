@@ -31,9 +31,7 @@ export class IssueDataManager {
     const issues = new Map<number, IssueObject>();
 
     res.forEach((issue) => {
-      console.log(issue);
       const res = IssueModelConverter.convert(issue);
-      console.log("res: ", res);
       let issueMap = issues.get(res.getRepoID());
       if (!issueMap) {
         issueMap = {};
@@ -41,7 +39,6 @@ export class IssueDataManager {
       }
       issueMap[res.getID()] = res;
     });
-    console.log(issues);
     return issues;
   }
 

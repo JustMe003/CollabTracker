@@ -17,9 +17,7 @@ export class IssueModel {
     this.id = id;
     this.html = html;
     this.creator = creator;
-    console.log("value to update", commenters)
     this.commenters = commenters;
-    console.log("value updated", this.commenters)
     this.assignees = assignees;
     this.numberOfComments = numberOfComments;
     this.reviewers = reviewers;

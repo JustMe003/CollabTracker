@@ -12,9 +12,7 @@ export class IssueModelConverter {
     (apiModel.reviewers || []).forEach((e) => {
       reviewers.push(e.login);
     });
-    console.log("Double check",commenters)
     const newObj = new IssueModel(apiModel.number, apiModel.html_url, apiModel.user.login, assignees, apiModel.comments,commenters, reviewers, apiModel.updated_at, apiModel.repository.id, apiModel.pull_request != undefined);
-    console.log("Before return", newObj)
     return newObj
   }
 }

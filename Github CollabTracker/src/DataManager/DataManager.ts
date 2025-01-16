@@ -20,26 +20,21 @@ export class DataManager {
 
   public async updateData() {
     // Start initializing
-    const metaData = this.readMetaData();
+    const metaDataPromise = this.readMetaData();
     const repos = this.readRepos();
     const users = this.readUsers();
     const scrapeReps = this.updateRepos();
     
     // Await all initialization
-    const lastUpdated = await metaData;
+    const metaData = await metaDataPromise;
     this.storageRepos = await repos;
     this.users = await users;
     this.initialized = true;    // Everything is initialized
     
     // Await scraping all issues and repos;
-    const allIssues = await this.updateIssues(lastUpdated);
-    const scrapedRepos = await scrapeReps;
-
-    for (let i = 0; i < scrapedRepos.length; i++) {
-      const res = await scrapedRepos[i];
-      if (!this.storageRepos[res.getRepoID()])    // Only store if we don't have repo yet
-        this.storageRepos[res.getRepoID()] = res;
-    }
+    const allIssues = await this.updateIssues(metaData);
+    console.log(allIssues);
+    await scrapeReps;
     
     const newIssues = this.getNewRepoIssues(allIssues); // Filter all issues we don't have a repo for
     
@@ -68,17 +63,17 @@ export class DataManager {
 
     console.log(this.storageRepos);
     console.log(this.users);
-
     
     // updateBranches()
     // const repos = await this.readRepos();
+    metaData.resetLastUpdated();
     this.writeMetaData();
     this.writeRepos();
     this.writeUsers();
   }
 
 
-  public async updateRepos(): Promise<Promise<RepoModel>[]> {
+  public async updateRepos(): Promise<void> {
     const scrapedRepos = await this.scrapeRepos();
     while (!this.initialized);
     const promises: Promise<RepoModel>[] = [];
@@ -86,13 +81,13 @@ export class DataManager {
       const id = pair[1].getRepoID();
       if (!this.storageRepos[id]) {
         // repo does not exists in storage
-        promises.push(this.scrapeFullRepo(pair[1]));
+        this.storageRepos[pair[0]] = pair[1];
       }
     });
-    return promises;
   }
 
   public async updateIssues(metaData: MetaData): Promise<Map<number, IssueObject>> {
+    console.log(metaData.getLastUpdated());
     return await IssueDataManager.scrapeIssues(this.scraper, metaData.getLastUpdated());
   }
 
@@ -106,17 +101,20 @@ export class DataManager {
 
   public mergeRepoWithIssues(repo: RepoModel, issues: IssueObject): Promise<void>[] {
     const repoIssues = repo.getIssues();
+    const repoPullReqs = repo.getPullRequests();
     const promises: Promise<void>[] = [];
     getNumberObjectList<IssueModel, IssueObject>(issues).forEach((pair: [number, IssueModel]) => {
       const issue = repoIssues[pair[0]];
-      console.log(repo.getName(), pair[0], pair[1]);
       if (!issue 
       || issue.getNumberOfComments() != pair[1].getNumberOfComments() 
       || issue.getUpdatedAt() < pair[1].getUpdatedAt()) {
         promises.push(this.scraper.scrapeComments(repo.getCreator(), repo.getName(), pair[0]).then((comments) => {
-          console.log("got comments of issue", pair[1].getID());
           pair[1].setCommenters(CommentersObjectConverter.convert(comments));
-          repoIssues[pair[0]] = pair[1];
+          if (pair[1].getIsPullRequest()) {
+            repoPullReqs[pair[0]] = pair[1];
+          } else {
+            repoIssues[pair[0]] = pair[1];
+          }
         }));
       }
     });
@@ -138,15 +136,6 @@ export class DataManager {
 
   public async scrapeRepo(id: number): Promise<RepoModel> {
     return RepoModelConverter.convert(await this.scraper.scrapeRepoFromId(id.toString()));
-  }
-
-  public async scrapeFullRepo(rep: RepoModel): Promise<RepoModel> {
-    if (!this.users[rep.getCreator()]) 
-      this.scrapeUser(rep.getCreator()).then((user) => this.users[rep.getCreator()] = UserModel.createNew(user));
-    const branches = await this.scrapeBranches(rep.getCreator(), rep.getName());
-    const repo = RepoModelConverter.convert(await this.scraper.scrapeRepo(rep.getCreator(), rep.getName()), branches);
-    this.storageRepos[repo.getRepoID()];
-    return repo;
   }
 
   public async createNewRepoFromIssue(key: number, issues: IssueObject): Promise<RepoModel> {
