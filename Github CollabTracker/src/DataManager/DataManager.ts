@@ -25,26 +25,34 @@ export class DataManager {
     const users = this.readUsers();
     const scrapeReps = this.updateRepos();
     
+    const lastUpdated = await metaData;
     this.storageRepos = await repos;
     this.users = await users;
-    const lastUpdated = await metaData;
     this.initialized = true;
     
     
     let newIssues = await this.updateIssues(lastUpdated);
-    console.log(newIssues);
-    // await scrapeReps;
+    const scrapedRepos = await scrapeReps;
+
+    for (let i = 0; i < scrapedRepos.length; i++) {
+      const res = await scrapedRepos[i];
+      this.storageRepos[res.getRepoID()] = res;
+    }
     
     newIssues = this.getNewRepoIssues(newIssues);
-    console.log(newIssues);
     
-    newIssues.forEach(async (obj, key) => {
-      const res = await this.scrapeRepo(key);
-      const split = this.seperateIssuesPullRequests(obj);
-      res.setIssues(split.issues);
-      res.setPullRequests(split.pullRequests);
-      this.storageRepos[key] = res;
+    const promises: Promise<RepoModel>[] = [];
+    newIssues.forEach((obj, key) => {
+      promises.push(this.createNewRepoFromIssue(key, obj));
     });
+
+    for (let i = 0; i < promises.length; i++) {
+      const res = await promises[i];
+      this.storageRepos[res.getRepoID()] = res;
+    }
+
+    console.log(this.storageRepos);
+    console.log(this.users);
 
     
     // updateBranches()
@@ -55,16 +63,18 @@ export class DataManager {
   }
 
 
-  public async updateRepos() {
+  public async updateRepos(): Promise<Promise<RepoModel>[]> {
     const scrapedRepos = await this.scrapeRepos();
     while (!this.initialized);
+    const promises: Promise<RepoModel>[] = [];
     getNumberObjectList<RepoModel, RepoObject>(scrapedRepos).forEach((pair: [number, RepoModel]) => {
       const id = pair[1].getRepoID();
       if (!this.storageRepos[id]) {
         // repo does not exists in storage
-        this.scrapeFullRepo(pair[1]);
+        promises.push(this.scrapeFullRepo(pair[1]));
       }
     });
+    return promises;
   }
 
   public async updateIssues(metaData: MetaData): Promise<Map<number, IssueObject>> {
@@ -104,6 +114,14 @@ export class DataManager {
     const repo = RepoModelConverter.convert(await this.scraper.scrapeRepo(rep.getCreator(), rep.getName()), branches);
     this.storageRepos[repo.getRepoID()];
     return repo;
+  }
+
+  public async createNewRepoFromIssue(key: number, issues: IssueObject): Promise<RepoModel> {
+    const res = await this.scrapeRepo(key);
+    const split = this.seperateIssuesPullRequests(issues);
+    res.setIssues(split.issues);
+    res.setPullRequests(split.pullRequests);
+    return res;
   }
 
   public async scrapeUser(user: string): Promise<UserModel> {
