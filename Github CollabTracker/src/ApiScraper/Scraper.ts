@@ -57,37 +57,22 @@ export class Scraper {
   }
 
 
-  public async scrapeIssues(lastUpdated: Date | undefined): Promise<apiMod.IssueApiModel[]> {
-    console.log("function entered");
+  public async scrapeIssues(lastUpdated: Date): Promise<apiMod.IssueApiModel[]> {
     let page = 1;
     let issues: apiMod.IssueApiModel[] = [];
 
     do {
-      console.log(lastUpdated);
-      if (lastUpdated == undefined) {
         issues = issues.concat(await RequestGithub.sendGetRequest(
           "https://api.github.com/user/issues",
           new Map<string, string>([
             ["filter", "all"],
             ["state", "all"],
             ["sort", "updated"],
+            ["since", lastUpdated.toDateString()],
             ["per_page", Scraper.perPage.toString()],
             ["page", page.toString()]
           ]),
           this.token) as apiMod.IssueApiModel[]);
-        } else {
-          issues = issues.concat(await RequestGithub.sendGetRequest(
-            "https://api.github.com/user/issues",
-            new Map<string, string>([
-              ["filter", "all"],
-              ["state", "all"],
-              ["sort", "updated"],
-              ["since", lastUpdated.toDateString()],
-              ["per_page", Scraper.perPage.toString()],
-              ["page", page.toString()]
-            ]),
-            this.token) as apiMod.IssueApiModel[]);
-        }
         console.log(issues);
       } while (issues.length / Scraper.perPage >= page++);
       return issues;

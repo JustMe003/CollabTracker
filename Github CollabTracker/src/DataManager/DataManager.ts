@@ -78,29 +78,18 @@ export class DataManager {
 
   public async updateRepos() {
     const scrapedRepos = await this.scrapeRepos();
-    console.log(1);
     while (!this.initialized);
-    console.log(2);
-    // getNumberObjectList<RepoModel, RepoObject>(scrapedRepos).forEach((pair: [number, RepoModel]) => {
-    //   const id = pair[1].getRepoID();
-    //   if (!this.storageRepos[id]) {
-    //     // repo does not exists in storage
-    //     this.scrapeFullRepo(pair[1]);
-    //   }
-    // });
-    console.log(3);
-    const list = getNumberObjectList<RepoModel, RepoObject>(scrapedRepos);
-    for (let i = 0; i < list.length; i++) {
-      console.log(i);
-      if (!this.storageRepos[list[i][1].getRepoID()])
-          await this.scrapeFullRepo(list[i][1]);
-    }
-    console.log("finished!");
+    getNumberObjectList<RepoModel, RepoObject>(scrapedRepos).forEach((pair: [number, RepoModel]) => {
+      const id = pair[1].getRepoID();
+      if (!this.storageRepos[id]) {
+        // repo does not exists in storage
+        this.scrapeFullRepo(pair[1]);
+      }
+    });
   }
 
   public async updateIssues(metaData: MetaData): Promise<Map<number, IssueObject>> {
     const allIssues = await this.scrapeIssues(metaData.getLastUpdated());
-    console.log(allIssues);
     return this.getNewRepoIssues(allIssues);
   }
 
