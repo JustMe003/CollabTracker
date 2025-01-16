@@ -94,6 +94,21 @@ export class Scraper {
     return branches;
   }
 
+  public async scrapeComments(owner: string, repoName: string, issueNumber: number): Promise<apiMod.CommentApiModel[]> {
+    let page = 1;
+    let comments: apiMod.CommentApiModel[] = [];
+    do {
+      comments = comments.concat(await RequestGithub.sendGetRequest(
+        `https://api.github.com/repos/${owner}/${repoName}/issues/${issueNumber}/comments`,
+        new Map<string, string>([
+          ["per_page", Scraper.perPage.toString()],
+          ["page", page.toString()]
+        ]),
+        this.token) as apiMod.CommentApiModel[]);
+    } while (comments.length / Scraper.perPage >= page++);
+    return comments;
+  }
+
 
   public async scrapeLastUpdatedBranch(url: string): Promise<apiMod.CommitsApiModel> {
     const lastCommit = await RequestGithub.sendGetRequest(

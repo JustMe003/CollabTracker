@@ -1,16 +1,18 @@
+import { CommentersObject } from "./GenericStringObject";
+
 export class IssueModel {
   private id: number;
   private html: string;
   private creator: string;
   private assignees: string[];
   private numberOfComments: number;
-  private commenters: string[];
+  private commenters: CommentersObject;
   private reviewers: string[];
   private updated_at: Date;
   private repoID: number;
   private isPullRequest: boolean;
 
-  constructor(id: number, html: string, creator: string, assignees: string[], numberOfComments: number, commenters: string[],
+  constructor(id: number, html: string, creator: string, assignees: string[], numberOfComments: number, commenters: CommentersObject,
     reviewers: string[], updated_at: Date, repoID: number, isPullRequest: boolean){
     this.id = id;
     this.html = html;
