@@ -47,7 +47,7 @@ export abstract class FileIO {
           baseDir: FileIO.baseDir
         });
         if (fileContents) {
-          return JSON.parse(fileContents);
+          return JSON.parse(fileContents, this.reviveDateTime);
         }
       }
     } catch (error) {
@@ -62,5 +62,15 @@ export abstract class FileIO {
       if (name.endsWith(FileIO.extension)) res[i] = name.substring(0, name.length - FileIO.extension.length);
     }
     return res;
+  }
+
+  private reviveDateTime(key: any, value: any) {
+    if (typeof value === 'string') {
+      const isValidDate = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:.(\d+))?Z$/.test(value);
+      if (isValidDate) {
+        return new Date(value); // Only return a Date if the string is valid
+      }
+    }
+    return value;
   }
 }
