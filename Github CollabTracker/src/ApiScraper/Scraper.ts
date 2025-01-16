@@ -60,7 +60,6 @@ export class Scraper {
   public async scrapeIssues(lastUpdated: Date): Promise<apiMod.IssueApiModel[]> {
     let page = 1;
     let issues: apiMod.IssueApiModel[] = [];
-
     do {
         issues = issues.concat(await RequestGithub.sendGetRequest(
           "https://api.github.com/user/issues",
@@ -73,7 +72,6 @@ export class Scraper {
             ["page", page.toString()]
           ]),
           this.token) as apiMod.IssueApiModel[]);
-        console.log(issues);
       } while (issues.length / Scraper.perPage >= page++);
       return issues;
     }

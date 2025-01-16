@@ -3,6 +3,7 @@ import { BranchObject, getNumberObjectList, IssueModel, IssueObject, RepoModel, 
 import { IOHandler } from "../IO/IOHandler";
 import { BranchModelConverter, IssueModelConverter, RepoModelConverter, UserModelConverter } from "../ModelConverter";
 import { MetaData } from "../Models/MetaData";
+import { IssueApiModel } from "../ApiModels";
 
 type IssuePullRequestObject = { issues: IssueObject, pullRequests: IssueObject };
 
@@ -32,13 +33,17 @@ export class DataManager {
     
     let newIssues = await this.updateIssues(lastUpdated);
     console.log(newIssues);
-    scrapeReps;
+    // await scrapeReps;
     
     newIssues = this.getNewRepoIssues(newIssues);
     console.log(newIssues);
     
     newIssues.forEach(async (obj, key) => {
-      console.log(await this.scrapeRepo(key));
+      const res = await this.scrapeRepo(key);
+      const split = this.seperateIssuesPullRequests(obj);
+      res.setIssues(split.issues);
+      res.setPullRequests(split.pullRequests);
+      this.storageRepos[key] = res;
     });
 
     
@@ -115,21 +120,30 @@ export class DataManager {
     return branches;
   }
   
-  public async scrapeIssues(lastUpdated: Date ): Promise<Map<number, IssueObject>> {
+  public async scrapeIssues(lastUpdated: Date): Promise<Map<number, IssueObject>> {
     const res = await this.scraper.scrapeIssues(lastUpdated);
     const issues = new Map<number, IssueObject>();
-    res.forEach(async (e) => {
-      const comments = await this.scraper.scrapeComments(e.repository.owner.login, e.repository.name, e.number);
-      const issue = IssueModelConverter.convert(e, comments );
-      let issueMap = issues.get(issue.getRepoID());
+    const promises: Promise<IssueModel>[] = [];
+
+    res.forEach((issue) => {
+      promises.push(this.assignCommentsToIssue(issue));
+    });
+
+    for (let i = 0; i < promises.length; i++) {
+      const res = await promises[i];
+      let issueMap = issues.get(res.getRepoID());
       if (!issueMap) {
         issueMap = {};
-        issues.set(issue.getRepoID(), issueMap);
+        issues.set(res.getRepoID(), issueMap);
       }
-      issueMap[issue.getID()] = issue;
-    })
+      issueMap[res.getID()] = res;
+    }
     return issues;
-    return new Map(); 
+  }
+
+  public async assignCommentsToIssue(issue: IssueApiModel): Promise<IssueModel> {
+    const comments = await this.scraper.scrapeComments(issue.repository.owner.login, issue.repository.name, issue.number);
+    return IssueModelConverter.convert(issue, comments);
   }
 
   public async readRepos(): Promise<RepoObject> {

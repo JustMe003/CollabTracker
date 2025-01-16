@@ -17,7 +17,6 @@ export class IOHandler {
     this.reposPath = this.getFolderPath(storage, "repos");
     this.usersPath = this.getFolderPath(storage, "users");
     this.metaDataPath = storage.getStoragePath();
-    console.log(this.metaDataPath)
     this.metaDataIO = new metaDataIO(this.metaDataPath)
     this.repoIO = new RepoIO(this.reposPath);
     this.userIO = new UserIO(this.usersPath);

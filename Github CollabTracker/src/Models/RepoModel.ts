@@ -64,6 +64,14 @@ export class RepoModel {
     this.branches = branches;
   }
 
+  public setIssues(issues: IssueObject) {
+    this.issues = issues;
+  }
+
+  public setPullRequests(pullReqs: IssueObject) {
+    this.pullRequests = pullReqs;
+  }
+
   public static createNew(mod: RepoModel): RepoModel {
     const branches: BranchObject = {};
     Object.entries(mod.branches).forEach((pair: [string, BranchModel]) => {
