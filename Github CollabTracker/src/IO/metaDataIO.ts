@@ -9,7 +9,7 @@ export class metaDataIO extends FileIO {
   }
 
   public async readMetaData(): Promise<MetaData> {
-    const read = await this.readObject("metaData" + FileIO.extension) as MetaData;
+    const read = await this.readObject("metaData") as MetaData;
     if (read == undefined)
       return new MetaData(new Date("2006-01-01T00:00:00"))
     else 
