@@ -1,9 +1,12 @@
 import { GitRefreshCookie } from "../../authorization/cookies/GitRefreshCookie";
 import { GitTokenCookie } from "../../authorization/cookies/GitTokenCookie";
 import { Controller } from "../../Controller/Controller";
+import { DataManager } from "../../DataManager/DataManager";
 import router from "../../router/router";
   
 export class Application {
+
+  dataManager: DataManager = {} as DataManager;
   
   public logOut() {
     GitTokenCookie.removeGitCookie();
@@ -14,9 +17,14 @@ export class Application {
 
   public async startMain() {
     const controller = new Controller(GitTokenCookie.getGitTokenCookie() || "");
-    const dataManager = await controller.getDataManager();
+    this.dataManager = await controller.getDataManager();
     console.log("got datamanager");
-    await dataManager.updateData();
+    await this.dataManager.updateData();
+    console.log("all updated!");
+  }
+
+  public async refresh() {
+    await this.dataManager.updateData();
     console.log("all updated!");
   }
 }

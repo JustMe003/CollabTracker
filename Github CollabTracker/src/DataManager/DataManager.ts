@@ -138,7 +138,7 @@ export class DataManager {
     const repos: RepoModel[] = [];
     res.forEach(repo => {
       repos.push(RepoModelConverter.convert(repo));
-    })
+    });
     return this.repoModelsToObject(repos);
   }
 
@@ -174,6 +174,7 @@ export class DataManager {
     res.forEach(commit => {
       commits.push(CommitModelConverter.convert(commit));
     });
+    console.log("scraping commits from " + rep.getName() + " done!");
     return { [rep.getDefaultBranch()]: new BranchModel(rep.getDefaultBranch(), updatedAt, commits) };
   }
 
