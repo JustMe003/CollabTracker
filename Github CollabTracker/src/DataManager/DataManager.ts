@@ -42,39 +42,13 @@ export class DataManager {
     });
 
     
-    
-    // updateIssues()
-    // updateMergeRequests()
     // updateBranches()
     //const repos = await this.readRepos();
     this.writeMetaData();
+    this.writeRepos();
+    this.writeUsers();
   }
 
-
-  // get all repos from storages S
-  // 
-  // get all repos from scraper   -- async A
-  // get all issues from scraper    -- async B
-
-  // After getting all issues from scraper, check whether we have stored it repo: If not, push to array C if repo of B is not in S
-
-  // After getting all repos from scraper , check whether we have stored it already: If not, s
-
-  // await both repo and issue checking.
-  // Take array C from issue checking and check again with updated repo object
-
-
-  // get all repos from storages S
-  // 
-  // get all repos from scraper   -- async A
-  // get all issues from scraper    -- async B
-
-  // After getting all issues from scraper, check whether we have stored it repo: If not, push to array C if repo of B is not in S
-
-  // After getting all repos from scraper , check whether we have stored it already: If not, s
-
-  // await both repo and issue checking.
-  // Take array C from issue checking and check again with updated repo object
 
   public async updateRepos() {
     const scrapedRepos = await this.scrapeRepos();
@@ -124,7 +98,6 @@ export class DataManager {
     const branches = await this.scrapeBranches(rep.getCreator(), rep.getName());
     const repo = RepoModelConverter.convert(await this.scraper.scrapeRepo(rep.getCreator(), rep.getName()), branches);
     this.storageRepos[repo.getRepoID()];
-    this.IOHandler.writeRepo(repo);
     return repo;
   }
 
@@ -167,8 +140,12 @@ export class DataManager {
     return this.userModelToObject(await this.IOHandler.getUsers());
   }
 
-  public writeRepos(repos: RepoModel[]) {
-    this.IOHandler.writeRepos(repos);
+  public writeRepos() {
+    this.IOHandler.writeRepos(this.storageRepos);
+  }
+
+  public writeUsers() {
+    this.IOHandler.writeUsers(this.users);
   }
   
   
