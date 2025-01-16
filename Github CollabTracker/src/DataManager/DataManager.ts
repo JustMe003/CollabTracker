@@ -142,7 +142,7 @@ export class DataManager {
     return branches;
   }
   
-  public async scrapeIssues(lastUpdated: Date | undefined): Promise<Map<number, IssueObject>> {
+  public async scrapeIssues(lastUpdated: Date ): Promise<Map<number, IssueObject>> {
     const res = await this.scraper.scrapeIssues(lastUpdated);
     const issues = new Map<number, IssueObject>();
     res.forEach(async (e) => {
