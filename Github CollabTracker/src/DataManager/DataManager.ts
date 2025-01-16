@@ -53,6 +53,7 @@ export class DataManager {
       this.storageRepos[res.getRepoID()] = res;
     }
 
+    // Merge the issues with their respective repos
     const issueMergePromises: Promise<void>[][] = [];
     getNumberObjectList<RepoModel, RepoObject>(this.storageRepos).forEach((pair: [number, RepoModel]) => {
       issueMergePromises.push(this.mergeRepoWithIssues(pair[1], allIssues.get(pair[0]) || {}));
@@ -95,7 +96,6 @@ export class DataManager {
   }
 
   public async updateIssues(metaData: MetaData): Promise<Map<number, IssueObject>> {
-    console.log(metaData.getLastUpdated());
     return await IssueDataManager.scrapeIssues(this.scraper, metaData.getLastUpdated());
   }
 

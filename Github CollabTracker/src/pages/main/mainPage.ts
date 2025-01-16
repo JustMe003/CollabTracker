@@ -6,7 +6,8 @@ import router from "../../router/router";
   
 export class Application {
 
-  dataManager: DataManager = {} as DataManager;
+  private dataManager: DataManager = {} as DataManager;
+
   
   public logOut() {
     GitTokenCookie.removeGitCookie();
