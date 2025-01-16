@@ -6,4 +6,5 @@ export interface RepoApiModel{
   owner: UserApiModel;
   name: string;
   default_branch: string;
+  updated_at: Date;
 }

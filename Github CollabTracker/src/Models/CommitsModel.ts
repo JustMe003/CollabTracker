@@ -1,9 +1,9 @@
 export class CommitsModel {
   private sha: string;
   private date: Date;
-  private author: number;
+  private author: string;
 
-  constructor(sha: string, date: Date, author: number){
+  constructor(sha: string, date: Date, author: string){
     this.sha = sha;
     this.date = date;
     this.author = author;
