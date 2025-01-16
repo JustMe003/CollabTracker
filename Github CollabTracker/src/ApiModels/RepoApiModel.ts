@@ -5,4 +5,5 @@ export interface RepoApiModel{
   html_url: string;
   owner: UserApiModel;
   name: string;
+  default_branch: string;
 }
