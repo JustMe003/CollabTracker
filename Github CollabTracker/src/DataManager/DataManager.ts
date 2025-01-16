@@ -76,7 +76,6 @@ export class DataManager {
   public async updateRepos(): Promise<void> {
     const scrapedRepos = await this.scrapeRepos();
     while (!this.initialized);
-    const promises: Promise<RepoModel>[] = [];
     getNumberObjectList<RepoModel, RepoObject>(scrapedRepos).forEach((pair: [number, RepoModel]) => {
       const id = pair[1].getRepoID();
       if (!this.storageRepos[id]) {
