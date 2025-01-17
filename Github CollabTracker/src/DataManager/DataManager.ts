@@ -13,7 +13,6 @@ export class DataManager {
   private scraper: Scraper;
   private IOHandler: IOHandler;
   private storageRepos: RepoObject = {};
-  private users: UserObject = {};
   private localUser: UserModel;
 
   constructor(scraper: Scraper, handler: IOHandler, localUser: UserModel) {
@@ -26,7 +25,6 @@ export class DataManager {
     // Start initializing
     const metaData = await this.readMetaData();
     this.storageRepos = await this.readRepos();
-    this.users = await this.readUsers();
     const scrapeReps = this.updateRepos(metaData.getLastUpdated());
     
     // Await scraping all issues and repos;
@@ -63,13 +61,13 @@ export class DataManager {
       }
     }
 
+    console.log(this.storageRepos);
     
     // updateBranches()
     // const repos = await this.readRepos();
     metaData.resetLastUpdated();
     this.writeMetaData();
     this.writeRepos();
-    this.writeUsers();
   }
 
 
@@ -80,7 +78,7 @@ export class DataManager {
       const id = pair[1].getRepoID();
       if (!this.storageRepos[id]) {
         // repo does not exists in storage
-        promises.push(this.scrapeDefaultBranch(pair[1], updatedAt).then(br => {
+        promises.push(this.scrapeDefaultBranch(pair[1]).then(br => {
           pair[1].setBranches(br);
           this.storageRepos[pair[0]] = pair[1];
         }));
@@ -210,7 +208,7 @@ export class DataManager {
     return branches;
   }
 
-  public async scrapeDefaultBranch(rep: RepoModel, updatedAt: Date): Promise<BranchObject> {
+  public async scrapeDefaultBranch(rep: RepoModel, updatedAt: Date = new Date("2006-01-01T00:00:00")): Promise<BranchObject> {
     const res = await this.scraper.scrapeCommits(rep.getCreator(), rep.getName(), rep.getDefaultBranch(), updatedAt);
     const commits: CommitsModel[] = [];
     res.forEach(commit => {
@@ -231,11 +229,6 @@ export class DataManager {
   public writeRepos() {
     this.IOHandler.writeRepos(this.storageRepos);
   }
-
-  public writeUsers() {
-    this.IOHandler.writeUsers(this.users);
-  }
-  
   
   public async readMetaData(): Promise<MetaData> {
     return await this.IOHandler.getMetaData();
@@ -261,4 +254,13 @@ export class DataManager {
     return obj;
   }
 
+  private async getUser(name: string): Promise<UserModel> {
+    const user = this.IOHandler.getUser(name);
+    if (!user) {
+      const scraped = UserModelConverter.convert(await this.scraper.scrapeUser(name));
+      this.IOHandler.writeUser(scraped);
+      return scraped
+    }
+    return user;
+  }
 }

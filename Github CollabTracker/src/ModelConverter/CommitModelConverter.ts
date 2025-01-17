@@ -3,6 +3,9 @@ import { CommitsModel } from "../Models";
 
 export class CommitModelConverter {
   public static convert(apiModel: CommitsApiModel) {
-    return new CommitsModel(apiModel.sha, apiModel.commit.author.date, apiModel.commit.author.name);
+    let name;
+    if (apiModel.author) name = apiModel.author.login;
+    else name = apiModel.commit.author.name;
+    return new CommitsModel(apiModel.sha, apiModel.commit.author.date, name);
   }
 }

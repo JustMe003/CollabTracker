@@ -68,4 +68,8 @@ export class IOHandler {
   public getMetaData() : Promise<MetaData> {
     return this.metaDataIO.readMetaData();
   }
+
+  public getUser(name: string): Promise<UserModel> {
+    return this.userIO.readUser(name);
+  }
 }
