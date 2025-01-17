@@ -11,9 +11,6 @@ export class DataManager {
   private scraper: Scraper;
   private IOHandler: IOHandler;
   private storageRepos: RepoObject = {};
-  private users: UserObject = {};
-  private userQueue: string[] = [];
-  private interval: number = 500;
 
   constructor(scraper: Scraper, handler: IOHandler) {
     this.scraper = scraper;
@@ -21,15 +18,10 @@ export class DataManager {
   }
 
   public async updateData() {
-    this.userQueue = [];
-
     // Start initializing
     const metaData = await this.readMetaData();
     this.storageRepos = await this.readRepos();
-    this.users = await this.readUsers();
     const scrapeReps = this.updateRepos(metaData.getLastUpdated());
-
-    const userQueueInterval = this.startUserQueue();
     
     // Await scraping all issues and repos;
     const allIssues = await this.updateIssues(metaData);
@@ -65,19 +57,13 @@ export class DataManager {
       }
     }
 
-    // Wait until the userqueue is empty
-    while (this.userQueue.length > 0) await new Promise(f => setTimeout(f, this.interval));
-    clearInterval(userQueueInterval);
-
     console.log(this.storageRepos);
-    console.log(this.users);
     
     // updateBranches()
     // const repos = await this.readRepos();
     metaData.resetLastUpdated();
     this.writeMetaData();
     this.writeRepos();
-    this.writeUsers();
   }
 
 
@@ -88,10 +74,9 @@ export class DataManager {
       const id = pair[1].getRepoID();
       if (!this.storageRepos[id]) {
         // repo does not exists in storage
-        promises.push(this.scrapeDefaultBranch(pair[1], updatedAt).then(br => {
+        promises.push(this.scrapeDefaultBranch(pair[1]).then(br => {
           pair[1].setBranches(br);
           this.storageRepos[pair[0]] = pair[1];
-          if (!this.users[pair[1].getCreator()]) this.userQueue.push(pair[1].getCreator());
         }));
       }
     });
@@ -171,7 +156,7 @@ export class DataManager {
     return branches;
   }
 
-  public async scrapeDefaultBranch(rep: RepoModel, updatedAt: Date): Promise<BranchObject> {
+  public async scrapeDefaultBranch(rep: RepoModel, updatedAt: Date = new Date("2006-01-01T00:00:00")): Promise<BranchObject> {
     const res = await this.scraper.scrapeCommits(rep.getCreator(), rep.getName(), rep.getDefaultBranch(), updatedAt);
     const commits: CommitsModel[] = [];
     res.forEach(commit => {
@@ -192,11 +177,6 @@ export class DataManager {
   public writeRepos() {
     this.IOHandler.writeRepos(this.storageRepos);
   }
-
-  public writeUsers() {
-    this.IOHandler.writeUsers(this.users);
-  }
-  
   
   public async readMetaData(): Promise<MetaData> {
     return await this.IOHandler.getMetaData();
@@ -222,15 +202,11 @@ export class DataManager {
     return obj;
   }
 
-  private startUserQueue(): ReturnType<typeof setInterval> {
-    return setInterval(async () => {
-      while (this.userQueue.length > 0) {
-        const name = this.userQueue.pop() as string;
-        if (!this.users[name]) {
-          this.users[name] = await this.scrapeUser(name);
-          console.log("Added " + name);
-        }
-      }
-    }, this.interval);
+  private async getUser(name: string): Promise<UserModel> {
+    const user = this.IOHandler.getUser(name);
+    if (!user) {
+      this.IOHandler.writeUser(UserModelConverter.convert(await this.scraper.scrapeUser(name)));
+    }
+    return user;
   }
 }
