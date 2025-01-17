@@ -1,5 +1,5 @@
 import { Scraper } from "../ApiScraper/Scraper";
-import { BranchModel, BranchObject, CommitsModel, getNumberObjectList, IssueModel, IssueObject, RepoModel, RepoObject, UserModel, UserObject } from "../Models";
+import { BranchModel, BranchObject, CommitsModel, getNumberKeys, IssueModel, IssueObject, RepoModel, RepoObject, UserModel, UserObject } from "../Models";
 import { IOHandler } from "../IO/IOHandler";
 import { BranchModelConverter, CommentersObjectConverter, CommitModelConverter, RepoModelConverter, UserModelConverter } from "../ModelConverter";
 import { MetaData } from "../Models/MetaData";
@@ -49,8 +49,8 @@ export class DataManager {
 
     // Merge the issues with their respective repos
     const issueMergePromises: Promise<void>[][] = [];
-    getNumberObjectList<RepoModel, RepoObject>(this.storageRepos).forEach((pair: [number, RepoModel]) => {
-      issueMergePromises.push(this.mergeRepoWithIssues(pair[1], allIssues.get(pair[0]) || {}));
+    getNumberKeys(this.storageRepos).forEach((key: number) => {
+      issueMergePromises.push(this.mergeRepoWithIssues(this.storageRepos[key], allIssues.get(key) || {}));
     });
     for (let i = 0; i < issueMergePromises.length; i++) {
       const arr = issueMergePromises[i];
@@ -72,13 +72,13 @@ export class DataManager {
   public async updateRepos(updatedAt: Date): Promise<Promise<void>[]> {
     const scrapedRepos = await this.scrapeRepos();
     const promises: Promise<void>[] = [];
-    getNumberObjectList<RepoModel, RepoObject>(scrapedRepos).forEach((pair: [number, RepoModel]) => {
-      const id = pair[1].getRepoID();
-      if (!this.storageRepos[id]) {
+    getNumberKeys(scrapedRepos).forEach((key: number) => {
+      const repo = scrapedRepos[key];
+      if (!this.storageRepos[key]) {
         // repo does not exists in storage
-        promises.push(this.scrapeDefaultBranch(pair[1]).then(br => {
-          pair[1].setBranches(br);
-          this.storageRepos[pair[0]] = pair[1];
+        promises.push(this.scrapeDefaultBranch(repo).then(br => {
+          repo.setBranches(br);
+          this.storageRepos[key] = repo;
         }));
       }
     });
@@ -101,19 +101,20 @@ export class DataManager {
     const repoIssues = repo.getIssues();
     const repoPullReqs = repo.getPullRequests();
     const promises: Promise<void>[] = [];
-    getNumberObjectList<IssueModel, IssueObject>(issues).forEach((pair: [number, IssueModel]) => {
-      const issue = repoIssues[pair[0]];
-      if (!issue 
-      || issue.getNumberOfComments() != pair[1].getNumberOfComments() 
-      || issue.getUpdatedAt() < pair[1].getUpdatedAt()) {
-        promises.push(this.scraper.scrapeComments(repo.getCreator(), repo.getName(), pair[0]).then(async (comments) => {
-          pair[1].setCommenters(CommentersObjectConverter.convert(comments));
-          if (pair[1].getIsPullRequest()) {
-            await this.updateEvents(repo, repoPullReqs[pair[0]], pair[1], false)
-            repoPullReqs[pair[0]] = pair[1];
+    getNumberKeys(issues).forEach((key: number) => {
+      const repoIssue = repoIssues[key];
+      const issue = issues[key];
+      if (!repoIssue 
+      || repoIssue.getNumberOfComments() != issue.getNumberOfComments() 
+      || repoIssue.getUpdatedAt() < issue.getUpdatedAt()) {
+        promises.push(this.scraper.scrapeComments(repo.getCreator(), repo.getName(), key).then(async (comments) => {
+          issue.setCommenters(CommentersObjectConverter.convert(comments));
+          if (issue.getIsPullRequest()) {
+            await this.updateEvents(repo, repoPullReqs[key], issue, false);
+            repoPullReqs[key] = issue;
           } else {
-            await this.updateEvents(repo, repoIssues[pair[0]], pair[1], true)
-            repoIssues[pair[0]] = pair[1];
+            await this.updateEvents(repo, repoIssues[key], issue, true);
+            repoIssues[key] = issue;
           }
         }));
       }
