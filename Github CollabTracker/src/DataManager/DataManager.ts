@@ -12,7 +12,6 @@ export class DataManager {
   private IOHandler: IOHandler;
   private storageRepos: RepoObject = {};
   private users: UserObject = {};
-  private initialized: boolean = false;
 
   constructor(scraper: Scraper, handler: IOHandler) {
     this.scraper = scraper;
@@ -21,16 +20,10 @@ export class DataManager {
 
   public async updateData() {
     // Start initializing
-    const metaDataPromise = this.readMetaData();
-    const repos = this.readRepos();
-    const users = this.readUsers();
-    const metaData = await metaDataPromise;
+    const metaData = await this.readMetaData();
+    this.storageRepos = await this.readRepos();
+    this.users = await this.readUsers();
     const scrapeReps = this.updateRepos(metaData.getLastUpdated());
-    
-    // Await all initialization
-    this.storageRepos = await repos;
-    this.users = await users;
-    this.initialized = true;    // Everything is initialized
     
     // Await scraping all issues and repos;
     const allIssues = await this.updateIssues(metaData);
@@ -80,7 +73,6 @@ export class DataManager {
 
   public async updateRepos(updatedAt: Date): Promise<Promise<void>[]> {
     const scrapedRepos = await this.scrapeRepos();
-    while (!this.initialized);
     const promises: Promise<void>[] = [];
     getNumberObjectList<RepoModel, RepoObject>(scrapedRepos).forEach((pair: [number, RepoModel]) => {
       const id = pair[1].getRepoID();
