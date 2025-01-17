@@ -1,9 +1,11 @@
-export class RepoEventModel {
-  private branchEvents: number[];
-  private issueEvents: number[];
-  private mergeRequestEvents: number[];
+import { EventModel } from "./EventModel";
 
-  constructor(branchEvents: number[], issueEvents: number[], mergeRequestEvents: number[]) {
+export class RepoEventModel {
+  private branchEvents: EventModel[] | undefined | null;  
+  private issueEvents: EventModel[] | undefined | null;
+  private mergeRequestEvents: EventModel[] | undefined | null;
+
+  constructor(branchEvents: EventModel[] = [], issueEvents: EventModel[] = [], mergeRequestEvents: EventModel[] = []) {
     this.branchEvents = branchEvents;
     this.issueEvents = issueEvents;
     this.mergeRequestEvents = mergeRequestEvents;
@@ -19,5 +21,18 @@ export class RepoEventModel {
 
   public getMergeRequestEvents() {
     return this.mergeRequestEvents;
+  }
+
+
+  public setBranchEvents(events: EventModel[]) {
+    this.branchEvents = events;
+  }
+
+  public setMergeRequests(events: EventModel[]) {
+    this.mergeRequestEvents = events;
+  }
+
+  public setIssueEvents(events: EventModel[]) {
+    this.issueEvents = events;
   }
 }
