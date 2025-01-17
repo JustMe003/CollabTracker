@@ -205,7 +205,9 @@ export class DataManager {
   private async getUser(name: string): Promise<UserModel> {
     const user = this.IOHandler.getUser(name);
     if (!user) {
-      this.IOHandler.writeUser(UserModelConverter.convert(await this.scraper.scrapeUser(name)));
+      const scraped = UserModelConverter.convert(await this.scraper.scrapeUser(name));
+      this.IOHandler.writeUser(scraped);
+      return scraped
     }
     return user;
   }
