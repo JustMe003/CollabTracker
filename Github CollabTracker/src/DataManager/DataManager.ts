@@ -1,11 +1,8 @@
 import { Scraper } from "../ApiScraper/Scraper";
-import { BranchModel, BranchObject, CommitsModel, getNumberKeys, IssueModel, IssueObject, RepoModel, RepoObject, UserModel, UserObject } from "../Models";
+import { BranchModel, BranchObject, CommitsModel, EventModel, getNumberKeys, getStringKeys, IssueModel, IssueObject, MetaData, RepoModel, RepoObject, UserModel, UserObject } from "../Models";
 import { IOHandler } from "../IO/IOHandler";
 import { BranchModelConverter, CommentersObjectConverter, CommitModelConverter, RepoModelConverter, UserModelConverter } from "../ModelConverter";
-import { MetaData } from "../Models/MetaData";
 import { IssueDataManager } from "./IssueDataManager";
-import { EventModel } from "../Models/EventModel";
-import { CommentersObject, getStringKeys } from "../Models/GenericStringObject";
 
 export class DataManager {
   private scraper: Scraper;
