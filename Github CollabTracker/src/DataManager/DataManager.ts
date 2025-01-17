@@ -12,6 +12,8 @@ export class DataManager {
   private IOHandler: IOHandler;
   private storageRepos: RepoObject = {};
   private users: UserObject = {};
+  private userQueue: string[] = [];
+  private interval: number = 500;
 
   constructor(scraper: Scraper, handler: IOHandler) {
     this.scraper = scraper;
@@ -19,11 +21,15 @@ export class DataManager {
   }
 
   public async updateData() {
+    this.userQueue = [];
+
     // Start initializing
     const metaData = await this.readMetaData();
     this.storageRepos = await this.readRepos();
     this.users = await this.readUsers();
     const scrapeReps = this.updateRepos(metaData.getLastUpdated());
+
+    const userQueueInterval = this.startUserQueue();
     
     // Await scraping all issues and repos;
     const allIssues = await this.updateIssues(metaData);
@@ -59,6 +65,10 @@ export class DataManager {
       }
     }
 
+    // Wait until the userqueue is empty
+    while (this.userQueue.length > 0) await new Promise(f => setTimeout(f, this.interval));
+    clearInterval(userQueueInterval);
+
     console.log(this.storageRepos);
     console.log(this.users);
     
@@ -81,6 +91,7 @@ export class DataManager {
         promises.push(this.scrapeDefaultBranch(pair[1], updatedAt).then(br => {
           pair[1].setBranches(br);
           this.storageRepos[pair[0]] = pair[1];
+          if (!this.users[pair[1].getCreator()]) this.userQueue.push(pair[1].getCreator());
         }));
       }
     });
@@ -211,4 +222,15 @@ export class DataManager {
     return obj;
   }
 
+  private startUserQueue(): ReturnType<typeof setInterval> {
+    return setInterval(async () => {
+      while (this.userQueue.length > 0) {
+        const name = this.userQueue.pop() as string;
+        if (!this.users[name]) {
+          this.users[name] = await this.scrapeUser(name);
+          console.log("Added " + name);
+        }
+      }
+    }, this.interval);
+  }
 }
