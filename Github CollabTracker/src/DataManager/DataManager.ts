@@ -34,6 +34,7 @@ export class DataManager {
     
     // Await scraping all issues and repos;
     const allIssues = await this.updateIssues(metaData);
+    // DOes not update it anywhere
     const repoPromises = await scrapeReps;
 
     for (let i = 0; i < repoPromises.length; i++) {
@@ -56,9 +57,10 @@ export class DataManager {
     // Merge the issues with their respective repos
     const issueMergePromises: Promise<void>[][] = [];
     getNumberObjectList<RepoModel, RepoObject>(this.storageRepos).forEach((pair: [number, RepoModel]) => {
+      if(pair[1].getIssues()[1])
+
       issueMergePromises.push(this.mergeRepoWithIssues(pair[1], allIssues.get(pair[0]) || {}));
     });
-
     for (let i = 0; i < issueMergePromises.length; i++) {
       const arr = issueMergePromises[i];
       for (let j = 0; j < arr.length; j++) {
@@ -66,8 +68,6 @@ export class DataManager {
       }
     }
 
-    console.log(this.storageRepos);
-    console.log(this.users);
     
     // updateBranches()
     // const repos = await this.readRepos();
@@ -113,6 +113,8 @@ export class DataManager {
     const promises: Promise<void>[] = [];
     getNumberObjectList<IssueModel, IssueObject>(issues).forEach((pair: [number, IssueModel]) => {
       const issue = repoIssues[pair[0]];
+
+
       if (!issue 
       || issue.getNumberOfComments() != pair[1].getNumberOfComments() 
       || issue.getUpdatedAt() < pair[1].getUpdatedAt()) {

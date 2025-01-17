@@ -1,6 +1,7 @@
 import * as fs from "@tauri-apps/plugin-fs";
 import { FileStorage } from "./FileStorage";
 import { FileHandler } from "./FileHandler";
+import { JSONDate } from "./JSONDate";
 
 export abstract class FileIO {
   protected path: string;
@@ -47,7 +48,7 @@ export abstract class FileIO {
           baseDir: FileIO.baseDir
         });
         if (fileContents) {
-          return JSON.parse(fileContents, this.reviveDateTime);
+          return JSON.parse(fileContents, JSONDate.reviveDateTime);
         }
       }
     } catch (error) {
@@ -64,13 +65,5 @@ export abstract class FileIO {
     return res;
   }
 
-  private reviveDateTime(key: any, value: any) {
-    if (typeof value === 'string') {
-      const isValidDate = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:.(\d+))?Z$/.test(value);
-      if (isValidDate) {
-        return new Date(value); // Only return a Date if the string is valid
-      }
-    }
-    return value;
-  }
+
 }
