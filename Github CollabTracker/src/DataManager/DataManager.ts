@@ -50,8 +50,6 @@ export class DataManager {
     // Merge the issues with their respective repos
     const issueMergePromises: Promise<void>[][] = [];
     getNumberObjectList<RepoModel, RepoObject>(this.storageRepos).forEach((pair: [number, RepoModel]) => {
-      if(pair[1].getIssues()[1])
-
       issueMergePromises.push(this.mergeRepoWithIssues(pair[1], allIssues.get(pair[0]) || {}));
     });
     for (let i = 0; i < issueMergePromises.length; i++) {
@@ -105,8 +103,6 @@ export class DataManager {
     const promises: Promise<void>[] = [];
     getNumberObjectList<IssueModel, IssueObject>(issues).forEach((pair: [number, IssueModel]) => {
       const issue = repoIssues[pair[0]];
-
-
       if (!issue 
       || issue.getNumberOfComments() != pair[1].getNumberOfComments() 
       || issue.getUpdatedAt() < pair[1].getUpdatedAt()) {
