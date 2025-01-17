@@ -17,11 +17,12 @@ export class Controller {
     const storage = new FileStorage(us.getLogin());
     const handler = new IOHandler(storage);
     await handler.init(storage);
-    return new DataManager(this.scraper, handler);
+    return new DataManager(this.scraper, handler, us);
   }
   
   private async updateUs(): Promise<UserModel> {
     return UserModelConverter.convert(await this.scraper.scrapeUs());
   }
+
   
 }

@@ -1,9 +1,9 @@
 import { EventModel } from "./EventModel";
 
 export class RepoEventModel {
-  private branchEvents: EventModel[] | undefined | null;  
-  private issueEvents: EventModel[] | undefined | null;
-  private mergeRequestEvents: EventModel[] | undefined | null;
+  private branchEvents: EventModel[];  
+  private issueEvents: EventModel[];
+  private mergeRequestEvents: EventModel[];
 
   constructor(branchEvents: EventModel[] = [], issueEvents: EventModel[] = [], mergeRequestEvents: EventModel[] = []) {
     this.branchEvents = branchEvents;

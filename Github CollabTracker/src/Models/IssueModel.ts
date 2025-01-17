@@ -34,7 +34,7 @@ export class IssueModel {
     return this.html;
   }
 
-  public getCommenter() {
+  public getCommenters() {
     return this.commenters;
   }
 

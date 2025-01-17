@@ -4,7 +4,7 @@ export class EventModel {
   private date: Date | undefined;
   private eventPlaceID: number;
 
-  constructor(participant: string, type: string,  date: Date, eventPlaceID: number) {
+  constructor(participant: string, type: string,  date: Date | undefined, eventPlaceID: number) {
     this.participant = participant;
     this.type = type;
     this.date = date;
