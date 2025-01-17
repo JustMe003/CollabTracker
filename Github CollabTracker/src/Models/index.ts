@@ -6,4 +6,4 @@ export { UserModel } from "./UserModel";
 export type { BranchObject, UserObject } from "./GenericStringObject";
 export type { IssueObject, PullReqObject, RepoObject} from "./GenericNumberObjects";
 export { getNumberKeys } from "./GenericNumberObjects";
-export { getStringObjectList } from "./GenericStringObject";
+export { getStringKeys } from "./GenericStringObject";

@@ -5,7 +5,7 @@ import { BranchModelConverter, CommentersObjectConverter, CommitModelConverter, 
 import { MetaData } from "../Models/MetaData";
 import { IssueDataManager } from "./IssueDataManager";
 import { EventModel } from "../Models/EventModel";
-import { CommentersObject, getStringObjectList } from "../Models/GenericStringObject";
+import { CommentersObject, getStringKeys } from "../Models/GenericStringObject";
 
 export class DataManager {
   private scraper: Scraper;
@@ -128,38 +128,41 @@ export class DataManager {
     console.log("Old Issue", pastIssue)
     console.log("new issue", newIssue)
     let events: EventModel[] = [];
-    if(isIssue && repoEvents.getIssueEvents()) {
+    if (isIssue && repoEvents.getIssueEvents()) {
       events = repoEvents.getIssueEvents();
     } else if (repoEvents.getMergeRequestEvents()) {
       events = repoEvents.getMergeRequestEvents()
     }
-    if(await IssueDataManager.checkCollaborator(newIssue, this.localUser.getLogin())) {
-      const newComments: Map<string, number> = new Map<string, number>;
-      getStringObjectList<number, CommentersObject>(newIssue.getCommenters()).forEach((pair: [string, number]) => {
-        if(pastIssue != undefined) {
+    if (await IssueDataManager.checkCollaborator(newIssue, this.localUser.getLogin())) {
+      const newComments: Map<string, number> = new Map<string, number>();
+      const commenters = newIssue.getCommenters();
+      getStringKeys(commenters).forEach((key: string) => {
+        const commenter = commenters[key];
+        if (pastIssue != undefined) {
           const pastComments = pastIssue.getCommenters();
-          if(pastComments[pair[0]])
-            newComments.set(pair[0], pair[1] - pastComments[pair[0]])
-        } else 
-        newComments.set(pair[0], pair[1])
-      });
-      let userNewComments:number | undefined = newComments.get(this.localUser.getLogin()) ;
+          if (pastComments[key])
+            newComments.set(key, commenter - pastComments[key]);
+        } else {
+          newComments.set(key, commenter);
+        }
+        });
+      let userNewComments: number | undefined = newComments.get(this.localUser.getLogin()) ;
       newComments.delete(this.localUser.getLogin())
       for (let [key, value] of newComments) {
         let totalEvents: number = 0;
-        if(userNewComments != undefined)
+        if (userNewComments != undefined)
           totalEvents  = userNewComments;
         else
         totalEvents = 0;
         totalEvents += value;
-        console.log(key, totalEvents)
-        for(let i=0; i<totalEvents; i++) {
+        console.log(key, totalEvents);
+        for (let i = 0; i < totalEvents; i++) {
           const event = new EventModel(key, "COMMENTER-COMMENTER", undefined, newIssue.getID())
           events.push(event);
         }
       }
       console.log("Events", events);
-      if(isIssue){
+      if (isIssue) {
         repoEvents.setIssueEvents(events)
       } else{
         repoEvents.setMergeRequests(events)

@@ -1,5 +1,5 @@
 import { FileStorage } from "../FileIO/FileStorage";
-import { getNumberKeys, getStringObjectList, RepoModel, RepoObject, UserModel, UserObject } from "../Models";
+import { getNumberKeys, getStringKeys, RepoModel, RepoObject, UserModel, UserObject } from "../Models";
 import { RepoIO } from "./RepoIO";
 import {metaDataIO} from "./metaDataIO"
 import { UserIO } from "./UserIO";
@@ -38,8 +38,8 @@ export class IOHandler {
   }
 
   public writeUsers(param: UserObject) {
-    getStringObjectList<UserModel, UserObject>(param).forEach((pair: [string, UserModel]) => {
-      this.userIO.writeObject(pair[1], pair[0]);
+    getStringKeys(param).forEach((key: string) => {
+      this.userIO.writeObject(param[key], key);
     })
   }
 
