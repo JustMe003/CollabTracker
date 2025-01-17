@@ -1,5 +1,5 @@
 import { Scraper } from "../ApiScraper/Scraper";
-import { BranchModel, BranchObject, CommitsModel, EventModel, getNumberKeys, getStringKeys, IssueModel, IssueObject, MetaData, RepoModel, RepoObject, UserModel, UserObject } from "../Models";
+import * as models from "../Models";
 import { IOHandler } from "../IO/IOHandler";
 import { BranchModelConverter, CommentersObjectConverter, CommitModelConverter, RepoModelConverter, UserModelConverter } from "../ModelConverter";
 import { IssueDataManager } from "./IssueDataManager";
@@ -7,10 +7,10 @@ import { IssueDataManager } from "./IssueDataManager";
 export class DataManager {
   private scraper: Scraper;
   private IOHandler: IOHandler;
-  private storageRepos: RepoObject = {};
-  private localUser: UserModel;
+  private storageRepos: models.RepoObject = {};
+  private localUser: models.UserModel;
 
-  constructor(scraper: Scraper, handler: IOHandler, localUser: UserModel) {
+  constructor(scraper: Scraper, handler: IOHandler, localUser: models.UserModel) {
     this.scraper = scraper;
     this.IOHandler = handler;
     this.localUser = localUser;
@@ -34,7 +34,7 @@ export class DataManager {
     const newIssues = this.getNewRepoIssues(allIssues); // Filter all issues we don't have a repo for
     
     // Scrape minimum repo to store the issues
-    const promises: Promise<RepoModel>[] = [];
+    const promises: Promise<models.RepoModel>[] = [];
     newIssues.forEach((obj, key) => {
       promises.push(this.createNewRepoFromIssue(key, obj));
     });
@@ -46,7 +46,7 @@ export class DataManager {
 
     // Merge the issues with their respective repos
     const issueMergePromises: Promise<void>[][] = [];
-    getNumberKeys(this.storageRepos).forEach((key: number) => {
+    models.getNumberKeys(this.storageRepos).forEach((key: number) => {
       issueMergePromises.push(this.mergeRepoWithIssues(this.storageRepos[key], allIssues.get(key) || {}));
     });
     for (let i = 0; i < issueMergePromises.length; i++) {
@@ -69,7 +69,7 @@ export class DataManager {
   public async updateRepos(updatedAt: Date): Promise<Promise<void>[]> {
     const scrapedRepos = await this.scrapeRepos();
     const promises: Promise<void>[] = [];
-    getNumberKeys(scrapedRepos).forEach((key: number) => {
+    models.getNumberKeys(scrapedRepos).forEach((key: number) => {
       const repo = scrapedRepos[key];
       if (!this.storageRepos[key]) {
         // repo does not exists in storage
@@ -82,23 +82,23 @@ export class DataManager {
     return promises;
   }
 
-  public async updateIssues(metaData: MetaData): Promise<Map<number, IssueObject>> {
+  public async updateIssues(metaData: models.MetaData): Promise<Map<number, models.IssueObject>> {
     return await IssueDataManager.scrapeIssues(this.scraper, metaData.getLastUpdated());
   }
 
-  public getNewRepoIssues(map: Map<number, IssueObject>): Map<number, IssueObject> {
-    const res = new Map<number, IssueObject>();
+  public getNewRepoIssues(map: Map<number, models.IssueObject>): Map<number, models.IssueObject> {
+    const res = new Map<number, models.IssueObject>();
     map.forEach((obj, key) => {
       if (!this.repoInStorage(key)) res.set(key, obj);
     });
     return res;
   }
 
-  public mergeRepoWithIssues(repo: RepoModel, issues: IssueObject): Promise<void>[] {
+  public mergeRepoWithIssues(repo: models.RepoModel, issues: models.IssueObject): Promise<void>[] {
     const repoIssues = repo.getIssues();
     const repoPullReqs = repo.getPullRequests();
     const promises: Promise<void>[] = [];
-    getNumberKeys(issues).forEach((key: number) => {
+    models.getNumberKeys(issues).forEach((key: number) => {
       const repoIssue = repoIssues[key];
       const issue = issues[key];
       if (!repoIssue 
@@ -119,12 +119,12 @@ export class DataManager {
     return promises;
   }
 
-  public async updateEvents(repo: RepoModel, pastIssue:IssueModel, newIssue: IssueModel, isIssue: boolean){
+  public async updateEvents(repo: models.RepoModel, pastIssue: models.IssueModel, newIssue: models.IssueModel, isIssue: boolean){
     const repoEvents = repo.getEvents();
     console.log("Repo", repo)
     console.log("Old Issue", pastIssue)
     console.log("new issue", newIssue)
-    let events: EventModel[] = [];
+    let events: models.EventModel[] = [];
     if (isIssue && repoEvents.getIssueEvents()) {
       events = repoEvents.getIssueEvents();
     } else if (repoEvents.getMergeRequestEvents()) {
@@ -133,7 +133,7 @@ export class DataManager {
     if (await IssueDataManager.checkCollaborator(newIssue, this.localUser.getLogin())) {
       const newComments: Map<string, number> = new Map<string, number>();
       const commenters = newIssue.getCommenters();
-      getStringKeys(commenters).forEach((key: string) => {
+      models.getStringKeys(commenters).forEach((key: string) => {
         const commenter = commenters[key];
         if (pastIssue != undefined) {
           const pastComments = pastIssue.getCommenters();
@@ -154,7 +154,7 @@ export class DataManager {
         totalEvents += value;
         console.log(key, totalEvents);
         for (let i = 0; i < totalEvents; i++) {
-          const event = new EventModel(key, "COMMENTER-COMMENTER", undefined, newIssue.getID())
+          const event = new models.EventModel(key, "COMMENTER-COMMENTER", undefined, newIssue.getID())
           events.push(event);
         }
       }
@@ -172,20 +172,20 @@ export class DataManager {
     return this.storageRepos[repId] != undefined;
   }
 
-  public async scrapeRepos(): Promise<RepoObject> {
+  public async scrapeRepos(): Promise<models.RepoObject> {
     const res = await this.scraper.scrapeRepos();
-    const repos: RepoModel[] = [];
+    const repos: models.RepoModel[] = [];
     res.forEach(repo => {
       repos.push(RepoModelConverter.convert(repo));
     });
     return this.repoModelsToObject(repos);
   }
 
-  public async scrapeRepo(id: number): Promise<RepoModel> {
+  public async scrapeRepo(id: number): Promise<models.RepoModel> {
     return RepoModelConverter.convert(await this.scraper.scrapeRepoFromId(id.toString()));
   }
 
-  public async createNewRepoFromIssue(key: number, issues: IssueObject): Promise<RepoModel> {
+  public async createNewRepoFromIssue(key: number, issues: models.IssueObject): Promise<models.RepoModel> {
     const res = await this.scrapeRepo(key);
     const split = IssueDataManager.seperateIssuesPullRequests(issues);
     res.setIssues(split.issues);
@@ -193,13 +193,13 @@ export class DataManager {
     return res;
   }
 
-  public async scrapeUser(user: string): Promise<UserModel> {
+  public async scrapeUser(user: string): Promise<models.UserModel> {
     return UserModelConverter.convert(await this.scraper.scrapeUser(user));
   }
 
-  public async scrapeBranches(owner: string, repoName: string): Promise<BranchObject> {
+  public async scrapeBranches(owner: string, repoName: string): Promise<models.BranchObject> {
     const res = await this.scraper.scrapeBranches(owner, repoName);
-    const branches: BranchObject = {};
+    const branches: models.BranchObject = {};
     res.forEach(async (e) => {
       const lastCommit = await this.scraper.scrapeLastUpdatedBranch(e.commit.url); 
       branches[e.name] = BranchModelConverter.convert(e, lastCommit);
@@ -207,21 +207,21 @@ export class DataManager {
     return branches;
   }
 
-  public async scrapeDefaultBranch(rep: RepoModel, updatedAt: Date = new Date("2006-01-01T00:00:00")): Promise<BranchObject> {
+  public async scrapeDefaultBranch(rep: models.RepoModel, updatedAt: Date = new Date("2006-01-01T00:00:00")): Promise<models.BranchObject> {
     const res = await this.scraper.scrapeCommits(rep.getCreator(), rep.getName(), rep.getDefaultBranch(), updatedAt);
-    const commits: CommitsModel[] = [];
+    const commits: models.CommitsModel[] = [];
     res.forEach(commit => {
       commits.push(CommitModelConverter.convert(commit));
     });
     console.log("scraping commits from " + rep.getName() + " done!");
-    return { [rep.getDefaultBranch()]: new BranchModel(rep.getDefaultBranch(), updatedAt, commits) };
+    return { [rep.getDefaultBranch()]: new models.BranchModel(rep.getDefaultBranch(), updatedAt, commits) };
   }
 
-  public async readRepos(): Promise<RepoObject> {
+  public async readRepos(): Promise<models.RepoObject> {
     return this.repoModelsToObject(await this.IOHandler.getRepos());
   }
   
-  public async readUsers(): Promise<UserObject> {
+  public async readUsers(): Promise<models.UserObject> {
     return this.userModelToObject(await this.IOHandler.getUsers());
   }
 
@@ -229,31 +229,31 @@ export class DataManager {
     this.IOHandler.writeRepos(this.storageRepos);
   }
   
-  public async readMetaData(): Promise<MetaData> {
+  public async readMetaData(): Promise<models.MetaData> {
     return await this.IOHandler.getMetaData();
   }
 
   public writeMetaData() {
-    this.IOHandler.writeMetaData(new MetaData(new Date()));
+    this.IOHandler.writeMetaData(new models.MetaData(new Date()));
   }
 
-  private repoModelsToObject(repos: RepoModel[]): RepoObject {
-    const obj: RepoObject = {};
+  private repoModelsToObject(repos: models.RepoModel[]): models.RepoObject {
+    const obj: models.RepoObject = {};
     repos.forEach(repo => {
       obj[repo.getRepoID()] = repo;
     });
     return obj;
   }
 
-  private userModelToObject(users: UserModel[]): UserObject {
-    const obj: UserObject = {};
+  private userModelToObject(users: models.UserModel[]): models.UserObject {
+    const obj: models.UserObject = {};
     users.forEach(user => {
       obj[user.getLogin()] = user;
     });
     return obj;
   }
 
-  private async getUser(name: string): Promise<UserModel> {
+  private async getUser(name: string): Promise<models.UserModel> {
     const user = this.IOHandler.getUser(name);
     if (!user) {
       const scraped = UserModelConverter.convert(await this.scraper.scrapeUser(name));
