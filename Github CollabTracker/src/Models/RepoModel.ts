@@ -13,11 +13,11 @@ export class RepoModel {
   private branches: BranchObject;
   private issues: IssueObject;
   private pullRequests: IssueObject;
-  private repoEvents: RepoEventModel[];
+  private repoEvents: RepoEventModel;
 
 
   constructor(repoID: number, name: string, html: string, creatorLogin: string, defaultBranch: string, branches: BranchObject = {}, 
-      issues: IssueObject = {}, pullRequests: IssueObject = {}, repoEvents: RepoEventModel[] = []) {
+      issues: IssueObject = {}, pullRequests: IssueObject = {}, repoEvents: RepoEventModel = new RepoEventModel()) {
     this.repoID = repoID;
     this.name = name;
     this.html = html;
@@ -76,6 +76,10 @@ export class RepoModel {
 
   public setPullRequests(pullReqs: IssueObject) {
     this.pullRequests = pullReqs;
+  }
+
+  public setEvents(events: RepoEventModel) {
+    this.repoEvents = events;
   }
 
   public static createNew(mod: RepoModel): RepoModel {

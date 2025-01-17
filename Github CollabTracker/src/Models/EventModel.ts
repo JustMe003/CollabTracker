@@ -1,24 +1,14 @@
 export class EventModel {
-  private id: number;
-  private participant: number;
+  private participant: string;
   private type: string;
-  private date: Date;
-  private commit: string | null;
-  private issue: string | null;
-  private mergeRequest: string | null;
+  private date: Date | undefined;
+  private eventPlaceID: number;
 
-  constructor(id: number, participant: number, type: string,  date: Date, commit: string | null, issue: string | null, mergeRequest: string | null) {
-    this.id = id;
+  constructor(participant: string, type: string,  date: Date, eventPlaceID: number) {
     this.participant = participant;
     this.type = type;
     this.date = date;
-    this.commit = commit;
-    this.issue = issue;
-    this.mergeRequest = mergeRequest;
-  }
-
-  public getID() {
-    return this.id;
+    this.eventPlaceID = eventPlaceID
   }
 
   public getParticipant() {
@@ -33,16 +23,8 @@ export class EventModel {
     return this.date;
   }
 
-  public getCommit() {
-    return this.commit;
-  }
-
-  public getIssue() {
-    return this.issue;
-  }
-
-  public getMergeRequest() {
-    return this.mergeRequest;
+  public getEventPlace() {
+    return this.eventPlaceID;
   }
 
 }
