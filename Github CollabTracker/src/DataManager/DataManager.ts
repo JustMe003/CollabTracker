@@ -6,16 +6,20 @@ import { MetaData } from "../Models/MetaData";
 import { IssueDataManager } from "./IssueDataManager";
 import { CommentersObjectConverter } from "../ModelConverter/CommentersObjectConverter";
 import { CommitModelConverter } from "../ModelConverter/CommitModelConverter";
+import { EventModel } from "../Models/EventModel";
+import { CommentersObject, getStringObjectList } from "../Models/GenericStringObject";
 
 export class DataManager {
   private scraper: Scraper;
   private IOHandler: IOHandler;
   private storageRepos: RepoObject = {};
   private users: UserObject = {};
+  private localUser: UserModel;
 
-  constructor(scraper: Scraper, handler: IOHandler) {
+  constructor(scraper: Scraper, handler: IOHandler, localUser: UserModel) {
     this.scraper = scraper;
     this.IOHandler = handler;
+    this.localUser = localUser;
   }
 
   public async updateData() {
@@ -106,17 +110,65 @@ export class DataManager {
       if (!issue 
       || issue.getNumberOfComments() != pair[1].getNumberOfComments() 
       || issue.getUpdatedAt() < pair[1].getUpdatedAt()) {
-        promises.push(this.scraper.scrapeComments(repo.getCreator(), repo.getName(), pair[0]).then((comments) => {
+        promises.push(this.scraper.scrapeComments(repo.getCreator(), repo.getName(), pair[0]).then(async (comments) => {
           pair[1].setCommenters(CommentersObjectConverter.convert(comments));
           if (pair[1].getIsPullRequest()) {
+            await this.updateEvents(repo, repoPullReqs[pair[0]], pair[1], false)
             repoPullReqs[pair[0]] = pair[1];
           } else {
+            await this.updateEvents(repo, repoIssues[pair[0]], pair[1], true)
             repoIssues[pair[0]] = pair[1];
           }
         }));
       }
     });
     return promises;
+  }
+
+  public async updateEvents(repo: RepoModel, pastIssue:IssueModel, newIssue: IssueModel, isIssue: boolean){
+    const repoEvents = repo.getEvents();
+    console.log("Repo", repo)
+    console.log("Old Issue", pastIssue)
+    console.log("new issue", newIssue)
+    let events: EventModel[] = [];
+    if(isIssue && repoEvents.getIssueEvents()) {
+      events = repoEvents.getIssueEvents();
+    } else if (repoEvents.getMergeRequestEvents()) {
+      events = repoEvents.getMergeRequestEvents()
+    }
+    if(await IssueDataManager.checkCollaborator(newIssue, this.localUser.getLogin())) {
+      const newComments: Map<string, number> = new Map<string, number>;
+      getStringObjectList<number, CommentersObject>(newIssue.getCommenters()).forEach((pair: [string, number]) => {
+        if(pastIssue != undefined) {
+          const pastComments = pastIssue.getCommenters();
+          if(pastComments[pair[0]])
+            newComments.set(pair[0], pair[1] - pastComments[pair[0]])
+        } else 
+        newComments.set(pair[0], pair[1])
+      });
+      let userNewComments:number | undefined = newComments.get(this.localUser.getLogin()) ;
+      newComments.delete(this.localUser.getLogin())
+      for (let [key, value] of newComments) {
+        let totalEvents: number = 0;
+        if(userNewComments != undefined)
+          totalEvents  = userNewComments;
+        else
+        totalEvents = 0;
+        totalEvents += value;
+        console.log(key, totalEvents)
+        for(let i=0; i<totalEvents; i++) {
+          const event = new EventModel(key, "COMMENTER-COMMENTER", undefined, newIssue.getID())
+          events.push(event);
+        }
+      }
+      console.log("Events", events);
+      if(isIssue){
+        repoEvents.setIssueEvents(events)
+      } else{
+        repoEvents.setMergeRequests(events)
+      }
+    }
+
   }
 
   public repoInStorage(repId: number): boolean {

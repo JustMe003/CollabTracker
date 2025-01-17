@@ -42,4 +42,19 @@ export class IssueDataManager {
     return issues;
   }
 
+  public static async checkCollaborator(issue: IssueModel, user:string): Promise<boolean> {
+    let isCollaborator = false;
+    for(let i=0; i<issue.getAssignees().length; i++) {
+      if(issue.getAssignees()[i] == user)
+        isCollaborator = true;
+    }
+    for(let i=0; i<issue.getReviewers().length; i++) {
+      if(issue.getReviewers()[i] == user)
+        isCollaborator = true;
+    }
+    if(issue.getCommenters()[user])
+      isCollaborator = true;
+    return isCollaborator;
+  }
+
 }
