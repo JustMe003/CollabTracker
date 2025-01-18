@@ -104,6 +104,7 @@ export class DataManager {
       if (!repoIssue 
       || repoIssue.getNumberOfComments() != issue.getNumberOfComments() 
       || repoIssue.getUpdatedAt() < issue.getUpdatedAt()) {
+
         promises.push(this.scraper.scrapeComments(repo.getCreator(), repo.getName(), key).then(async (comments) => {
           issue.setCommenters(CommentersObjectConverter.convert(comments));
           if (issue.getIsPullRequest()) {
@@ -121,9 +122,6 @@ export class DataManager {
 
   public async updateEvents(repo: models.RepoModel, pastIssue: models.IssueModel, newIssue: models.IssueModel, isIssue: boolean){
     const repoEvents = repo.getEvents();
-    console.log("Repo", repo)
-    console.log("Old Issue", pastIssue)
-    console.log("new issue", newIssue)
     let events: models.EventModel[] = [];
     if (isIssue && repoEvents.getIssueEvents()) {
       events = repoEvents.getIssueEvents();
@@ -131,33 +129,8 @@ export class DataManager {
       events = repoEvents.getMergeRequestEvents()
     }
     if (await IssueDataManager.checkCollaborator(newIssue, this.localUser.getLogin())) {
-      const newComments: Map<string, number> = new Map<string, number>();
-      const commenters = newIssue.getCommenters();
-      models.getStringKeys(commenters).forEach((key: string) => {
-        const commenter = commenters[key];
-        if (pastIssue != undefined) {
-          const pastComments = pastIssue.getCommenters();
-          if (pastComments[key])
-            newComments.set(key, commenter - pastComments[key]);
-        } else {
-          newComments.set(key, commenter);
-        }
-        });
-      let userNewComments: number | undefined = newComments.get(this.localUser.getLogin()) ;
-      newComments.delete(this.localUser.getLogin())
-      for (let [key, value] of newComments) {
-        let totalEvents: number = 0;
-        if (userNewComments != undefined)
-          totalEvents  = userNewComments;
-        else
-        totalEvents = 0;
-        totalEvents += value;
-        console.log(key, totalEvents);
-        for (let i = 0; i < totalEvents; i++) {
-          const event = new models.EventModel(key, "COMMENTER-COMMENTER", undefined, newIssue.getID())
-          events.push(event);
-        }
-      }
+      events = await IssueDataManager.createAssigneeEvents(events, pastIssue, newIssue, this.localUser)
+      events = await IssueDataManager.createCommentsEvents(events, pastIssue, newIssue, this.localUser)
       console.log("Events", events);
       if (isIssue) {
         repoEvents.setIssueEvents(events)

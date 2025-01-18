@@ -37,7 +37,12 @@ export class RepoEventModel {
   }
 
   public static createNew(mod: RepoEventModel): RepoEventModel {
-  
-      return new RepoEventModel(mod.branchEvents, mod.issueEvents, mod.mergeRequestEvents);
-    }
+    const branches: EventModel[] = [];
+    mod.branchEvents.forEach( event => branches.push(EventModel.createNew(event)))
+    const issues: EventModel[] = [];
+    mod.branchEvents.forEach( event => issues.push(EventModel.createNew(event)))
+    const mergeReqs: EventModel[] = [];
+    mod.branchEvents.forEach( event => mergeReqs.push(EventModel.createNew(event)))
+    return new RepoEventModel(branches, issues, mergeReqs);
+  }
 }

@@ -27,4 +27,8 @@ export class EventModel {
     return this.eventPlaceID;
   }
 
+  public static createNew(mod: EventModel): EventModel { 
+    return new EventModel(mod.participant, mod.type, mod.date, mod.eventPlaceID);
+  }
+
 }
