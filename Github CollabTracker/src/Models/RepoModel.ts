@@ -95,7 +95,8 @@ export class RepoModel {
     Object.entries(mod.pullRequests).forEach((pair: [string, IssueModel]) => {
       pullReqs[parseInt(pair[0])] = IssueModel.createNew(pair[1]);
     });
-    return new RepoModel(mod.repoID, mod.name, mod.html, mod.creatorLogin, mod.defaultBranch, branches, issues, pullReqs, mod.repoEvents);
+    const newRepoEvent: RepoEventModel = RepoEventModel.createNew(mod.repoEvents)
+    return new RepoModel(mod.repoID, mod.name, mod.html, mod.creatorLogin, mod.defaultBranch, branches, issues, pullReqs, newRepoEvent);
   }
 
 }

@@ -35,4 +35,9 @@ export class RepoEventModel {
   public setIssueEvents(events: EventModel[]) {
     this.issueEvents = events;
   }
+
+  public static createNew(mod: RepoEventModel): RepoEventModel {
+  
+      return new RepoEventModel(mod.branchEvents, mod.issueEvents, mod.mergeRequestEvents);
+    }
 }
