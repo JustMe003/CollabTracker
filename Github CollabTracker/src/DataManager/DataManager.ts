@@ -21,7 +21,7 @@ export class DataManager {
     const metaData = await this.readMetaData();
     this.storageRepos = await this.readRepos();
     const scrapeReps = this.updateRepos(metaData.getLastUpdated());
-    
+    console.log("Storage", this.storageRepos)
     // Await scraping all issues and repos;
     const allIssues = await this.updateIssues(metaData);
     // DOes not update it anywhere
@@ -38,11 +38,12 @@ export class DataManager {
     newIssues.forEach((obj, key) => {
       promises.push(this.createNewRepoFromIssue(key, obj));
     });
-
+    console.log("First", this.storageRepos)
     for (let i = 0; i < promises.length; i++) {
       const res = await promises[i];
       this.storageRepos[res.getRepoID()] = res;
     }
+    console.log("Second", this.storageRepos)
 
     // Merge the issues with their respective repos
     const issueMergePromises: Promise<void>[][] = [];
@@ -102,9 +103,8 @@ export class DataManager {
       const repoIssue = repoIssues[key];
       const issue = issues[key];
       if (!repoIssue 
-      || repoIssue.getNumberOfComments() != issue.getNumberOfComments() 
-      || repoIssue.getUpdatedAt() < issue.getUpdatedAt()) {
-
+        || repoIssue.getNumberOfComments() != issue.getNumberOfComments() 
+        || repoIssue.getUpdatedAt() < issue.getUpdatedAt()) {
         promises.push(this.scraper.scrapeComments(repo.getCreator(), repo.getName(), key).then(async (comments) => {
           issue.setCommenters(CommentersObjectConverter.convert(comments));
           if (issue.getIsPullRequest()) {
@@ -123,14 +123,22 @@ export class DataManager {
   public async updateEvents(repo: models.RepoModel, pastIssue: models.IssueModel, newIssue: models.IssueModel, isIssue: boolean){
     const repoEvents = repo.getEvents();
     let events: models.EventModel[] = [];
+    console.log("Previous issue", pastIssue)
+    console.log("Current issue", newIssue)
+    console.log("Current repo", repo)
     if (isIssue && repoEvents.getIssueEvents()) {
+      console.log("GOT ISSUE EVENTS", repoEvents.getIssueEvents())
       events = repoEvents.getIssueEvents();
     } else if (repoEvents.getMergeRequestEvents()) {
       events = repoEvents.getMergeRequestEvents()
     }
+    console.log("PAST EVENTS", events)
     if (await IssueDataManager.checkCollaborator(newIssue, this.localUser.getLogin())) {
       events = await IssueDataManager.createAssigneeEvents(events, pastIssue, newIssue, this.localUser)
+      console.log("Stage 1", events)
       events = await IssueDataManager.createCommentsEvents(events, pastIssue, newIssue, this.localUser)
+      console.log("Stage 2", events)
+      //events = await IssueDataManager.createAssigneeCommentatorEvents(events, pastIssue, newIssue, this.localUser)
       console.log("Events", events);
       if (isIssue) {
         repoEvents.setIssueEvents(events)

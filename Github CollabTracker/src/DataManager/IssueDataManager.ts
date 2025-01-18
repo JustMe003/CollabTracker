@@ -75,7 +75,7 @@ export class IssueDataManager {
       } else {
         newComments.set(key, commenter);
       }
-      });
+    });
     let userNewComments: number | undefined = newComments.get(user.getLogin()) ;
     newComments.delete(user.getLogin())
     for (let [key, value] of newComments) {
@@ -88,6 +88,7 @@ export class IssueDataManager {
       console.log(key, totalEvents);
       for (let i = 0; i < totalEvents; i++) {
         const event = new models.EventModel(key, "COMMENTER-COMMENTER", undefined, newIssue.getID())
+        console.log("FOUND EVENT", event)
         events.push(event);
       }
     }
@@ -100,21 +101,64 @@ export class IssueDataManager {
     let pastAssignees: string[] = [];
     if(pastIssue != undefined)
       pastAssignees = pastIssue.getAssignees()
-    for(let i = 0; i<pastAssignees.length; i++) {
+    console.log(pastAssignees.length)
+    for(let i = 0; i< pastAssignees.length; i++) {
       if(!assignees.includes(pastAssignees[i])) {
-        events = events.filter(event => event.getParticipant() != pastAssignees[i] && (event.getType() != "ASSIGNEE-ASSIGNEE" || event.getType() != "ASSIGNEE-COMMENTER" ))
+        console.log("removed event")
+        events = events.filter(event => event.getParticipant() != pastAssignees[i] && (event.getType() != "ASSIGNEE-ASSIGNEE" || event.getType() != "ASSIGNEE-COMMENTER" || event.getType() != "COMMENTER-ASSIGNEE" ))
       }
     }
     if(assignees.includes(user.getLogin())) {
-      for(let i = 0; i<assignees.length; i++) {
+      for(let i = 0; i< assignees.length; i++) 
         if(!pastAssignees.includes(assignees[i])) 
           newAssignees.push(assignees[i])
       if(newAssignees.includes(user.getLogin()))
         newAssignees = assignees;
       newAssignees = newAssignees.filter(assignee => assignee != user.getLogin())
-      for(let i=0; i<newAssignees.length; i++)
+      for(let i=0; i< newAssignees.length; i++)
         events.push(new models.EventModel(newAssignees[i], "ASSIGNEE-ASSIGNEE", undefined, newIssue.getID()))
+    
+    }
+    console.log("EXITED ASSSIGNE", events)
+    return events;
+  }
+
+
+  public static async createAssigneeCommentatorEvents(events: models.EventModel[], pastIssue: models.IssueModel, newIssue: models.IssueModel, user: models.UserModel) : Promise<models.EventModel[]> {
+    let newAssignees: string[] = [];
+    const newComments: Map<string, number> = new Map<string, number>();
+    const assignees = newIssue.getAssignees();
+    let pastAssignees: string[] = [];
+    if(pastIssue != undefined)
+      pastAssignees = pastIssue.getAssignees()
+    const commenters = newIssue.getCommenters()
+    models.getStringKeys(commenters).forEach((key: string) => {
+      const commenter = commenters[key];
+      if (pastIssue != undefined) {
+        const pastComments = pastIssue.getCommenters();
+        if (pastComments[key] && pastComments[key] < commenter)
+          newComments.set(key, commenter - pastComments[key]);
+      } else {
+        newComments.set(key, commenter);
       }
+    });
+    if(assignees.includes(user.getLogin())) {
+      for (let [key, value] of newComments) {
+        if(key == user.getLogin())
+          assignees.forEach(assignee => {
+            if(assignee != user.getLogin())
+              events.push(new models.EventModel(assignee, "COMMENTER-ASSIGNEE", undefined, newIssue.getID()))
+          })
+        else
+          events.push(new models.EventModel(key, "ASSIGNEE-COMMENTER", undefined, newIssue.getID()))
+      }
+    } else {
+      for(let i = 0; i<assignees.length; i++) 
+        if(!pastAssignees.includes(assignees[i])) 
+          newAssignees.push(assignees[i])
+      for(let i = 0; i<newAssignees.length; i++) 
+          for(let j=0; j< commenters[user.getLogin()]; j++)
+            events.push(new models.EventModel(newAssignees[i], "COMMENTER-ASSIGNEE", undefined, newIssue.getID()))
     }
     return events;
   }
