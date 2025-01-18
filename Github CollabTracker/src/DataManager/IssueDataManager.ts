@@ -1,6 +1,6 @@
 import { Scraper } from "../ApiScraper/Scraper";
 import { IssueModelConverter } from "../ModelConverter";
-import { getNumberObjectList, IssueModel, IssueObject } from "../Models";
+import { getNumberKeys, IssueModel, IssueObject } from "../Models";
 
 export type IssuePullRequestObject = { issues: IssueObject, pullRequests: IssueObject };
 
@@ -11,12 +11,13 @@ export class IssueDataManager {
     const issues: IssueObject = {};
     const pullReqs: IssueObject = {};
     if (all) {
-      getNumberObjectList<IssueModel, IssueObject>(all).forEach((pair) => {
-        console.log(pair[1].getIsPullRequest());
-        if (pair[1].getIsPullRequest()) {
-          pullReqs[pair[1].getID()] = pair[1];
+      getNumberKeys(all).forEach((key: number) => {
+        const issue = all[key];
+        console.log(issue.getIsPullRequest());
+        if (issue.getIsPullRequest()) {
+          pullReqs[key] = issue;
         } else {
-          issues[pair[1].getID()] = pair[1];
+          issues[key] = issue;
         }
       });
     }

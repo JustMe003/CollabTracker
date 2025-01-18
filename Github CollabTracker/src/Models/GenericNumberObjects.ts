@@ -7,10 +7,8 @@ export type IssueObject = GenericNumberObject<IssueModel>;
 export type PullReqObject = GenericNumberObject<IssueModel>;
 export type RepoObject = GenericNumberObject<RepoModel>;
 
-export function getNumberObjectList<T, U extends GenericNumberObject<T>>(obj: U): [number, T][] {
-  const list: [number, T][] = [];
-  Object.entries(obj).forEach((pair) => {
-    list.push([parseInt(pair[0]), pair[1]]);
-  });
+export function getNumberKeys<T, U extends GenericNumberObject<T>>(obj: U): number[] {
+  const list: number[] = [];
+  Object.keys(obj).forEach(e => list.push(parseInt(e)));
   return list;
 }
