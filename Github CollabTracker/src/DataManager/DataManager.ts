@@ -59,7 +59,6 @@ export class DataManager {
     console.log(this.storageRepos);
     
     // updateBranches()
-    // const repos = await this.readRepos();
     metaData.resetLastUpdated();
     this.writeMetaData();
     this.writeRepos();
@@ -104,7 +103,6 @@ export class DataManager {
       if (!repoIssue 
       || repoIssue.getNumberOfComments() != issue.getNumberOfComments() 
       || repoIssue.getUpdatedAt() < issue.getUpdatedAt()) {
-
         promises.push(this.scraper.scrapeComments(repo.getCreator(), repo.getName(), key).then(async (comments) => {
           issue.setCommenters(CommentersObjectConverter.convert(comments));
           if (issue.getIsPullRequest()) {
