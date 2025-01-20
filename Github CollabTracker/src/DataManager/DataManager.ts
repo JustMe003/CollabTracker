@@ -19,7 +19,7 @@ export class DataManager {
   public async updateData() {
     // Start initializing
     const metaData = await this.readMetaData();
-    this.storageRepos = await this.readRepos();
+    //this.storageRepos = await this.readRepos();
     const scrapeReps = this.updateRepos(metaData.getLastUpdated());
     console.log("Storage", this.storageRepos)
     // Await scraping all issues and repos;
@@ -138,7 +138,7 @@ export class DataManager {
       console.log("Stage 1", events)
       events = await IssueDataManager.createCommentsEvents(events, pastIssue, newIssue, this.localUser)
       console.log("Stage 2", events)
-      //events = await IssueDataManager.createAssigneeCommentatorEvents(events, pastIssue, newIssue, this.localUser)
+      events = await IssueDataManager.createAssigneeCommentatorEvents(events, pastIssue, newIssue, this.localUser)
       console.log("Events", events);
       if (isIssue) {
         repoEvents.setIssueEvents(events)

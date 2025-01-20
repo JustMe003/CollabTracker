@@ -106,6 +106,7 @@ export class IssueDataManager {
       if(!assignees.includes(pastAssignees[i])) {
         console.log("removed event")
         events = events.filter(event => event.getParticipant() != pastAssignees[i] && (event.getType() != "ASSIGNEE-ASSIGNEE" || event.getType() != "ASSIGNEE-COMMENTER" || event.getType() != "COMMENTER-ASSIGNEE" ))
+        console.log("removed event2", events)
       }
     }
     if(assignees.includes(user.getLogin())) {
