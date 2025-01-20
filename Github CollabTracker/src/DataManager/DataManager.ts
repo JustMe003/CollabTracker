@@ -163,31 +163,7 @@ export class DataManager {
   }
 
   public async updateEvents(repo: models.RepoModel, pastIssue: models.IssueModel, newIssue: models.IssueModel, isIssue: boolean){
-    const repoEvents = repo.getEvents();
-    let events: models.EventModel[] = [];
-    console.log("Previous issue", pastIssue)
-    console.log("Current issue", newIssue)
-    console.log("Current repo", repo)
-    if (isIssue && repoEvents.getIssueEvents()) {
-      console.log("GOT ISSUE EVENTS", repoEvents.getIssueEvents())
-      events = repoEvents.getIssueEvents();
-    } else if (repoEvents.getMergeRequestEvents()) {
-      events = repoEvents.getMergeRequestEvents()
-    }
-    console.log("PAST EVENTS", events)
-    if (await IssueDataManager.checkCollaborator(newIssue, this.localUser.getLogin())) {
-      events = await IssueDataManager.createAssigneeEvents(events, pastIssue, newIssue, this.localUser)
-      console.log("Stage 1", events)
-      events = await IssueDataManager.createCommentsEvents(events, pastIssue, newIssue, this.localUser)
-      console.log("Stage 2", events)
-      events = await IssueDataManager.createAssigneeCommentatorEvents(events, pastIssue, newIssue, this.localUser)
-      console.log("Events", events);
-      if (isIssue) {
-        repoEvents.setIssueEvents(events)
-      } else{
-        repoEvents.setMergeRequests(events)
-      }
-    }
+    
 
   }
 

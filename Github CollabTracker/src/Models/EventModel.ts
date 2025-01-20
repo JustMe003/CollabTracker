@@ -1,34 +1,35 @@
 export class EventModel {
   private participant: string;
-  private type: string;
-  private date: Date | undefined;
-  private eventPlaceID: number;
+  private developerEvents: number;
+  private administratorEvents: number;
+  private commentatorEvents: number;
 
-  constructor(participant: string, type: string,  date: Date | undefined, eventPlaceID: number) {
+  constructor(participant: string, developerEvents: number,  administratorEvents: number, commentatorEvents: number) {
     this.participant = participant;
-    this.type = type;
-    this.date = date;
-    this.eventPlaceID = eventPlaceID;
+    this.developerEvents = developerEvents;
+    this.administratorEvents = administratorEvents;
+    this.commentatorEvents = commentatorEvents;
+    
   }
 
   public getParticipant() {
     return this.participant;
   }
 
-  public getType() {
-    return this.type;
+  public getAdminEntries() {
+    return this.administratorEvents;
   }
 
-  public getDate() {
-    return this.date;
+  public getDeveloperEntries() {
+    return this.developerEvents;
   }
 
   public getEventPlace() {
-    return this.eventPlaceID;
+    return this.commentatorEvents;
   }
 
   public static createNew(mod: EventModel): EventModel { 
-    return new EventModel(mod.participant, mod.type, mod.date, mod.eventPlaceID);
+    return new EventModel(mod.participant, mod.developerEvents, mod.administratorEvents, mod.commentatorEvents);
   }
 
 }
