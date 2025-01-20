@@ -1,6 +1,7 @@
 import { BranchModel } from "./BranchModel";
+import { EventModel } from "./EventModel";
 import { IssueObject } from "./GenericNumberObjects";
-import { BranchObject } from "./GenericStringObject";
+import { BranchObject, RepoCollaborations } from "./GenericStringObject";
 import { IssueModel } from "./IssueModel";
 import { RepoEventModel } from "./RepoEventModel";
 
@@ -13,11 +14,11 @@ export class RepoModel {
   private branches: BranchObject;
   private issues: IssueObject;
   private pullRequests: IssueObject;
-  private repoEvents: RepoEventModel;
+  private repoCollaborations: RepoCollaborations;
 
 
   constructor(repoID: number, name: string, html: string, creatorLogin: string, defaultBranch: string, branches: BranchObject = {}, 
-      issues: IssueObject = {}, pullRequests: IssueObject = {}, repoEvents: RepoEventModel = new RepoEventModel()) {
+      issues: IssueObject = {}, pullRequests: IssueObject = {}, repoCollaborations: RepoCollaborations = {}) {
     this.repoID = repoID;
     this.name = name;
     this.html = html;
@@ -26,7 +27,7 @@ export class RepoModel {
     this.branches = branches;
     this.issues = issues;
     this.pullRequests = pullRequests;
-    this.repoEvents = repoEvents;
+    this.repoCollaborations = repoCollaborations;
   }
   
 
@@ -62,8 +63,8 @@ export class RepoModel {
     return this.pullRequests;
   }
 
-  public getEvents() {
-    return this.repoEvents;
+  public getCollaborations() {
+    return this.repoCollaborations;
   }
 
   public setBranches(branches: BranchObject) {
@@ -78,8 +79,8 @@ export class RepoModel {
     this.pullRequests = pullReqs;
   }
 
-  public setEvents(events: RepoEventModel) {
-    this.repoEvents = events;
+  public setCollaborations(repoCollaborations: RepoCollaborations) {
+    this.repoCollaborations = repoCollaborations;
   }
 
   public static createNew(mod: RepoModel): RepoModel {
@@ -95,8 +96,11 @@ export class RepoModel {
     Object.entries(mod.pullRequests).forEach((pair: [string, IssueModel]) => {
       pullReqs[parseInt(pair[0])] = IssueModel.createNew(pair[1]);
     });
-    const newRepoEvent: RepoEventModel = RepoEventModel.createNew(mod.repoEvents)
-    return new RepoModel(mod.repoID, mod.name, mod.html, mod.creatorLogin, mod.defaultBranch, branches, issues, pullReqs, newRepoEvent);
+    const collaborations: RepoCollaborations = {};
+    Object.entries(mod.repoCollaborations).forEach((pair: [string, EventModel]) => {
+      collaborations[pair[0]] = EventModel.createNew(pair[1])
+    });
+    return new RepoModel(mod.repoID, mod.name, mod.html, mod.creatorLogin, mod.defaultBranch, branches, issues, pullReqs, collaborations);
   }
 
 }
