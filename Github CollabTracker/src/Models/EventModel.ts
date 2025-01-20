@@ -9,7 +9,6 @@ export class EventModel {
     this.developerEvents = developerEvents;
     this.administratorEvents = administratorEvents;
     this.commentatorEvents = commentatorEvents;
-    
   }
 
   public getParticipant() {
