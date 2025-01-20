@@ -8,7 +8,7 @@ export class EventModel {
     this.participant = participant;
     this.type = type;
     this.date = date;
-    this.eventPlaceID = eventPlaceID
+    this.eventPlaceID = eventPlaceID;
   }
 
   public getParticipant() {

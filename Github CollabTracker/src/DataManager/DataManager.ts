@@ -4,6 +4,48 @@ import { IOHandler } from "../IO/IOHandler";
 import { BranchModelConverter, CommentersObjectConverter, CommitModelConverter, RepoModelConverter, UserModelConverter } from "../ModelConverter";
 import { IssueDataManager } from "./IssueDataManager";
 
+/**
+ * issue {
+ *  creator: name
+ *  commenters: {name: number}
+ *  assignees: [name]
+ *  reviewers: [name]
+ * }
+ * 
+ * UserRoleObject { // indexed by username
+ *  Name: {
+ *    developer: number
+ *    commenter: number
+ *    administrator: number
+ *  }
+ * }
+ * 
+ * JustMe003: {
+ *  R-Selaru: {
+ *    developer: 0
+ *    commenter: 3
+ *    administrator: 1 
+ *  },
+ *  Bob: {
+ *    
+ * }
+ * }
+ * R-Selaru: {
+ *  JustMe003: {
+ *    developer: 0
+ *    commenter: 3
+ *    administrator: 1
+ *  },
+ *  Bob: {
+ *    developer: 2,
+ *    commenter: 0,
+ *    administrator: 0
+ *  }
+ * }
+ * 
+ */
+
+
 export class DataManager {
   private scraper: Scraper;
   private IOHandler: IOHandler;
