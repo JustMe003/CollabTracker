@@ -25,3 +25,10 @@ Issue creation --> First message, is a commenter action
 Pull request creation --> Developer action
 
 Direct and indirect collaborations
+
+
+
+3 questions:
+1. Basic view of repository collaborations
+2. Number of distinct people we are collaborating with
+3. Biggest collaborator in a repository

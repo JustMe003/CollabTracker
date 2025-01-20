@@ -106,10 +106,10 @@ export class DataManager {
         promises.push(this.scraper.scrapeComments(repo.getCreator(), repo.getName(), key).then(async (comments) => {
           issue.setCommenters(CommentersObjectConverter.convert(comments));
           if (issue.getIsPullRequest()) {
-            await this.updateEvents(repo, repoPullReqs[key], issue, false);
+            // await this.updateEvents(repo, repoPullReqs[key], issue, false);
             repoPullReqs[key] = issue;
           } else {
-            await this.updateEvents(repo, repoIssues[key], issue, true);
+            // await this.updateEvents(repo, repoIssues[key], issue, true);
             repoIssues[key] = issue;
           }
         }));
