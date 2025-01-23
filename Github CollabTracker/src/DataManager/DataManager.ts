@@ -13,7 +13,7 @@ import { IssueDataManager } from "./IssueDataManager";
  * }
  * 
  * UserRoleObject { // indexed by username
- *  Name: {
+ *  Name: { // also indexed by username
  *    developer: number
  *    commenter: number
  *    administrator: number
