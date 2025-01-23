@@ -3,6 +3,7 @@ import * as models from "../Models";
 import { IOHandler } from "../IO/IOHandler";
 import { BranchModelConverter, CommentersObjectConverter, CommitModelConverter, RepoModelConverter, UserModelConverter } from "../ModelConverter";
 import { IssueDataManager } from "./IssueDataManager";
+import { EventManager } from "./EventManager";
 
 /**
  * issue {
@@ -149,11 +150,10 @@ export class DataManager {
         || repoIssue.getUpdatedAt() < issue.getUpdatedAt()) {
         promises.push(this.scraper.scrapeComments(repo.getCreator(), repo.getName(), key).then(async (comments) => {
           issue.setCommenters(CommentersObjectConverter.convert(comments));
+          //await this.updateEvents(repo, repoPullReqs[key], issue);
           if (issue.getIsPullRequest()) {
-            await this.updateEvents(repo, repoPullReqs[key], issue, false);
             repoPullReqs[key] = issue;
           } else {
-            await this.updateEvents(repo, repoIssues[key], issue, true);
             repoIssues[key] = issue;
           }
         }));
@@ -162,9 +162,10 @@ export class DataManager {
     return promises;
   }
 
-  public async updateEvents(repo: models.RepoModel, pastIssue: models.IssueModel, newIssue: models.IssueModel, isIssue: boolean){
-    
-
+  public async updateEvents(repo: models.RepoModel, pastIssue: models.IssueModel, newIssue: models.IssueModel){
+    const pastEvents = repo.getCollaborations();
+    EventManager.createAssigneeEvents(pastIssue, newIssue, pastEvents);
+    console.log(pastEvents);
   }
 
   public repoInStorage(repId: number): boolean {

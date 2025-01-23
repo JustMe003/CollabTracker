@@ -3,7 +3,6 @@ import { EventModel } from "./EventModel";
 import { IssueObject } from "./GenericNumberObjects";
 import { BranchObject, RepoCollaborations, UserCollaborations } from "./GenericStringObject";
 import { IssueModel } from "./IssueModel";
-import { RepoEventModel } from "./RepoEventModel";
 
 export class RepoModel {
   private repoID: number;

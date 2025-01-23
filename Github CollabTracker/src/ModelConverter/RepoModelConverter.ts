@@ -1,7 +1,6 @@
 import { RepoApiModel } from "../ApiModels/RepoApiModel";
 import { BranchObject, IssueObject, RepoModel } from "../Models";
 import { RepoCollaborations } from "../Models/GenericStringObject";
-import { RepoEventModel } from "../Models/RepoEventModel";
 
 export class RepoModelConverter {
   public static convert(apiModel: RepoApiModel, branches: BranchObject = {}, issues: IssueObject = {}, pullReqs: IssueObject = {}, collaborations: RepoCollaborations = {}): RepoModel {
