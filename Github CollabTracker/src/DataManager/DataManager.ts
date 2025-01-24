@@ -62,12 +62,12 @@ export class DataManager {
   public async updateData() {
     // Start initializing
     const metaData = await this.readMetaData();
-    //this.storageRepos = await this.readRepos();
+    this.storageRepos = await this.readRepos();
     const scrapeReps = this.updateRepos(metaData.getLastUpdated());
     console.log("Storage", this.storageRepos)
     // Await scraping all issues and repos;
     const allIssues = await this.updateIssues(metaData);
-    // DOes not update it anywhere
+    // Does not update it anywhere
     const repoPromises = await scrapeReps;
 
     for (let i = 0; i < repoPromises.length; i++) {
@@ -81,12 +81,10 @@ export class DataManager {
     newIssues.forEach((obj, key) => {
       promises.push(this.createNewRepoFromIssue(key, obj));
     });
-    console.log("First", this.storageRepos)
     for (let i = 0; i < promises.length; i++) {
       const res = await promises[i];
       this.storageRepos[res.getRepoID()] = res;
     }
-    console.log("Second", this.storageRepos)
 
     // Merge the issues with their respective repos
     const issueMergePromises: Promise<void>[][] = [];
@@ -105,7 +103,7 @@ export class DataManager {
     // updateBranches()
     // const repos = await this.readRepos();
     metaData.resetLastUpdated();
-    this.writeMetaData();
+    // this.writeMetaData();
     this.writeRepos();
   }
 
@@ -150,7 +148,7 @@ export class DataManager {
         || repoIssue.getUpdatedAt() < issue.getUpdatedAt()) {
         promises.push(this.scraper.scrapeComments(repo.getCreator(), repo.getName(), key).then(async (comments) => {
           issue.setCommenters(CommentersObjectConverter.convert(comments));
-          //await this.updateEvents(repo, repoPullReqs[key], issue);
+          await this.updateEvents(repo, repoPullReqs[key], issue);
           if (issue.getIsPullRequest()) {
             repoPullReqs[key] = issue;
           } else {
@@ -164,8 +162,11 @@ export class DataManager {
 
   public async updateEvents(repo: models.RepoModel, pastIssue: models.IssueModel, newIssue: models.IssueModel){
     const pastEvents = repo.getCollaborations();
+    console.log(repo.getName(), pastEvents);
     EventManager.createAssigneeEvents(pastIssue, newIssue, pastEvents);
-    console.log(pastEvents);
+    console.log(repo.getName(), pastEvents);
+    EventManager.createAssigneeCommentator(pastIssue, newIssue, pastEvents);
+    console.log(repo.getName(), pastEvents);
   }
 
   public repoInStorage(repId: number): boolean {

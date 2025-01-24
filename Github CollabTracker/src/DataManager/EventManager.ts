@@ -8,14 +8,18 @@ export class EventManager {
       pastAssignees = pastIssue.getAssignees();
     const newAssignees = newIssue.getAssignees();
     let detectedNew = this.detectNewAssignees(pastAssignees, newAssignees);
-    for(let i = 0; i < detectedNew.length; i++) 
-      for(let j = 0; j < newAssignees.length; i++)
-        if(detectedNew[i] != newAssignees[j]) 
+    console.log(events);
+    for(let i = 0; i < detectedNew.length; i++)
+      for(let j = 0; j < newAssignees.length; j++)
+        if(detectedNew[i] != newAssignees[j]) {
+          events[detectedNew[i]] = events[detectedNew[i]] || {};
+          (events[detectedNew[i]])[newAssignees[j]] = (events[detectedNew[i]])[newAssignees[j]] || new models.EventModel(0, 0, 0);
           (events[detectedNew[i]])[newAssignees[j]].incrementAdmin(1);
+        }
     
   }
     
-  public static createAssigneeCommentator( pastIssue: models.IssueModel, newIssue: models.IssueModel, events: models.RepoCollaborations) {
+  public static createAssigneeCommentator(pastIssue: models.IssueModel, newIssue: models.IssueModel, events: models.RepoCollaborations) {
     let pastCommenters: models.CommentersObject = {};
     if (pastIssue) 
       pastCommenters = pastIssue.getCommenters();
@@ -36,8 +40,13 @@ export class EventManager {
   
         const commenter2Count = detectedNewCommenters[commenter2];
         const isCommenter2Admin = newAssignees.includes(commenter2);
-  
+        
+        events[commenter1] = events[commenter1] || {};
+        events[commenter1][commenter2] = events[commenter1][commenter2] || new models.EventModel(0, 0, 0);
         const event = events[commenter1][commenter2];
+        console.log(event);
+
+        // const event = events[commenter1][commenter2];
   
         if (isCommenter1Admin) {
           event.incrementAdmin(commenter1Count);
@@ -57,7 +66,7 @@ export class EventManager {
 
   private static detectNewAssignees(oldArray: string[], newArray: string[]) : string[] {
     let detectedNew: string[] = [];
-    newArray.forEach( element => {
+    newArray.forEach(element => {
       if(!oldArray.includes(element))
         detectedNew.push(element)
     })
