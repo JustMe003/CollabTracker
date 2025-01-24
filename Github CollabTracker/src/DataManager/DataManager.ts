@@ -103,7 +103,7 @@ export class DataManager {
     // updateBranches()
     // const repos = await this.readRepos();
     metaData.resetLastUpdated();
-    // this.writeMetaData();
+    this.writeMetaData();
     this.writeRepos();
   }
 
@@ -148,7 +148,8 @@ export class DataManager {
         || repoIssue.getUpdatedAt() < issue.getUpdatedAt()) {
         promises.push(this.scraper.scrapeComments(repo.getCreator(), repo.getName(), key).then(async (comments) => {
           issue.setCommenters(CommentersObjectConverter.convert(comments));
-          await this.updateEvents(repo, repoPullReqs[key], issue);
+          await this.updateEvents(repo, repoIssues[key], issue);
+          //await this.updateEvents(repo, repoPullReqs[key], issue);
           if (issue.getIsPullRequest()) {
             repoPullReqs[key] = issue;
           } else {
@@ -162,11 +163,12 @@ export class DataManager {
 
   public async updateEvents(repo: models.RepoModel, pastIssue: models.IssueModel, newIssue: models.IssueModel){
     const pastEvents = repo.getCollaborations();
-    console.log(repo.getName(), pastEvents);
-    EventManager.createAssigneeEvents(pastIssue, newIssue, pastEvents);
-    console.log(repo.getName(), pastEvents);
+    //console.log("Previous", repo.getName(), pastEvents);
+    console.log("Update events", pastIssue)
+    //EventManager.createAssigneeEvents(pastIssue, newIssue, pastEvents);
+    //console.log("Current 1", repo.getName(), pastEvents);
     EventManager.createAssigneeCommentator(pastIssue, newIssue, pastEvents);
-    console.log(repo.getName(), pastEvents);
+    //console.log("current 2", repo.getName(), pastEvents);
   }
 
   public repoInStorage(repId: number): boolean {
