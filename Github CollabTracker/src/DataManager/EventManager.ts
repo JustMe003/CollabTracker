@@ -37,7 +37,7 @@ export class EventManager {
       const commenter1Count = detectedNewCommenters[commenter1];
       const isCommenter1Admin = newAssignees.includes(commenter1);
       commenterKeys.forEach((commenter2) => {
-        if (commenter1 === commenter2) return;
+        if (commenter1 == commenter2) return;
         
         const commenter2Count = detectedNewCommenters[commenter2];
         const isCommenter2Admin = newAssignees.includes(commenter2);
