@@ -164,8 +164,8 @@ export class DataManager {
   public async updateEvents(repo: models.RepoModel, pastIssue: models.IssueModel, newIssue: models.IssueModel){
     const pastEvents = repo.getCollaborations();
     //console.log("Previous", repo.getName(), pastEvents);
-    console.log("Update events", pastIssue)
-    //EventManager.createAssigneeEvents(pastIssue, newIssue, pastEvents);
+    //console.log("Update events", pastIssue)
+    EventManager.createAssigneeEvents(pastIssue, newIssue, pastEvents);
     //console.log("Current 1", repo.getName(), pastEvents);
     EventManager.createAssigneeCommentator(pastIssue, newIssue, pastEvents);
     //console.log("current 2", repo.getName(), pastEvents);

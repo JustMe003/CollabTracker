@@ -8,14 +8,28 @@ export class EventManager {
       pastAssignees = pastIssue.getAssignees();
     const newAssignees = newIssue.getAssignees();
     let detectedNew = this.detectNewAssignees(pastAssignees, newAssignees);
-    console.log(events);
+    console.log("These are the detected new", detectedNew);
+    for(let i = 0; i < detectedNew.length; i++) {
+      for(let j= i + 1; j < detectedNew.length; j++) {
+        events[detectedNew[i]] = events[detectedNew[i]] || {};
+        events[detectedNew[j]] = events[detectedNew[j]] || {};
+        (events[detectedNew[i]])[detectedNew[j]] = (events[detectedNew[i]])[detectedNew[j]] || new models.EventModel(0, 0, 0);
+        (events[detectedNew[j]])[detectedNew[i]] = (events[detectedNew[j]])[detectedNew[i]] || new models.EventModel(0, 0, 0);
+        (events[detectedNew[i]])[detectedNew[j]].incrementAdmin(1);
+        (events[detectedNew[j]])[detectedNew[i]].incrementAdmin(1);
+      }
+    }
+    const cpy = newAssignees;
+    let subtraction= cpy.filter(item => detectedNew.indexOf(item) < 0);
     for(let i = 0; i < detectedNew.length; i++)
-      for(let j = 0; j < newAssignees.length; j++)
-        if(detectedNew[i] != newAssignees[j]) {
-          events[detectedNew[i]] = events[detectedNew[i]] || {};
-          (events[detectedNew[i]])[newAssignees[j]] = (events[detectedNew[i]])[newAssignees[j]] || new models.EventModel(0, 0, 0);
-          (events[detectedNew[i]])[newAssignees[j]].incrementAdmin(1);
-        }
+      for(let j = 0; j < subtraction.length; j++) {
+        events[detectedNew[i]] = events[detectedNew[i]] || {};
+        events[subtraction[j]] = events[subtraction[j]] || {};
+        (events[detectedNew[i]])[subtraction[j]] = (events[detectedNew[i]])[subtraction[j]] || new models.EventModel(0, 0, 0);
+        (events[subtraction[j]])[detectedNew[i]] = (events[subtraction[j]])[detectedNew[i]] || new models.EventModel(0, 0, 0);
+        (events[detectedNew[i]])[newAssignees[j]].incrementAdmin(1);
+        (events[subtraction[j]])[detectedNew[i]].incrementAdmin(1);
+      }
     
   }
     
@@ -36,38 +50,66 @@ export class EventManager {
         return
       const commenter1Count = detectedNewCommenters[commenter1];
       const isCommenter1Admin = newAssignees.includes(commenter1);
-      commenterKeys.forEach((commenter2) => {
-        if (commenter1 == commenter2) return;
-        
-        const commenter2Count = detectedNewCommenters[commenter2];
-        const isCommenter2Admin = newAssignees.includes(commenter2);
-        
-        events[commenter1] = events[commenter1] || {};
-        events[commenter1][commenter2] = events[commenter1][commenter2] || new models.EventModel(0, 0, 0);
-        const event = events[commenter1][commenter2];
-        console.log(event);
+      if(commenterKeys.length > 1) {
 
-        // const event = events[commenter1][commenter2];
-  
-        console.log("Will incremeent first for issue",newIssue.getID(), newIssue.getRepoID(), commenter1Count)
-        if (isCommenter1Admin) {
-          event.incrementAdmin(commenter1Count);
-        } else {
-          event.incrementCommentator(commenter1Count);
-        }
-        
-        console.log("Will incremeent second for issue",newIssue.getID(), newIssue.getRepoID(), commenter2Count)
-        if (isCommenter2Admin) {
-          event.incrementAdmin(commenter2Count);
-        } else {
-          event.incrementCommentator(commenter2Count);
-        }
-      });
+        commenterKeys.forEach((commenter2) => {
+          if (commenter1 == commenter2) return;
+          
+          const commenter2Count = detectedNewCommenters[commenter2];
+          const isCommenter2Admin = newAssignees.includes(commenter2);
+          
+          events[commenter1] = events[commenter1] || {};
+          events[commenter1][commenter2] = events[commenter1][commenter2] || new models.EventModel(0, 0, 0);
+          const event = events[commenter1][commenter2];
+          console.log(event);
+          
+          if (isCommenter1Admin) {
+            event.incrementAdmin(commenter1Count);
+          } else {
+            event.incrementCommentator(commenter1Count);
+          }
+          
+          if (isCommenter2Admin) {
+            event.incrementAdmin(commenter2Count);
+          } else {
+            event.incrementCommentator(commenter2Count);
+          }
+        });
+      } else {
+        Object.keys(events).forEach(user => {
+          if(user == commenter1) {
+            Object.keys(events[commenter1]).forEach(commenter2 => {
+              if(!(this.checkLoneInvolvementAssignee(newAssignees, commenter2) && this.checkLoneInvolvementCommentator(newCommenters, commenter2))){
+                events[commenter1][commenter2] = events[commenter1][commenter2] || new models.EventModel(0, 0, 0);
+                const event = events[commenter1][commenter2];
+                if (isCommenter1Admin) {
+                  event.incrementAdmin(commenter1Count);
+                } else {
+                  event.incrementCommentator(commenter1Count);
+                }
+              }
+            })
+          } else if (!(this.checkLoneInvolvementAssignee(newAssignees, user) && this.checkLoneInvolvementCommentator(newCommenters, user))){
+            Object.keys(events[user]).forEach(commenter2 => {
+              if(commenter2 == commenter1) {
+                events[user][commenter1] = events[user][commenter1] || new models.EventModel(0, 0, 0);
+                const event = events[user][commenter1];
+                if (isCommenter1Admin) {
+                  event.incrementAdmin(commenter1Count);
+                } else {
+                  event.incrementCommentator(commenter1Count);
+                }
+              }
+            })
+          }
+        })
+
+      }
     });
   }
-  
-
-  private static detectNewAssignees(oldArray: string[], newArray: string[]) : string[] {
+    
+    
+    private static detectNewAssignees(oldArray: string[], newArray: string[]) : string[] {
     let detectedNew: string[] = [];
     newArray.forEach(element => {
       if(!oldArray.includes(element))
