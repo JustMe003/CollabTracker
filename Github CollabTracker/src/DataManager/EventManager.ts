@@ -76,40 +76,27 @@ export class EventManager {
           }
         });
       } else {
-        Object.keys(events).forEach(user => {
-          if(user == commenter1) {
-            Object.keys(events[commenter1]).forEach(commenter2 => {
-              if(!(this.checkLoneInvolvementAssignee(newAssignees, commenter2) && this.checkLoneInvolvementCommentator(newCommenters, commenter2))){
-                events[commenter1][commenter2] = events[commenter1][commenter2] || new models.EventModel(0, 0, 0);
-                const event = events[commenter1][commenter2];
-                if (isCommenter1Admin) {
-                  event.incrementAdmin(commenter1Count);
-                } else {
-                  event.incrementCommentator(commenter1Count);
-                }
-              }
-            })
-          } else if (!(this.checkLoneInvolvementAssignee(newAssignees, user) && this.checkLoneInvolvementCommentator(newCommenters, user))){
-            Object.keys(events[user]).forEach(commenter2 => {
-              if(commenter2 == commenter1) {
-                events[user][commenter1] = events[user][commenter1] || new models.EventModel(0, 0, 0);
-                const event = events[user][commenter1];
-                if (isCommenter1Admin) {
-                  event.incrementAdmin(commenter1Count);
-                } else {
-                  event.incrementCommentator(commenter1Count);
-                }
-              }
-            })
+        Object.keys(events).forEach((user) => {
+          if (user === commenter1) {
+            // Update for all commenters of commenter1
+            Object.keys(events[commenter1]).forEach((commenter2) => {
+              if (!(this.checkLoneInvolvementAssignee(newAssignees, commenter2) && this.checkLoneInvolvementCommentator(newCommenters, commenter2))) 
+                this.updateEvents(events, commenter1, commenter2, commenter1Count, isCommenter1Admin);
+            });
+          } else if (!(this.checkLoneInvolvementAssignee(newAssignees, user) && this.checkLoneInvolvementCommentator(newCommenters, user))) {
+            // Update for other users targeting commenter1
+            Object.keys(events[user]).forEach((commenter2) => {
+              if (commenter2 === commenter1) 
+                this.updateEvents(events, user, commenter1, commenter1Count, isCommenter1Admin);
+            });
           }
-        })
-
+        });
       }
     });
   }
     
     
-    private static detectNewAssignees(oldArray: string[], newArray: string[]) : string[] {
+  private static detectNewAssignees(oldArray: string[], newArray: string[]) : string[] {
     let detectedNew: string[] = [];
     newArray.forEach(element => {
       if(!oldArray.includes(element))
@@ -152,5 +139,17 @@ export class EventManager {
       return false
     else 
       return true
+  }
+
+  private static updateEvents(events: models.RepoCollaborations, user: string, target: string, count: number, isAdmin: boolean) {
+    events[user] = events[user] || {};
+    events[user][target] = events[user][target] || new models.EventModel(0, 0, 0);
+    const event = events[user][target];
+  
+    if (isAdmin) {
+      event.incrementAdmin(count);
+    } else {
+      event.incrementCommentator(count);
+    }
   }
 }
