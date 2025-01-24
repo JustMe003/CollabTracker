@@ -56,21 +56,21 @@ export class EventManager {
   }
   
 
-    private static detectNewAssignees(oldArray: string[], newArray: string[]) : string[] {
-      let detectedNew: string[] = [];
-      newArray.forEach( element => {
-        if(!oldArray.includes(element))
-          detectedNew.push(element)
-      })
-      return detectedNew;
-    }
+  private static detectNewAssignees(oldArray: string[], newArray: string[]) : string[] {
+    let detectedNew: string[] = [];
+    newArray.forEach( element => {
+      if(!oldArray.includes(element))
+        detectedNew.push(element)
+    })
+    return detectedNew;
+  }
 
-    private static detectNewComments(oldArray: models.CommentersObject, newArray: models.CommentersObject) : models.CommentersObject {
-      let detectedNew: models.CommentersObject = {};
-      Object.entries(newArray).forEach((pair: [string, number]) => {
-        if(!(oldArray[pair[0]] && oldArray[pair[0]] == pair[1]))
-          detectedNew[pair[0]] = pair[1] - oldArray[pair[0]]
-      });
-      return detectedNew;
-    }
+  private static detectNewComments(oldArray: models.CommentersObject, newArray: models.CommentersObject) : models.CommentersObject {
+    let detectedNew: models.CommentersObject = {};
+    Object.entries(newArray).forEach((pair: [string, number]) => {
+      if(!(oldArray[pair[0]] && oldArray[pair[0]] == pair[1]))
+        detectedNew[pair[0]] = pair[1] - oldArray[pair[0]]
+    });
+    return detectedNew;
+  }
 }
