@@ -25,7 +25,6 @@ export class EventManager {
     const newCommenters = newIssue.getCommenters();
     const detectedNewCommenters = this.detectNewComments(pastCommenters, newCommenters);
   
-    // Use an array of new commenters for single loop processing
     const commenterKeys = Object.keys(detectedNewCommenters);
   
     commenterKeys.forEach((commenter1) => {
