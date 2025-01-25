@@ -117,6 +117,7 @@ export class DataManager {
         // repo does not exists in storage
         promises.push(this.scrapeDefaultBranch(repo).then(br => {
           repo.setBranches(br);
+          EventManager.updateCommitEvents(repo, br);
           this.storageRepos[key] = repo;
         }));
       }

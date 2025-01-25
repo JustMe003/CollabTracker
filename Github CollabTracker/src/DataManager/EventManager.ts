@@ -152,4 +152,41 @@ export class EventManager {
       event.incrementCommentator(count);
     }
   }
+
+  public static updateCommitEvents(repo: models.RepoModel, branch: models.BranchObject) {
+    models.getStringKeys(branch).forEach((key) => {
+      const commits = branch[key].getCommits();
+      const map = new Map<string, number>();
+      commits.forEach(commit => {
+        const author = commit.getAuthor();
+        map.set(author, (map.get(author) || 0) + 1);
+      });
+      console.log(repo.getName(), map);
+
+      const events = repo.getCollaborations();
+      const newCommiters = EventManager.filterNewCommiters(events, commits);
+
+      newCommiters.forEach(author => {
+        events[author] = {};
+      })
+
+      map.forEach((n1, author1) => {
+        events[author1] = events[author1] || {};
+        map.forEach((n2, author2) => {
+          if (author1 === author2) return;
+          events[author1][author2] = events[author1][author2] || new models.EventModel(0, 0, 0);
+          events[author1][author2].incrementDeveloper(n1 + n2);
+        });
+      });
+      console.log(repo.getName(), events);
+    });
+  }
+
+  public static filterNewCommiters(events: models.RepoCollaborations, commits: models.CommitsModel[]): string[] {
+    const arr: string[] = [];
+    commits.forEach(commit => {
+      if (!events[commit.getAuthor()]) arr.push(commit.getAuthor());
+    });
+    return arr;
+  }
 }
