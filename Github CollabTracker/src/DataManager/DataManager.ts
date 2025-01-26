@@ -260,7 +260,7 @@ export class DataManager {
   }
 
   public async getUserCollaborations() : Promise<Map<string, number>> {
-    const allCollabs = new Map<string, number>
+    const allCollabs = new Map<string, number>();
     this.storageRepos = await this.readRepos();
     Object.entries(this.storageRepos).forEach((pair: [string, models.RepoModel]) => {
       const collabs = pair[1].getCollaborations()
@@ -276,7 +276,7 @@ export class DataManager {
   }
 
   public async getMaxUserCollaborationsRepo() : Promise<Map<string, [string, number]>> {
-    const allCollabs = new Map<string, [string, number]>
+    const allCollabs = new Map<string, [string, number]>();
     this.storageRepos = await this.readRepos();
     Object.entries(this.storageRepos).forEach((pair: [string, models.RepoModel]) => {
       const collabs = pair[1].getCollaborations()
@@ -297,7 +297,7 @@ export class DataManager {
   }
 
   public async getRepoCollaborations(repoID: number) : Promise<Map<[string, string] , number>> {
-    const allCollabs = new Map<[string, string] , number>
+    const allCollabs = new Map<[string, string] , number>();
     this.storageRepos = await this.readRepos();
     const repo = this.storageRepos[repoID]
     const collabs = repo.getCollaborations()
