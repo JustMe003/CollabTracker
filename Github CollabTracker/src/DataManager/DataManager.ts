@@ -292,18 +292,18 @@ export class DataManager {
         allCollabs.set(pair[1].getName(), [user, max])
       }
     })
-    
+
     return allCollabs;
   }
 
-  public async getRepoCollaborations(repoID: number) : Promise<Map<string, [string, number]>> {
-    const allCollabs = new Map<string, [string, number]>
+  public async getRepoCollaborations(repoID: number) : Promise<Map<[string, string] , number>> {
+    const allCollabs = new Map<[string, string] , number>
     this.storageRepos = await this.readRepos();
     const repo = this.storageRepos[repoID]
     const collabs = repo.getCollaborations()
     Object.keys(collabs).forEach(user => {
       Object.entries(collabs[user]).forEach((pair: [string, models.EventModel]) => {
-        allCollabs.set(user, [pair[0], pair[1].getAdminEntries() + pair[1].getDeveloperEntries() + pair[1].getCommentatorEvents()])
+        allCollabs.set([user, pair[0]], pair[1].getAdminEntries() + pair[1].getDeveloperEntries() + pair[1].getCommentatorEvents())
       })
     })
     return allCollabs;

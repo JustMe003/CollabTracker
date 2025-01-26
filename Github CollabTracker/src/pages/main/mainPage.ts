@@ -2,6 +2,7 @@ import { GitRefreshCookie } from "../../authorization/cookies/GitRefreshCookie";
 import { GitTokenCookie } from "../../authorization/cookies/GitTokenCookie";
 import { Controller } from "../../Controller/Controller";
 import { DataManager } from "../../DataManager/DataManager";
+import { RepoModel } from "../../Models";
 import router from "../../router/router";
   
 export class Application {
@@ -39,5 +40,10 @@ export class Application {
   public async refresh() {
     await this.dataManager.updateData();
     console.log("all updated!");
+  }
+
+  public async getRepos() {
+    const repoObject = await this.dataManager.readRepos();
+    return Object.values(repoObject);
   }
 }
