@@ -149,11 +149,11 @@ export class DataManager {
         || repoIssue.getUpdatedAt() < issue.getUpdatedAt()) {
         promises.push(this.scraper.scrapeComments(repo.getCreator(), repo.getName(), key).then(async (comments) => {
           issue.setCommenters(CommentersObjectConverter.convert(comments));
-          await this.updateEvents(repo, repoIssues[key], issue);
-          //await this.updateEvents(repo, repoPullReqs[key], issue);
           if (issue.getIsPullRequest()) {
+            await this.updateEvents(repo, repoIssues[key], issue);
             repoPullReqs[key] = issue;
           } else {
+            await this.updateEvents(repo, repoPullReqs[key], issue);
             repoIssues[key] = issue;
           }
         }));

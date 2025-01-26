@@ -8,7 +8,6 @@ export class EventManager {
       pastAssignees = pastIssue.getAssignees();
     const newAssignees = newIssue.getAssignees();
     let detectedNew = this.detectNewAssignees(pastAssignees, newAssignees);
-    console.log("These are the detected new", detectedNew);
     for(let i = 0; i < detectedNew.length; i++) {
       for(let j= i + 1; j < detectedNew.length; j++) {
         events[detectedNew[i]] = events[detectedNew[i]] || {};
@@ -27,7 +26,7 @@ export class EventManager {
         events[subtraction[j]] = events[subtraction[j]] || {};
         (events[detectedNew[i]])[subtraction[j]] = (events[detectedNew[i]])[subtraction[j]] || new models.EventModel(0, 0, 0);
         (events[subtraction[j]])[detectedNew[i]] = (events[subtraction[j]])[detectedNew[i]] || new models.EventModel(0, 0, 0);
-        (events[detectedNew[i]])[newAssignees[j]].incrementAdmin(1);
+        (events[detectedNew[i]])[subtraction[j]].incrementAdmin(1);
         (events[subtraction[j]])[detectedNew[i]].incrementAdmin(1);
       }
     
