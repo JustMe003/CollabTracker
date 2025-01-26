@@ -286,4 +286,37 @@ export class DataManager {
     return allCollabs;
 
   }
+
+  public async getMaxUserCollaborationsRepo() : Promise<Map<string, [string, number]>> {
+    const allCollabs = new Map<string, [string, number]>
+    this.storageRepos = await this.readRepos();
+    Object.entries(this.storageRepos).forEach((pair: [string, models.RepoModel]) => {
+      const collabs = pair[1].getCollaborations()
+      let max = 0;
+      let user = "";
+      if(collabs[this.localUser.getLogin()]) {
+        Object.entries(collabs[this.localUser.getLogin()]).forEach((event: [string, models.EventModel]) => {
+          if(event[1].getAdminEntries() + event[1].getDeveloperEntries() + event[1].getCommentatorEvents() > max) {
+            max = event[1].getAdminEntries() + event[1].getDeveloperEntries() + event[1].getCommentatorEvents()
+            user = event[0]
+          }
+        })
+        allCollabs.set(pair[1].getName(), [user, max])
+      }
+    })
+    return allCollabs;
+  }
+
+  public async getRepoCollaborations(repoID: number) : Promise<Map<string, [string, number]>> {
+    const allCollabs = new Map<string, [string, number]>
+    this.storageRepos = await this.readRepos();
+    const repo = this.storageRepos[repoID]
+    const collabs = repo.getCollaborations()
+    Object.keys(collabs).forEach(user => {
+      Object.entries(collabs[user]).forEach((pair: [string, models.EventModel]) => {
+        allCollabs.set(user, [pair[0], pair[1].getAdminEntries() + pair[1].getDeveloperEntries() + pair[1].getCommentatorEvents()])
+      })
+    })
+    return allCollabs;
+  }
 }
