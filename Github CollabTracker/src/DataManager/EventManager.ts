@@ -160,14 +160,22 @@ export class EventManager {
         const author = commit.getAuthor();
         map.set(author, (map.get(author) || 0) + 1);
       });
-      console.log(repo.getName(), map);
 
       const events = repo.getCollaborations();
-      const newCommiters = EventManager.filterNewCommiters(events, commits);
+      // const newCommiters = EventManager.filterCommiters(events, commits);
+      // const oldCommiters = EventManager.filterCommiters(events, commits, false);
+      // const numCommitsPerUser = EventManager.mapNumCommitsToUser(repo.getBranches()[repo.getDefaultBranch()].getCommits());
 
-      newCommiters.forEach(author => {
-        events[author] = {};
-      })
+      // newCommiters.forEach(author => {
+      //   events[author] = {};
+      //   oldCommiters.forEach((oldAuthor) => {
+      //     events[author][oldAuthor] = new models.EventModel(0, 0, 0);
+      //     events[author][oldAuthor].incrementDeveloper(numCommitsPerUser.get(oldAuthor) || 0);
+      //     events[oldAuthor][author] = new models.EventModel(0, 0, 0);
+      //     events[oldAuthor][author].incrementDeveloper(numCommitsPerUser.get(oldAuthor) || 0);
+      //   });
+      // });
+
 
       map.forEach((n1, author1) => {
         events[author1] = events[author1] || {};
@@ -177,15 +185,23 @@ export class EventManager {
           events[author1][author2].incrementDeveloper(n1 + n2);
         });
       });
-      console.log(repo.getName(), events);
     });
   }
 
-  public static filterNewCommiters(events: models.RepoCollaborations, commits: models.CommitsModel[]): string[] {
+  public static filterCommiters(events: models.RepoCollaborations, commits: models.CommitsModel[], reverse: boolean = false): string[] {
     const arr: string[] = [];
     commits.forEach(commit => {
-      if (!events[commit.getAuthor()]) arr.push(commit.getAuthor());
+      if (reverse) if (!events[commit.getAuthor()]) arr.push(commit.getAuthor());
+      else if (events[commit.getAuthor()]) arr.push(commit.getAuthor());
     });
     return arr;
+  }
+
+  public static mapNumCommitsToUser(commits: models.CommitsModel[]): Map<string, number> {
+    const map = new Map<string, number>();
+    commits.forEach((commit) => {
+      map.set(commit.getAuthor(), 1 + (map.get(commit.getAuthor()) || 0));
+    });
+    return map;
   }
 }
