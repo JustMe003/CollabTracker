@@ -24,6 +24,10 @@ export class Application {
     console.log("all updated!");
   }
 
+  public async getTotalCollaborations() : Promise<Map<string, number>> {
+    return await this.dataManager.getUserCollaborations()
+  }
+
   public async refresh() {
     await this.dataManager.updateData();
     console.log("all updated!");

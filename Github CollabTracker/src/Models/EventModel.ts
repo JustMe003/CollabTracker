@@ -18,7 +18,7 @@ export class EventModel {
     return this.developerEvents;
   }
 
-  public getEventPlace() {
+  public getCommentatorEvents() {
     return this.commentatorEvents;
   }
 

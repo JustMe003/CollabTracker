@@ -4,6 +4,7 @@ import { IOHandler } from "../IO/IOHandler";
 import { BranchModelConverter, CommentersObjectConverter, CommitModelConverter, RepoModelConverter, UserModelConverter } from "../ModelConverter";
 import { IssueDataManager } from "./IssueDataManager";
 import { EventManager } from "./EventManager";
+import { CookieHandler } from "../authorization/cookies/cookies";
 
 /**
  * issue {
@@ -142,19 +143,22 @@ export class DataManager {
     const repoPullReqs = repo.getPullRequests();
     const promises: Promise<void>[] = [];
     models.getNumberKeys(issues).forEach((key: number) => {
-      const repoIssue = repoIssues[key];
+      let repoIssue = repoIssues[key];
+      if(!repoIssue)
+        repoIssue = repoPullReqs[key]
       const issue = issues[key];
       if (!repoIssue 
         || repoIssue.getNumberOfComments() != issue.getNumberOfComments() 
         || repoIssue.getUpdatedAt() < issue.getUpdatedAt()) {
         promises.push(this.scraper.scrapeComments(repo.getCreator(), repo.getName(), key).then(async (comments) => {
           issue.setCommenters(CommentersObjectConverter.convert(comments));
-          if (issue.getIsPullRequest()) {
+          console.log("Enters on this", issue)
+          if (!issue.getIsPullRequest()) {
             await this.updateEvents(repo, repoIssues[key], issue);
-            repoPullReqs[key] = issue;
+            repoIssues[key] = issue;
           } else {
             await this.updateEvents(repo, repoPullReqs[key], issue);
-            repoIssues[key] = issue;
+            repoPullReqs[key] = issue;
           }
         }));
       }
@@ -165,7 +169,7 @@ export class DataManager {
   public async updateEvents(repo: models.RepoModel, pastIssue: models.IssueModel, newIssue: models.IssueModel){
     const pastEvents = repo.getCollaborations();
     //console.log("Previous", repo.getName(), pastEvents);
-    //console.log("Update events", pastIssue)
+    //console.log("Past issue", pastIssue)
     EventManager.createAssigneeEvents(pastIssue, newIssue, pastEvents);
     //console.log("Current 1", repo.getName(), pastEvents);
     EventManager.createAssigneeCommentator(pastIssue, newIssue, pastEvents);
@@ -265,5 +269,21 @@ export class DataManager {
       return scraped
     }
     return user;
+  }
+
+  public async getUserCollaborations() : Promise<Map<string, number>> {
+    const allCollabs = new Map<string, number>
+    this.storageRepos = await this.readRepos();
+    Object.entries(this.storageRepos).forEach((pair: [string, models.RepoModel]) => {
+      const collabs = pair[1].getCollaborations()
+      if(collabs[this.localUser.getLogin()]) {
+        Object.entries(collabs[this.localUser.getLogin()]).forEach((event: [string, models.EventModel]) => {
+          const previousValue = allCollabs.get(event[0]) ?? 0;
+          allCollabs.set(event[0], previousValue + event[1].getAdminEntries() + event[1].getDeveloperEntries() + event[1].getCommentatorEvents())
+        })
+      }
+    })
+    return allCollabs;
+
   }
 }
