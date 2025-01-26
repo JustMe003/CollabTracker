@@ -112,13 +112,13 @@ export class DataManager {
     const promises: Promise<void>[] = [];
     models.getNumberKeys(scrapedRepos).forEach((key: number) => {
       const repo = scrapedRepos[key];
+      promises.push(this.scrapeDefaultBranch(repo).then(br => {
+        repo.setBranches(br);
+        EventManager.updateCommitEvents(repo, br);
+      }));
       if (!this.storageRepos[key]) {
         // repo does not exists in storage
-        promises.push(this.scrapeDefaultBranch(repo).then(br => {
-          repo.setBranches(br);
-          EventManager.updateCommitEvents(repo, br);
-          this.storageRepos[key] = repo;
-        }));
+        this.storageRepos[key] = repo;
       }
     });
     return promises;
@@ -220,7 +220,7 @@ export class DataManager {
       commits.push(CommitModelConverter.convert(commit));
     });
     console.log("scraping commits from " + rep.getName() + " done!");
-    return { [rep.getDefaultBranch()]: new models.BranchModel(rep.getDefaultBranch(), updatedAt, commits) };
+    return { [rep.getDefaultBranch()]: new models.BranchModel(rep.getDefaultBranch(), new Date(), commits) };
   }
 
   public async readRepos(): Promise<models.RepoObject> {
