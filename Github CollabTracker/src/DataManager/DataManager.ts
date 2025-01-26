@@ -4,8 +4,6 @@ import { IOHandler } from "../IO/IOHandler";
 import { BranchModelConverter, CommentersObjectConverter, CommitModelConverter, RepoModelConverter, UserModelConverter } from "../ModelConverter";
 import { IssueDataManager } from "./IssueDataManager";
 import { EventManager } from "./EventManager";
-import { CookieHandler } from "../authorization/cookies/cookies";
-
 /**
  * issue {
  *  creator: name
@@ -259,16 +257,6 @@ export class DataManager {
       obj[user.getLogin()] = user;
     });
     return obj;
-  }
-
-  private async getUser(name: string): Promise<models.UserModel> {
-    const user = this.IOHandler.getUser(name);
-    if (!user) {
-      const scraped = UserModelConverter.convert(await this.scraper.scrapeUser(name));
-      this.IOHandler.writeUser(scraped);
-      return scraped
-    }
-    return user;
   }
 
   public async getUserCollaborations() : Promise<Map<string, number>> {
