@@ -24,8 +24,16 @@ export class Application {
     console.log("all updated!");
   }
 
-  public async getTotalCollaborations() : Promise<Map<string, number>> {
-    return await this.dataManager.getUserCollaborations()
+  public async getTotalCollaborations() {
+    console.log(await this.dataManager.getUserCollaborations());
+  }
+
+  public async getMaxCollaborators() {
+    console.log(await this.dataManager.getMaxUserCollaborationsRepo());
+  }
+
+  public async listCollaboratiosnPerRepo(id: number) {
+    console.log(await this.dataManager.getRepoCollaborations(id));
   }
 
   public async refresh() {

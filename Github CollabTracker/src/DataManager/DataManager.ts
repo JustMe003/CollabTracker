@@ -292,6 +292,7 @@ export class DataManager {
         allCollabs.set(pair[1].getName(), [user, max])
       }
     })
+    
     return allCollabs;
   }
 
