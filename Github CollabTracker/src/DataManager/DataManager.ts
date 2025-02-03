@@ -288,10 +288,10 @@ export class DataManager {
             max = event[1].getAdminEntries() + event[1].getDeveloperEntries() + event[1].getCommentatorEvents()
             user = event[0]
           }
-        })
-        allCollabs.set(pair[1].getName(), [user, max])
+        });
+        allCollabs.set(pair[1].getName(), [user, max]);
       }
-    })
+    });
 
     return allCollabs;
   }
