@@ -1,10 +1,10 @@
 
 # Github CollabTracker
-By (Just_A_Dutchman_)[https://github.com/JustMe003] and (R-Selaru)[https://github.com/R-Selaru]
+By [Just_A_Dutchman_](https://github.com/JustMe003) and [R-Selaru](https://github.com/R-Selaru)
 ## How to set up
 
 Step 1:
-First go to the link [https://github.com/apps/collabtracker] and install the 
+First go to this [link](https://github.com/apps/collabtracker) and install the 
 extenstion on your github account.
 
 Step 2:
