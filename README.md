@@ -1,5 +1,6 @@
 
 # Github CollabTracker
+By (Just_A_Dutchman_)[https://github.com/JustMe003] and (R-Selaru)[https://github.com/R-Selaru]
 ## How to set up
 
 Step 1:
@@ -31,11 +32,17 @@ Step 3:
 Take the code shown in the app and paste on the github authentification page
 
 Step 4:
-After closing the authentification page, press the finish button. You should now see a page with main written.
+Close the github authentication page. You will now be taken to the main page
 
 Step 5:
-You can test the log out button which will make you restart setps 1-4
+Now the application is running, requesting the GitHub API and storing data locally. This may take a while
 
-Fair warning: Even if it doesn't look like much for now there are a lot of things going on in the backround which will be shown at the meeting on Friday.
+Step 6:
+Await the application until it shows a table with repositories. The application is now ready for use
 
 
+## Use cases
+Currently the application can show the following things:
+1. The number of GitHub users with whom we have collaborated
+2. All collaborations between users in a repository
+3. The biggest collaborator in a repository
