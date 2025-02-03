@@ -1,8 +1,7 @@
 export class EventModel {
-  private participant: string;
-  private type: string;
-  private date: Date | undefined;
-  private eventPlaceID: number;
+  private developerEvents: number;
+  private administratorEvents: number;
+  private commentatorEvents: number;
 
   constructor(participant: string, type: string,  date: Date | undefined, eventPlaceID: number) {
     this.participant = participant;
@@ -11,24 +10,33 @@ export class EventModel {
     this.eventPlaceID = eventPlaceID;
   }
 
-  public getParticipant() {
-    return this.participant;
+
+  public getAdminEntries() {
+    return this.administratorEvents;
   }
 
-  public getType() {
-    return this.type;
+  public getDeveloperEntries() {
+    return this.developerEvents;
   }
 
-  public getDate() {
-    return this.date;
+  public getCommentatorEvents() {
+    return this.commentatorEvents;
   }
 
-  public getEventPlace() {
-    return this.eventPlaceID;
+  public incrementAdmin(value: number) {
+    this.administratorEvents += value;
+  }
+
+  public incrementCommentator(value: number) {
+    this.commentatorEvents += value;
+  }
+
+  public incrementDeveloper(value: number) {
+    this.developerEvents += value;
   }
 
   public static createNew(mod: EventModel): EventModel { 
-    return new EventModel(mod.participant, mod.type, mod.date, mod.eventPlaceID);
+    return new EventModel(mod.developerEvents, mod.administratorEvents, mod.commentatorEvents);
   }
 
 }

@@ -5,7 +5,7 @@ export { RepoModel } from "./RepoModel";
 export { UserModel } from "./UserModel";
 export { MetaData } from "./MetaData";
 export { EventModel } from "./EventModel";
-export type { BranchObject, UserObject, CommentersObject } from "./GenericStringObject";
+export type { BranchObject, UserObject, CommentersObject, RepoCollaborations, UserCollaborations } from "./GenericStringObject";
 export type { IssueObject, PullReqObject, RepoObject} from "./GenericNumberObjects";
 export { getNumberKeys } from "./GenericNumberObjects";
 export { getStringKeys } from "./GenericStringObject";

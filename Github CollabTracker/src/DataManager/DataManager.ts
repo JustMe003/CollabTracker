@@ -3,6 +3,48 @@ import * as models from "../Models";
 import { IOHandler } from "../IO/IOHandler";
 import { BranchModelConverter, CommentersObjectConverter, CommitModelConverter, RepoModelConverter, UserModelConverter } from "../ModelConverter";
 import { IssueDataManager } from "./IssueDataManager";
+import { EventManager } from "./EventManager";
+/**
+ * issue {
+ *  creator: name
+ *  commenters: {name: number}
+ *  assignees: [name]
+ *  reviewers: [name]
+ * }
+ * 
+ * UserRoleObject { // indexed by username
+ *  Name: { // also indexed by username
+ *    developer: number
+ *    commenter: number
+ *    administrator: number
+ *  }
+ * }
+ * 
+ * JustMe003: {
+ *  R-Selaru: {
+ *    developer: 0
+ *    commenter: 3
+ *    administrator: 1 
+ *  },
+ *  Bob: {
+ *    
+ * }
+ * }
+ * R-Selaru: {
+ *  JustMe003: {
+ *    developer: 0
+ *    commenter: 3
+ *    administrator: 1
+ *  },
+ *  Bob: {
+ *    developer: 2,
+ *    commenter: 0,
+ *    administrator: 0
+ *  }
+ * }
+ * 
+ */
+
 
 export class DataManager {
   private scraper: Scraper;
@@ -21,10 +63,10 @@ export class DataManager {
     const metaData = await this.readMetaData();
     this.storageRepos = await this.readRepos();
     const scrapeReps = this.updateRepos(metaData.getLastUpdated());
-    
+    console.log("Storage", this.storageRepos)
     // Await scraping all issues and repos;
     const allIssues = await this.updateIssues(metaData);
-    // DOes not update it anywhere
+    // Does not update it anywhere
     const repoPromises = await scrapeReps;
 
     for (let i = 0; i < repoPromises.length; i++) {
@@ -38,7 +80,6 @@ export class DataManager {
     newIssues.forEach((obj, key) => {
       promises.push(this.createNewRepoFromIssue(key, obj));
     });
-
     for (let i = 0; i < promises.length; i++) {
       const res = await promises[i];
       this.storageRepos[res.getRepoID()] = res;
@@ -70,12 +111,13 @@ export class DataManager {
     const promises: Promise<void>[] = [];
     models.getNumberKeys(scrapedRepos).forEach((key: number) => {
       const repo = scrapedRepos[key];
+      promises.push(this.scrapeDefaultBranch(repo).then(br => {
+        repo.setBranches(br);
+        EventManager.updateCommitEvents(repo, br);
+      }));
       if (!this.storageRepos[key]) {
         // repo does not exists in storage
-        promises.push(this.scrapeDefaultBranch(repo).then(br => {
-          repo.setBranches(br);
-          this.storageRepos[key] = repo;
-        }));
+        this.storageRepos[key] = repo;
       }
     });
     return promises;
@@ -98,19 +140,22 @@ export class DataManager {
     const repoPullReqs = repo.getPullRequests();
     const promises: Promise<void>[] = [];
     models.getNumberKeys(issues).forEach((key: number) => {
-      const repoIssue = repoIssues[key];
+      let repoIssue = repoIssues[key];
+      if(!repoIssue)
+        repoIssue = repoPullReqs[key]
       const issue = issues[key];
       if (!repoIssue 
-      || repoIssue.getNumberOfComments() != issue.getNumberOfComments() 
-      || repoIssue.getUpdatedAt() < issue.getUpdatedAt()) {
+        || repoIssue.getNumberOfComments() != issue.getNumberOfComments() 
+        || repoIssue.getUpdatedAt() < issue.getUpdatedAt()) {
         promises.push(this.scraper.scrapeComments(repo.getCreator(), repo.getName(), key).then(async (comments) => {
           issue.setCommenters(CommentersObjectConverter.convert(comments));
-          if (issue.getIsPullRequest()) {
-            // await this.updateEvents(repo, repoPullReqs[key], issue, false);
-            repoPullReqs[key] = issue;
-          } else {
-            // await this.updateEvents(repo, repoIssues[key], issue, true);
+          console.log("Enters on this", issue)
+          if (!issue.getIsPullRequest()) {
+            await this.updateEvents(repo, repoIssues[key], issue);
             repoIssues[key] = issue;
+          } else {
+            await this.updateEvents(repo, repoPullReqs[key], issue);
+            repoPullReqs[key] = issue;
           }
         }));
       }
@@ -118,25 +163,14 @@ export class DataManager {
     return promises;
   }
 
-  public async updateEvents(repo: models.RepoModel, pastIssue: models.IssueModel, newIssue: models.IssueModel, isIssue: boolean){
-    const repoEvents = repo.getEvents();
-    let events: models.EventModel[] = [];
-    if (isIssue && repoEvents.getIssueEvents()) {
-      events = repoEvents.getIssueEvents();
-    } else if (repoEvents.getMergeRequestEvents()) {
-      events = repoEvents.getMergeRequestEvents()
-    }
-    if (await IssueDataManager.checkCollaborator(newIssue, this.localUser.getLogin())) {
-      events = await IssueDataManager.createAssigneeEvents(events, pastIssue, newIssue, this.localUser)
-      events = await IssueDataManager.createCommentsEvents(events, pastIssue, newIssue, this.localUser)
-      console.log("Events", events);
-      if (isIssue) {
-        repoEvents.setIssueEvents(events)
-      } else{
-        repoEvents.setMergeRequests(events)
-      }
-    }
-
+  public async updateEvents(repo: models.RepoModel, pastIssue: models.IssueModel, newIssue: models.IssueModel){
+    const pastEvents = repo.getCollaborations();
+    //console.log("Previous", repo.getName(), pastEvents);
+    //console.log("Past issue", pastIssue)
+    EventManager.createAssigneeEvents(pastIssue, newIssue, pastEvents);
+    //console.log("Current 1", repo.getName(), pastEvents);
+    EventManager.createAssigneeCommentator(pastIssue, newIssue, pastEvents);
+    //console.log("current 2", repo.getName(), pastEvents);
   }
 
   public repoInStorage(repId: number): boolean {
@@ -185,7 +219,7 @@ export class DataManager {
       commits.push(CommitModelConverter.convert(commit));
     });
     console.log("scraping commits from " + rep.getName() + " done!");
-    return { [rep.getDefaultBranch()]: new models.BranchModel(rep.getDefaultBranch(), updatedAt, commits) };
+    return { [rep.getDefaultBranch()]: new models.BranchModel(rep.getDefaultBranch(), new Date(), commits) };
   }
 
   public async readRepos(): Promise<models.RepoObject> {
@@ -224,13 +258,53 @@ export class DataManager {
     return obj;
   }
 
-  private async getUser(name: string): Promise<models.UserModel> {
-    const user = this.IOHandler.getUser(name);
-    if (!user) {
-      const scraped = UserModelConverter.convert(await this.scraper.scrapeUser(name));
-      this.IOHandler.writeUser(scraped);
-      return scraped
-    }
-    return user;
+  public async getUserCollaborations() : Promise<Map<string, number>> {
+    const allCollabs = new Map<string, number>();
+    this.storageRepos = await this.readRepos();
+    Object.entries(this.storageRepos).forEach((pair: [string, models.RepoModel]) => {
+      const collabs = pair[1].getCollaborations()
+      if(collabs[this.localUser.getLogin()]) {
+        Object.entries(collabs[this.localUser.getLogin()]).forEach((event: [string, models.EventModel]) => {
+          const previousValue = allCollabs.get(event[0]) ?? 0;
+          allCollabs.set(event[0], previousValue + event[1].getAdminEntries() + event[1].getDeveloperEntries() + event[1].getCommentatorEvents())
+        })
+      }
+    })
+    return allCollabs;
+
+  }
+
+  public async getMaxUserCollaborationsRepo() : Promise<Map<string, [string, number]>> {
+    const allCollabs = new Map<string, [string, number]>();
+    this.storageRepos = await this.readRepos();
+    Object.entries(this.storageRepos).forEach((pair: [string, models.RepoModel]) => {
+      const collabs = pair[1].getCollaborations()
+      let max = 0;
+      let user = "";
+      if(collabs[this.localUser.getLogin()]) {
+        Object.entries(collabs[this.localUser.getLogin()]).forEach((event: [string, models.EventModel]) => {
+          if(event[1].getAdminEntries() + event[1].getDeveloperEntries() + event[1].getCommentatorEvents() > max) {
+            max = event[1].getAdminEntries() + event[1].getDeveloperEntries() + event[1].getCommentatorEvents()
+            user = event[0]
+          }
+        });
+        allCollabs.set(pair[1].getName(), [user, max]);
+      }
+    });
+
+    return allCollabs;
+  }
+
+  public async getRepoCollaborations(repoID: number) : Promise<Map<[string, string] , number>> {
+    const allCollabs = new Map<[string, string] , number>();
+    this.storageRepos = await this.readRepos();
+    const repo = this.storageRepos[repoID]
+    const collabs = repo.getCollaborations()
+    Object.keys(collabs).forEach(user => {
+      Object.entries(collabs[user]).forEach((pair: [string, models.EventModel]) => {
+        allCollabs.set([user, pair[0]], pair[1].getAdminEntries() + pair[1].getDeveloperEntries() + pair[1].getCommentatorEvents())
+      })
+    })
+    return allCollabs;
   }
 }
