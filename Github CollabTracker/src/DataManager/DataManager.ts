@@ -100,7 +100,6 @@ export class DataManager {
     console.log(this.storageRepos);
     
     // updateBranches()
-    // const repos = await this.readRepos();
     metaData.resetLastUpdated();
     this.writeMetaData();
     this.writeRepos();

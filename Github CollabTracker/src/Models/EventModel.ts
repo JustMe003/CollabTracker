@@ -3,10 +3,11 @@ export class EventModel {
   private administratorEvents: number;
   private commentatorEvents: number;
 
-  constructor(developerEvents: number,  administratorEvents: number, commentatorEvents: number) {
-    this.developerEvents = developerEvents;
-    this.administratorEvents = administratorEvents;
-    this.commentatorEvents = commentatorEvents;
+  constructor(participant: string, type: string,  date: Date | undefined, eventPlaceID: number) {
+    this.participant = participant;
+    this.type = type;
+    this.date = date;
+    this.eventPlaceID = eventPlaceID;
   }
 
 
